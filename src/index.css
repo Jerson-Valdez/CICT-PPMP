@@ -5,14 +5,14 @@
   --text-black: #000000;
   --text-white: #ffffff;
   --text-gray: #8F8F8F;
+
   --primary: #A60212;
   --secondary: #FFA929;
+  
   --sf-bg: #212529;
   --sf-bg-secondary: #F1F1F1;
 
   --red-shadow: 0px 10px 30px 0px rgba(166, 2, 18, 0.4);
-  /* --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); */
-  /* --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25); */
 
   --font-sans: 'Inter', sans-serif;
 
@@ -28,7 +28,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   img {
     max-width: 100%;
     display: block;
