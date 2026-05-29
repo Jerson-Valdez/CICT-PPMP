@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router';
+import { BrowserRouter as Routes, Route, BrowserRouter } from 'react-router';
 import './App.css'
 import Landing from './pages/landing/Landing';
 
