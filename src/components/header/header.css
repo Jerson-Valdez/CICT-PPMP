@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+.header-container {
+    @apply w-[calc(100%-288px)] h-20 flex flex-row absolute items-center justify-start ml-72 px-5 py-4 gap-5;
+    border-bottom: 0.5px solid var(--text-gray);
+
+    & .title {
+        @apply flex flex-1 flex-col items-start justify-center;
+
+        & > h1 {
+            @apply text-3xl font-bold;
+        }
+        & > p {
+            @apply text-sm;
+            color: var(--text-gray);
+        }
+    }
+
+    & .upload-button{
+        @apply flex flex-row items-center text-green-500 text-xs px-2.5 py-1.5 rounded-xl 
+        border border-green-500 gap-1 bg-green-500/20 cursor-pointer;
+
+        &:hover {
+            @apply bg-green-500 transition-all duration-300 ease-in-out text-white -translate-y-0.5 shadow-xl;
+        }
+    }
+
+    & .notification-button{
+        @apply relative cursor-pointer;
+        & .notification-count {
+            @apply absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-xs text-white bg-red-500;
+        }
+        &:hover{
+            @apply -translate-y-0.5 transition-all duration-300 ease-in-out drop-shadow-xl;
+        }
+    }
+
+    & .user-profile {
+        @apply flex flex-row items-center gap-2 px-5;
+        border-left: 0.5px solid var(--text-gray);
+
+        & .user-icon{
+            @apply text-white p-2.5 rounded-full;
+            background-color: var(--primary);
+        }
+
+        & .user-info {
+            @apply flex flex-col items-start justify-center;
+
+            & .name {
+                @apply text-base font-bold;
+            }
+            & .email{
+                @apply text-xs;
+                color: var(--text-gray);
+            }
+        }
+    }
+}
