@@ -6,16 +6,23 @@ import arrow_primary from '../../assets/designs/arrow_primary.svg';
 import { IconLayoutDashboard, IconClipboardList, IconChartColumn, IconTransform, IconChecklist, IconUsers, IconSettings2, IconCalendarWeek, IconLogout2 } from '@tabler/icons-react';
 import type { JSX } from 'react/jsx-dev-runtime';
 
-export default function Nav(){
+interface NavItem {
+    name: string;
+    to: string;
+    icon: JSX.Element;
+    description?: string;
+}
 
-    const navLink: { name: string; to: string; icon: JSX.Element }[] = [       
-        {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={20} /> },
-        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={20} /> },
-        {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} /> },
-        {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={20} /> },
-        {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={20} /> },
-        {name: 'User Management', to: 'user-management', icon: <IconUsers size={20} /> },
-        {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} /> },
+export default function Nav({ onPageChange }: { onPageChange: (pageName: string, pageDescription?: string) => void }) {
+
+    const navLink: NavItem[] = [       
+        {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={20} />, description: 'Procurement Management Overview' },
+        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={20} />, description: 'Full procurement items list with quantity' },
+        {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} />, description: 'Track every item from planning to fulfillment' },
+        {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={20} />, description: 'Reallocatiton of Funds and Resources' },
+        {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={20} />, description: 'Review and approve reallocation requests' },
+        {name: 'User Management', to: 'user-management', icon: <IconUsers size={20} />, description: 'Create and manage staff accounts for the CICT-PPMP system' },
+        {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} />, description: 'Manage your account and system preferences' },
     ]
 
 
@@ -51,7 +58,8 @@ export default function Nav(){
                     <NavLink 
                         key={index} 
                         to={link.to} 
-                        className="nav-link">
+                        className="nav-link"
+                        onClick={() => onPageChange(link.name, link.description)}>
                         {link.icon}
                         <span>{link.name}</span>
                     </NavLink>
