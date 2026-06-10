@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .icon {
-    @apply p-2 text-2xl w-fit rounded-xl border;
+    @apply p-2 text-2xl w-fit rounded-xl;
 
     &.green {
         @apply bg-green-500/20 text-green-500 border-green-500;

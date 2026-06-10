@@ -1,11 +1,15 @@
 @import "tailwindcss";
 
 .header-container {
-    @apply w-[calc(100%-288px)] h-20 flex flex-row absolute items-center justify-start ml-72 px-5 py-4 gap-5;
-    border-bottom: 0.5px solid var(--text-gray);
+    @apply w-[calc(100%-288px)] h-20 flex flex-row absolute top-0 items-center justify-start ml-72 px-5 py-4 gap-5 max-md:w-full max-md:ml-0 max-md:gap-3 max-md:px-3 max-md:py-3 max-md:justify-between
+            bg-white/80 shadow-lg;
+
+    & .menu-toggle {
+        @apply hidden max-md:flex flex-row items-center justify-center text-2xl cursor-pointer;
+    }
 
     & .title {
-        @apply flex flex-1 flex-col items-start justify-center;
+        @apply flex flex-1 flex-col items-start justify-center max-sm:hidden;
 
         & > h1 {
             @apply text-3xl font-bold;

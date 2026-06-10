@@ -13,16 +13,16 @@ interface NavItem {
     description?: string;
 }
 
-export default function Nav({ onPageChange }: { onPageChange: (pageName: string, pageDescription?: string) => void }) {
+export default function Nav() {
 
     const navLink: NavItem[] = [       
-        {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={20} />, description: 'Procurement Management Overview' },
-        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={20} />, description: 'Full procurement items list with quantity' },
-        {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} />, description: 'Track every item from planning to fulfillment' },
-        {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={20} />, description: 'Reallocatiton of Funds and Resources' },
-        {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={20} />, description: 'Review and approve reallocation requests' },
-        {name: 'User Management', to: 'user-management', icon: <IconUsers size={20} />, description: 'Create and manage staff accounts for the CICT-PPMP system' },
-        {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} />, description: 'Manage your account and system preferences' },
+        {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={20} />},
+        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={20} /> },
+        {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} />},
+        {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={20} /> },
+        {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={20} /> },
+        {name: 'User Management', to: 'user-management', icon: <IconUsers size={20} /> },
+        {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} />},
     ]
 
 
@@ -59,7 +59,7 @@ export default function Nav({ onPageChange }: { onPageChange: (pageName: string,
                         key={index} 
                         to={link.to} 
                         className="nav-link"
-                        onClick={() => onPageChange(link.name, link.description)}>
+                        onClick={() => console.log(`Navigating to ${link.name}`)}>
                         {link.icon}
                         <span>{link.name}</span>
                     </NavLink>

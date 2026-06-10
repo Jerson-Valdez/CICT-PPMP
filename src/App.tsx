@@ -22,13 +22,6 @@ function App() {
 
 function AppWrapper() {
 
-  const [currentPageName, setCurrentPageName] = useState<string>('');
-  const [currentPageDescription, setCurrentPageDescription] = useState<string>('');
-  function onPageChange(pageName: string, pageDescription?: string) {
-    setCurrentPageName(pageName);
-    setCurrentPageDescription(pageDescription || '');
-  }
-
   const location = useLocation()
   const noNavPaths = ['/', '/login', '/forgot-password', '/reset-password'];
   const hideNav = noNavPaths.some(path => matchPath(path, location.pathname));
@@ -37,8 +30,8 @@ function AppWrapper() {
     <>
       {!hideNav && (
         <>
-          <Nav onPageChange={onPageChange} />
-          <Header currentPageName={currentPageName} currentPageDescription={currentPageDescription} />
+          <Nav />
+          <Header />
         </>
       )}
         <Routes>

@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+.dashboard-card{
+    @apply flex flex-col items-start justify-start p-5 gap-2 shadow-xl rounded-xl min-w-72 w-[calc(33.333%-14px)];
+
+    & > .card-content{
+        & > h3{
+            @apply text-sm font-semibold;
+            color: var(--text-gray);
+        }
+        & > h2{
+            @apply text-xl font-bold;
+        }
+        & > p{
+            @apply text-xs;
+            color: var(--text-gray);
+
+            & > .additional-info {
+                @apply text-blue-500 font-semibold ml-3;
+            }
+        }
+    }
+    & > .card-line {
+        @apply w-full h-1 rounded-full;
+
+        &.blue-purple {
+            @apply bg-gradient-to-r from-blue-500 to-purple-500;
+        }
+        &.green-teal {
+            @apply bg-gradient-to-r from-green-500 to-teal-500;
+        }
+        &.yellow-red {
+            @apply bg-gradient-to-r from-yellow-500 to-red-500;
+        }
+        &.purple-black {
+            @apply bg-gradient-to-r from-purple-500 to-black;
+        }
+        &.cyan-blue {
+            @apply bg-gradient-to-r from-cyan-400 to-blue-500;
+        }
+        &.green-yellow {
+            @apply bg-gradient-to-r from-green-500 to-yellow-500;
+        }
+    }
+}
