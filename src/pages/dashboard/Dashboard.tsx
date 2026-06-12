@@ -1,8 +1,10 @@
 import { type JSX } from 'react';
 import DashboardCard from '../../components/cards/dashboard_card/DashboardCard';
 import './dashboard.css';
-import { IconWallet, IconFilter2Check, IconStatusChange, IconCurrencyDollarOff, IconGitPullRequestDraft, IconChecklist, IconTimelineEventText } from '@tabler/icons-react';
+import { IconWallet, IconFilter2Check, IconStatusChange, IconCurrencyDollarOff, IconGitPullRequestDraft, IconChecklist, IconTimelineEventText, IconScale, IconChartBarOff, IconTransform, IconClockDollar } from '@tabler/icons-react';
 import DashboardProcurementCard from '../../components/cards/dashboard_procurement_card/DashboardProcurementCard';
+import alab from '../../assets/icons/alab.svg';
+import { Link } from 'react-router';
 
 export default function Dashboard(){
     interface DashboardData {
@@ -94,29 +96,146 @@ export default function Dashboard(){
                             <p>Track the progress of your procurement activities</p>
                         </div>
                     </div>
-                    <DashboardProcurementCard 
-                        icon="rejected"
-                        color="red" 
-                        title="Rejected PR" 
-                        description="Purchase requests that have been rejected" 
-                        date="2023-10-15" 
-                        value={20000}/>
-                    <DashboardProcurementCard 
-                        icon="upload"
-                        color="green" 
-                        title="Uploaded PR" 
-                        description="Purchase requests that have been uploaded" 
-                        date="2023-10-15" />
-                    <DashboardProcurementCard 
-                        icon="pr"
-                        color="blue" 
-                        title="Purchase Request" 
-                        description="Purchase request  of 10 SSD is requested" 
-                        date="2023-10-15" 
-                        value={50000}/>
+                    <div className="content-container">
+                        <DashboardProcurementCard 
+                            icon="rejected"
+                            title="Rejected PR" 
+                            description="Purchase requests that have been rejected" 
+                            date="2023-10-15" 
+                            value={20000}/>
+                        <DashboardProcurementCard 
+                            icon="upload"
+                            title="Uploaded PR" 
+                            description="Purchase requests that have been uploaded" 
+                            date="2023-10-15" />
+                        <DashboardProcurementCard 
+                            icon="approved"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="pr"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="reallocate"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="pr"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="pr"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="upload"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="pr"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="pr"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="pr"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="arrived"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="rejected"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard 
+                            icon="cancel"
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15" 
+                            value={50000}/>
+                            <DashboardProcurementCard
+                            title="Purchase Request" 
+                            description="Purchase request  of 10 SSD is requested" 
+                            date="2023-10-15"/>
+                    </div>
                 </div>
-                <div className="ai-features-container">
 
+                <div className="ai-features-container">
+                    <div className="ai-features-header">
+                        <div className="icon alab">
+                            <img src={alab} alt="ALAB Icon" className="alab-icon" style={{ width: '25px', height: '35px' }}/>
+                        </div>
+                        <div className="title-container">
+                            <h2>Bulk Balancing Optimization</h2>
+                            <p>In Lieu Assistant</p>
+                        </div>
+                    </div>
+                    <div className="content-container">
+                        <Link to="/in-lieu-reallocation" className="alab-link">
+                            <IconScale size={24} className="alab-link-icon"/>
+                            <span>Optimize Your Budget with ALAB</span>
+                        </Link>
+
+                        <div className="ai-features-content">
+                            <div className="icon red"><IconChartBarOff size={18}/></div>
+                            <div className="description">
+                                <h3>Not Utilized Items</h3>
+                                <p>Based on the historical low-utilization items</p>
+                            </div>
+                            <span>35%</span>
+                        </div>
+                        <div className="ai-features-content">
+                            <div className="icon red"><IconTransform size={18}/></div>
+                            <div className="description">
+                                <h3>Frequent In Lieu Items</h3>
+                                <p>Based on the historical frequency of in-lieu items</p>
+                            </div>
+                            <span>35%</span>
+                        </div>
+                        <div className="ai-features-content">
+                            <div className="icon red"><IconChartBarOff size={18}/></div>
+                            <div className="description">
+                                <h3>Not Utilized in Current Year</h3>
+                                <p>Based on Items not utilized for the current fiscal year</p>
+                            </div>
+                            <span>20%</span>
+                        </div>
+                        <div className="ai-features-content">
+                            <div className="icon red"><IconClockDollar size={18}/></div>
+                            <div className="description">
+                                <h3>Lowest Price</h3>
+                                <p>Based on the items price to fit the budget</p>
+                            </div>
+                            <span>10%</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

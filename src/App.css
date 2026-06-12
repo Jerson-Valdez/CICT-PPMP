@@ -23,9 +23,21 @@
         @apply bg-red-500/20 text-red-500 border-red-500;
     }
 
+    &.orange {
+        @apply bg-orange-500/20 text-orange-500 border-orange-500;
+    }
+
+    &.gray {
+        @apply bg-gray-500/20 text-gray-500 border-gray-500;
+    }
+
     &.royal-red {
         background-color: color-mix(in srgb, var(--primary) 20%, transparent);
         color: var(--primary);
+    }
+
+    &.alab{
+        @apply bg-white/20 text-white border-white px-3;
     }
 }
 

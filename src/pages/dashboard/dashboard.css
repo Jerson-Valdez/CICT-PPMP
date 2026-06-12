@@ -12,7 +12,7 @@
         @apply flex flex-row flex-wrap items-start justify-center gap-5 w-full max-md:flex-col;
 
         & > .procurement-timeline-container{
-            @apply flex flex-col items-start justify-start p-5 rounded-xl shadow-2xl w-full min-w-md;
+            @apply flex-6 flex flex-col items-start justify-start p-5 rounded-xl shadow-2xl w-full h-[450px];
 
             & > .procurement-timeline-header {
                 @apply flex flex-row items-center justify-start gap-3 w-full pb-3;
@@ -28,6 +28,62 @@
                     & > p {
                         @apply text-sm;
                         color: var(--text-gray);
+                    }
+                }
+            }
+            & > .content-container{
+                @apply flex flex-col items-center justify-start py-1 gap-1 w-full h-full overflow-y-auto;
+            }
+        }
+        & > .ai-features-container{
+            @apply flex-5 flex flex-col items-center justify-start rounded-xl w-full min-w-80 h-[450px];
+            box-shadow: var(--red-shadow);
+            
+            & > .ai-features-header{
+                @apply flex flex-row items-center justify-start gap-2 w-full pb-3 rounded-t-xl p-5;
+                background: linear-gradient(90deg, var(--primary), var(--secondary));
+
+                & > .title-container{
+                    @apply flex flex-col items-start justify-start;
+
+                    & > h2 {
+                        @apply text-base font-bold text-white;
+                    }
+
+                    & > p {
+                        @apply text-sm text-white;
+                    }
+                }
+            }
+            & > .content-container{
+                @apply flex flex-col items-center justify-evenly py-2 px-5 gap-2 w-full h-full overflow-y-auto;
+
+                & > .alab-link{
+                    @apply flex flex-row items-center gap-1 p-3 rounded-xl font-bold text-white text-sm w-full justify-center
+                    transition-all duration-300 ease-in-out cursor-pointer;
+                    background: linear-gradient(90deg, var(--primary), var(--secondary));
+
+                    &:hover {
+                        @apply -translate-y-0.5;
+                        box-shadow: var(--red-shadow);
+                    }
+                }
+                & > .ai-features-content{
+                    @apply flex flex-row items-center justify-between gap-3 w-full border p-3 rounded-xl;
+                    border-color: var(--text-gray);
+
+                    & > .description{
+                        @apply flex-1;
+                        & > h3 {
+                            @apply text-sm font-semibold;
+                        }
+                        & > p {
+                            @apply text-xs;
+                            color: var(--text-gray);
+                        }
+                    }
+                    & > span{
+                        @apply text-sm font-semibold text-green-500;
                     }
                 }
             }

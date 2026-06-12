@@ -1,11 +1,31 @@
 import './dashboard-procurement-card.css';
 import { IconClockX, IconFileStack, IconClockCheck, IconTransform, IconCloudUpload, IconClock, IconClockCancel } from '@tabler/icons-react';
 
-export default function DashboardProcurementCard({icon, title, description, date, value, color}: {icon?: string, title: string, description: string, date: string, value?: number, color?: string}) {
+export default function DashboardProcurementCard({icon, title, description, date, value}: {icon?: string, title: string, description: string, date: string, value?: number}) {
+    const color = (icon: string) => {
+        switch(icon) {
+            case 'rejected':
+                return 'red';
+            case 'approved':
+                return 'green';
+            case 'arrived':
+                return 'green';
+            case 'pr':
+                return 'blue';
+            case 'reallocate':
+                return 'orange';
+            case 'upload':
+                return 'purple';
+            case 'cancel':
+                return 'gray';
+            default:
+                return 'yellow';
+        }
+    }
     return (
         <div className="dashboard-procurement-card">
             <div className="icon-container">
-                <div className={`icon ${color || 'yellow'}`}>
+                <div className={`icon ${color(icon? icon : 'default')}`}>
                     {icon ? (
                         <>
                             {icon === 'rejected' && <IconClockX size={24} />}
