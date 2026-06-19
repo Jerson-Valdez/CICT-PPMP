@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+.page-container.reallocation{
+    & > .budget-balancing-container{
+        @apply flex flex-col items-center justify-center p-5 gap-5 bg-white shadow-2xl rounded-xl w-full;
+
+        & > .title-container{
+            @apply flex flex-col items-start justify-center w-full;
+
+            & > h2 {
+                @apply text-xl font-semibold;
+            }
+            & > p {
+                @apply text-xs;
+                color: var(--text-gray);
+            }
+        }
+        & > .price-balancing-container{
+            @apply flex flex-row flex-wrap items-center justify-between w-full p-5 rounded-xl border border-gray-300 bg-gray-500/20;
+
+            & > .required-budget-container, & > .available-budget-container, & > .remaining-budget-container {
+                @apply flex flex-col items-start justify-center;
+
+                & > p {
+                    @apply text-xl font-semibold;
+                }
+                & > h3 {
+                    @apply text-xs;
+                    color: var(--text-gray);
+                }
+            }
+            &.balanced {
+                @apply border-green-500 bg-green-500/20;
+                & > .remaining-budget-container {
+                    @apply text-green-500;
+                }
+            }
+            &.unbalanced {
+                @apply border-red-500 bg-red-500/20;
+                & > .remaining-budget-container {
+                    @apply text-red-500;
+                }
+            }
+        }
+        & > .new-lieu-items-container{
+            @apply flex flex-row flex-wrap items-center justify-center gap-5 w-full max-md:flex-col;
+
+            & > .new-items-container, & > .lieu-items-container{
+                @apply flex-1 flex flex-col items-center justify-center gap-2 bg-white rounded-xl shadow-xl p-5 w-full;
+
+                & > .search-container {
+                        @apply w-full;
+                }
+
+                & > .title-button-container {
+                        @apply flex flex-row items-center justify-between gap-2 w-full max-sm:flex-col;
+
+                        & > h3 {
+                            @apply flex flex-row items-center text-base font-semibold;
+                        }
+                        & > button {
+                            @apply text-sm font-semibold w-fit max-sm:w-full;
+                        }
+                }
+            }
+        }
+
+        & > .button-container{
+            @apply flex flex-row items-center justify-end gap-2 w-full;
+        }
+    }
+}

@@ -10,6 +10,7 @@ import Nav from './components/nav/Nav';
 import Header from './components/header/Header';
 import PpmpMasterlist from './pages/masterlist/PpmpMasterlist';
 import ProcurementMonitor from './pages/monitoring/ProcurementMonitor';
+import InLieuReallocation from './pages/reallocation/InLieuReallocation';
 
 function App() {
 
@@ -45,6 +46,7 @@ function AppWrapper() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/ppmp-master-list" element={<PpmpMasterlist />} />
             <Route path="/procurement-monitor" element={<ProcurementMonitor />} />
+            <Route path="/in-lieu-reallocation" element={<InLieuReallocation />} />
         </Routes>
     </>
   )

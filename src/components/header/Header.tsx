@@ -58,9 +58,13 @@ export default function Header() {
     <header className="header-container">
       <div className="menu-toggle">
         {isSidebarCollapsed ? (
-          <IconLayoutSidebarLeftExpand size={30} onClick={toggleSidebar} />
+          <div className="icon royal-red">
+            <IconLayoutSidebarLeftExpand size={30} onClick={toggleSidebar} />
+          </div>
         ) : (
-          <IconLayoutSidebarLeftCollapse size={30} onClick={toggleSidebar} />
+          <div className="icon royal-red">
+            <IconLayoutSidebarLeftCollapse size={30} onClick={toggleSidebar} color="white" />
+          </div>
         )}
       </div>
       <div className="title">

@@ -54,9 +54,14 @@ export default function MasterlistTable({itemCount, unitCount, exportFunction, d
                             <td>{item.fulfilledQuantity}</td>
                             <td>{item.priceCatalogue.toLocaleString()}</td>
                             <td>{item.totalPrice.toLocaleString()}</td>
-                            <td colSpan={2}>
-                                <button className="btn-solid blue">
-                                    <IconFileStack size={18} /> Create PR ({item.availableQuantity} avail.)</button>
+                            <td>
+                                {item.availableQuantity > 0 ? (
+                                    <button className="btn-solid blue">
+                                        <IconFileStack size={18} /> Create PR ({item.availableQuantity} avail.)</button>
+                                ) : (
+                                    <button className="btn-solid blue" disabled>
+                                        <IconFileStack size={18} /> Create PR ({item.availableQuantity} avail.)</button>
+                                )}
                             </td>
                         </tr>
                     ))}

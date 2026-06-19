@@ -213,7 +213,7 @@ export default function Dashboard(){
                         </div>
                     </div>
                     <div className="content-container">
-                        <Link to="/in-lieu-reallocation" className="alab-link">
+                        <Link to="/in-lieu-reallocation" className="btn-alab">
                             <IconScale size={24} className="alab-link-icon"/>
                             <span>Optimize Your Budget with ALAB</span>
                         </Link>

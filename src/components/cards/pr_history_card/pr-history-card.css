@@ -18,7 +18,7 @@
         }
     }
     & > .date-button-container{
-        @apply flex flex-col items-end justify-start gap-2;
+        @apply flex flex-col items-end justify-start gap-2 max-md:w-full;
 
         & > .pr-date {
             @apply text-xs;
