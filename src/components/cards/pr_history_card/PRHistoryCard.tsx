@@ -5,9 +5,10 @@ export default function PRHistoryCard({prNumber, quantity, specifications, statu
         {prNumber: string, quantity: number, specifications: string, status: string, dateRequested: string, dateFulfilled?: string | null}) {
     return (    
         <div className="pr-history-card">
-            <div className={`icon ${status === "Pending" ? "yellow" : status === "Fulfilled" ? "green" : ""}`}>
+            <div className={`icon ${status === "Pending" ? "yellow" : status === "Fulfilled" ? "green" : status === "Cancelled" ? "red" : ""}`}>
                 {status === "Pending" && <IconClock size={24} />}
                 {status === "Fulfilled" && <IconCircleDashedCheck size={24} />}
+                {status === "Cancelled" && <IconCancel size={24}/>}
             </div>
             <div className="info">
                 <div className="pr-number-status-container">

@@ -61,6 +61,14 @@ export default function ProcurementMonitor() {
                     dateRequested: "2023-10-05",
                     dateFulfilled: "2023-10-10",
                 },
+                {
+                    id: "pr-003",
+                    prNumber: "PR-2023-003",
+                    quantity: 2,
+                    specifications: "2 pieces of Solid State Drive (1TB NVMe Gen4)",
+                    status: "Cancelled",
+                    dateRequested: "2023-10-01",
+                }
             ],
             prHistoryCount: 1,
         },

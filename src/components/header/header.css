@@ -9,13 +9,13 @@
     }
 
     & .title {
-        @apply flex flex-1 flex-col items-start justify-center max-sm:hidden;
+        @apply flex flex-1 flex-col items-start justify-center;
 
         & > h1 {
-            @apply text-3xl font-bold;
+            @apply text-3xl font-bold max-sm:text-xl;
         }
         & > p {
-            @apply text-sm;
+            @apply text-sm max-sm:text-xs;
             color: var(--text-gray);
         }
     }
@@ -40,7 +40,7 @@
     }
 
     & .user-profile {
-        @apply flex flex-row items-center gap-2 px-5;
+        @apply flex flex-row items-center gap-2 px-5 max-sm:px-2;
         border-left: 0.5px solid var(--text-gray);
 
         & .user-icon{
@@ -49,7 +49,7 @@
         }
 
         & .user-info {
-            @apply flex flex-col items-start justify-center;
+            @apply flex flex-col items-start justify-center max-sm:hidden;
 
             & .name {
                 @apply text-base font-bold;
