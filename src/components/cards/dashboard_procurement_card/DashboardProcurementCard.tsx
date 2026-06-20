@@ -47,7 +47,7 @@ export default function DashboardProcurementCard({icon, title, description, date
                 <p>{description}</p>
                 <div className="date-value-container">
                     <span>{date}</span>
-                    {value !== undefined && <p className="value">PHP {value.toLocaleString()}</p>}
+                    {value !== undefined && <p className="value">PHP {value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>}
                 </div>
             </div>
         </div>

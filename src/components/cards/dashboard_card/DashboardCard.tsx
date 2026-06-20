@@ -9,7 +9,7 @@ export default function DashboardCard({ icon, iconColor, title, description, val
             </div>
             <div className="card-content">
                 <h3>{title}</h3>
-                <h2>PHP {value.toLocaleString()}</h2>
+                <h2>PHP {value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
                 <p>{description}{additionalInfo && <span className="additional-info">{additionalInfo}</span>}</p>
             </div>
             <div className={`card-line ${color}`} />
