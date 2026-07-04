@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+.upload-ppmp.dialog{
+    @apply fixed flex-col w-5xl p-6 rounded-lg bg-white shadow-lg left-0 right-0 top-1/2 -translate-y-1/2 mx-auto;
+
+    & > .header{
+        @apply flex flex-row items-center justify-between mb-4;
+
+        & > .title{
+            @apply flex flex-row items-center justify-start gap-2;
+
+            & > h3{
+                @apply text-sm font-semibold;
+            }
+        }
+        & > .fiscal-yr-date{
+            @apply text-xs font-semibold bg-gray-100 py-2 px-5 rounded-xl;
+        }
+    }
+    & > .upload-steps{
+        @apply flex flex-row items-center justify-start gap-1 mb-4;
+
+        & > .icon{
+            @apply flex flex-row items-center justify-center gap-1 px-3 py-1 rounded-full;
+
+            & > p{
+                @apply text-[10px] font-semibold;
+            }
+        }
+    }
+    & > .file-upload-container{
+        @apply flex flex-col items-center justify-center w-full p-10 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer gap-2 transform transition-all duration-300 ease-in-out;
+
+        & > h4{
+            @apply text-sm font-semibold;
+        }
+        & > p{
+            @apply text-xs font-normal;
+            color: var(--text-gray);
+        }
+        &:hover{
+            @apply bg-green-100 border-green-500;
+        }
+    }
+    & > .map-columns-container{
+        @apply flex flex-col ;
+        & > p{
+            @apply text-xs font-normal;
+            color: var(--text-gray);
+        }
+        & > .selection-container{
+            @apply flex flex-col gap-2 mt-2;
+            & > .header{
+                @apply flex flex-row items-center justify-between border-b border-gray-300 p-2;
+                & > h4{
+                    @apply w-full text-start text-sm font-semibold text-green-500;
+                }
+            }
+            & > .group{
+                @apply flex flex-row items-center justify-start gap-2 border-b border-gray-300 py-1 bg-green-50 p-2 rounded-lg;
+                & > .title{
+                    & > h5{
+                        @apply text-sm font-semibold;
+                    }
+                    & > p{
+                        @apply text-xs font-normal;
+                        color: var(--text-gray);
+                    }
+                }
+                & > select{
+                    @apply flex-1 text-xs font-semibold border border-gray-300 rounded-lg px-2 py-2;
+                }
+                &.row{
+                    @apply flex-row items-start gap-1 border border-gray-300 rounded-lg p-2 mb-2 bg-white;
+                    color: var(--primary);
+                    border-color: var(--primary);
+                }
+            }
+        }
+    }
+    & > .preview-import-container{
+        @apply flex flex-col gap-2 mt-2;
+        & > .preview-table{
+            @apply overflow-x-auto rounded-lg border border-gray-300;
+            & > table{
+                @apply w-full border-collapse;
+                & > thead{
+                    @apply bg-green-50;
+                    & > tr{
+                        & > th{
+                            @apply text-xs font-semibold text-start px-2 py-2 border border-gray-300;
+                        }
+                    }
+                }
+                & > tbody{
+                    & > tr{
+                        &:nth-child(even){
+                            @apply bg-gray-50;
+                        }
+                        & > td{
+                            @apply text-xs font-normal text-start px-2 py-2 border border-gray-300;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & > .action-btns{
+        @apply flex flex-row items-center justify-start gap-2 mt-4 flex-wrap;
+        & > .cancel-btn-container{
+            @apply flex-1;
+        }
+    }
+}

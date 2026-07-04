@@ -4,9 +4,11 @@ import { useLocation } from 'react-router';
 import { IconLayoutSidebarLeftExpand } from '@tabler/icons-react';
 import { IconLayoutSidebarLeftCollapse } from '@tabler/icons-react';
 import { useState } from 'react';
+import UploadPPMP from '../dialogs/uploadPPMP/UploadPPMP';
 
 export default function Header() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isUploadPPMPDialogOpen, setIsUploadPPMPDialogOpen] = useState(false);
 
   function toggleSidebar() {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -72,11 +74,14 @@ export default function Header() {
         <p className="header-description">{currentPageDescription}</p>
       </div>
       {currentPageName === "Dashboard" && (
-        <button className="upload-button">
+        <button className="upload-button" onClick={() => {setIsUploadPPMPDialogOpen(true)}}>
           <IconUpload size={24} />
           Upload PPMP
         </button>
       )}
+
+      <UploadPPMP isOpen={isUploadPPMPDialogOpen} onClose={() => {setIsUploadPPMPDialogOpen(false)}} />
+        
       {/*<button className="notification-button">
         <span className="notification-count">3</span>
         <IconBell size={24} />
