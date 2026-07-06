@@ -13,7 +13,7 @@ export default function Dashboard(){
     useEffect(() => {
         const loadDashboardData = async () => {
             try {
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                await new Promise(resolve => setTimeout(resolve, 500));
             } finally {
                 setIsLoading(false);
             }
