@@ -40,8 +40,7 @@
     }
 
     & .user-profile {
-        @apply flex flex-row items-center gap-2 px-5 max-sm:px-2;
-        border-left: 0.5px solid var(--text-gray);
+        @apply flex flex-row items-center gap-2 px-2;
 
         & .user-icon{
             @apply text-white p-2.5 rounded-full;
