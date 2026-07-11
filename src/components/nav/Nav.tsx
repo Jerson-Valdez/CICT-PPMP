@@ -13,9 +13,23 @@ interface NavItem {
     description?: string;
 }
 
-export default function Nav() {
+interface NavProps {
+    userRole: string;
+    fiscalYear: number[];
+}
+
+export default function Nav({ userRole, fiscalYear }: NavProps) {
 
     const navLink: NavItem[] = [       
+        {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={20} />},
+        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={20} /> },
+        {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} />},
+        {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={20} /> },
+        {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={20} /> },
+        {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} />},
+    ]
+
+    const adminNavLink: NavItem[] = [       
         {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={20} />},
         {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={20} /> },
         {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} />},
@@ -46,15 +60,14 @@ export default function Nav() {
                     Fiscal Year:
                 </label>
                 <select name="fiscal-year" id="fiscal-year">
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                    <option value="2022">2022</option>
-                    <option value="2021">2021</option>
+                    {fiscalYear.map((year, index) => (
+                        <option key={index} value={year}>{year}</option>
+                    ))}
                 </select>
             </div>
             <hr />
             <div className="nav-links">
-                {navLink.map((link, index) => (
+                {(userRole === 'admin' ? adminNavLink : navLink).map((link, index) => (
                     <NavLink 
                         key={index} 
                         to={link.to} 

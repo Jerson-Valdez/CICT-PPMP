@@ -6,53 +6,66 @@ import { IconSearch, IconFilter } from '@tabler/icons-react';
 import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWrapper";
 import MonitoringSkeleton from "../../components/skeleton/skeleton_pages/MonitoringSkeleton";
 
+interface ItemsCountCardData {
+    icon: string;
+    title: string;
+    count: number;
+    color: string;
+}
+interface prHistory {
+    prId: number;
+    quantity: number;
+    specifications: string;
+    status: string;
+    dateRequested: string;
+    dateFulfilled?: string | null;
+} 
+interface ppmpMonitoringData {
+    itemId: number;
+    itemName: string;
+    unitMeasurement: string;
+    priceCatalog: number;
+    plannedQuantity: number;
+    availableQuantity: number;
+    pendingQuantity: number;
+    fulfilledQuantity: number;
+    prHistory: prHistory[];
+    prHistoryCount: number;
+}
+
 export default function ProcurementMonitor() {
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+    const [totalPlannedItemCount, setTotalPlannedItemCount] = useState(258);
+    const [totalAvailableItemCount, setTotalAvailableItemCount] = useState(189);
+    const [totalPendingItemCount, setTotalPendingItemCount] = useState(12);
+    const [totalFulfilledItemCount, setTotalFulfilledItemCount] = useState(58);
         
     useEffect(() => {
         const loadDashboardData = async () => {
             try {
                 await new Promise(resolve => setTimeout(resolve, 500));
             } finally {
-                setIsLoading(false);
+                setIsInitialLoading(false);
             }
         };
 
         loadDashboardData();
     }, []);
 
-    const ItemsCountCardData: {icon: string, title: string, count: number, color: string}[] = [
-        {icon: 'package', title: 'Total Items in Planned', count: 256, color: 'gray'},
-        {icon: 'chart', title: 'Total Available Items', count: 189, color: 'blue'},
-        {icon: 'clock', title: 'Total Pending Items', count: 12, color: 'yellow'},
-        {icon: 'check', title: 'Total Fulfilled Items', count: 58, color: 'green'},
+    const ItemsCountCardData: ItemsCountCardData[] = [
+        {icon: 'package', title: 'Total Items in Planned', count: totalPlannedItemCount, color: 'gray'},
+        {icon: 'chart', title: 'Total Available Items', count: totalAvailableItemCount, color: 'blue'},
+        {icon: 'clock', title: 'Total Pending Items', count: totalPendingItemCount, color: 'yellow'},
+        {icon: 'check', title: 'Total Fulfilled Items', count: totalFulfilledItemCount, color: 'green'},
     ];
 
-    interface prHistoryItem {
-        id: number;
-        quantity: number;
-        specifications: string;
-        status: string;
-        dateRequested: string;
-        dateFulfilled?: string | null;
-    } 
-
-    interface TrackingItem {
-        id: number;
-        itemName: string;
-        priceCatalog: number;
-        plannedQuantity: number;
-        availableQuantity: number;
-        pendingQuantity: number;
-        fulfilledQuantity: number;
-        prHistory: prHistoryItem[];
-        prHistoryCount: number;
-    }
-
-    const mockTrackingItems: TrackingItem[] = [
+    const mockTrackingItems: ppmpMonitoringData[] = [
         {
-            id: 1,
+            itemId: 1,
             itemName: "Solid State Drive (1TB NVMe Gen4)",
+            unitMeasurement: "unit",
             priceCatalog: 4500.00,
             plannedQuantity: 10,
             availableQuantity: 9,
@@ -60,14 +73,14 @@ export default function ProcurementMonitor() {
             fulfilledQuantity: 0,
             prHistory: [
                 {
-                    id: 1,
+                    prId: 1,
                     quantity: 5,
                     specifications: "5 pieces of Solid State Drive (1TB NVMe Gen4)",
                     status: "Pending",
                     dateRequested: "2023-10-01",
                 },
                 {
-                    id: 2,
+                    prId: 2,
                     quantity: 4,
                     specifications: "4 pieces of Solid State Drive (1TB NVMe Gen4)",
                     status: "Fulfilled",
@@ -75,7 +88,7 @@ export default function ProcurementMonitor() {
                     dateFulfilled: "2023-10-10",
                 },
                 {
-                    id: 3,
+                    prId: 3,
                     quantity: 2,
                     specifications: "2 pieces of Solid State Drive (1TB NVMe Gen4)",
                     status: "Cancelled",
@@ -85,8 +98,9 @@ export default function ProcurementMonitor() {
             prHistoryCount: 1,
         },
         {   
-            id: 2,
+            itemId: 2,
             itemName: "LED Monitor (24-inch IPS, 144Hz)",
+            unitMeasurement: "unit",
             priceCatalog: 8500.00,
             plannedQuantity: 5,
             availableQuantity: 5,
@@ -94,7 +108,7 @@ export default function ProcurementMonitor() {
             fulfilledQuantity: 0,
             prHistory: [
                 {
-                    id: 3,
+                    prId: 3,
                     quantity: 5,
                     specifications: "5 units of LED Monitor (24-inch IPS, 144Hz)",
                     status: "Available",
@@ -104,8 +118,9 @@ export default function ProcurementMonitor() {
             prHistoryCount: 0,
         },
         {
-            id: 3,
+            itemId: 3,
             itemName: "Mechanical Keyboard (Hot-swappable)",
+            unitMeasurement: "piece",
             priceCatalog: 2200.00,
             plannedQuantity: 15,
             availableQuantity: 5,
@@ -118,7 +133,7 @@ export default function ProcurementMonitor() {
 
   return (
     <main className="page-container monitoring">
-        <LoadingWrapper isLoading={isLoading} skeleton={<MonitoringSkeleton />}>
+        <LoadingWrapper isLoading={isInitialLoading} skeleton={<MonitoringSkeleton />}>
             <div className="items-count-card-container">
                 {ItemsCountCardData.map((data, index) => (
                     <ItemsCountCard 
@@ -139,11 +154,11 @@ export default function ProcurementMonitor() {
                     <IconFilter size={24} />
                     <select className="filter-select">
                         <option value="">Filter by:</option>
-                        <option value="ascending">Ascending Item Name</option>
-                        <option value="descending">Descending Item Name</option>
-                        <option value="available">Available Items</option>
-                        <option value="pending">Pending Items</option>
-                        <option value="fulfilled">Fulfilled Items</option>
+                        <option value="ascendingByItemName">Ascending Item Name</option>
+                        <option value="descendingByItemName">Descending Item Name</option>
+                        <option value="availableItems">Available Items</option>
+                        <option value="pendingItems">Pending Items</option>
+                        <option value="fulfilledItems">Fulfilled Items</option>
                     </select>
                 </div>
             </div>
@@ -151,8 +166,9 @@ export default function ProcurementMonitor() {
                     {mockTrackingItems.map((item, index) => (
                         <TrackingItemCard 
                             key={index}
-                            id={item.id} 
+                            itemId={item.itemId} 
                             itemName={item.itemName}
+                            unitMeasurement={item.unitMeasurement}
                             priceCatalog={item.priceCatalog}
                             plannedQuantity={item.plannedQuantity}
                             availableQuantity={item.availableQuantity}

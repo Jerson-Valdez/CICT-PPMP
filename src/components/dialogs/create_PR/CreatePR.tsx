@@ -4,21 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import PrintPR from "../print_PR/PrintPR";
 
 interface CreatePRProps {
+    itemId: number;
     itemName: string;
     availableQuantity: number;
     pendingQuantity: number;
     fulfilledQuantity: number;
-    priceCatalogue: number;
+    priceCatalog: number;
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default function CreatePR({ itemName, availableQuantity, pendingQuantity, fulfilledQuantity, priceCatalogue, isOpen, onClose }: CreatePRProps) {
+export default function CreatePR({itemId, itemName, availableQuantity, pendingQuantity, fulfilledQuantity, priceCatalog, isOpen, onClose }: CreatePRProps) {
     const [requestQuantity, setRequestQuantity] = useState(1);
     const [techSpecs, setTechSpecs] = useState("");
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
-    const totalPrice = priceCatalogue * requestQuantity;
+    const totalPrice = priceCatalog * requestQuantity;
 
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -45,7 +46,8 @@ export default function CreatePR({ itemName, availableQuantity, pendingQuantity,
 
     function handleRequestQuantityChange(e: React.ChangeEvent<HTMLInputElement>) {
         const value = parseInt(e.target.value);
-        const errorMessageElement = document.getElementById("requestQtyError");
+        const errorMessageElement = document.getElementById(`requestQtyError${itemId}`);
+        setRequestQuantity(0);
 
         if (value < 1 || value > availableQuantity) {
             errorMessageElement!.textContent = `Request quantity must be between 1 and ${availableQuantity}.`;
@@ -57,7 +59,7 @@ export default function CreatePR({ itemName, availableQuantity, pendingQuantity,
 
     function handleTechSpecsChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
         const value = e.target.value;
-        const errorMessageElement = document.getElementById("specsError");
+        const errorMessageElement = document.getElementById(`specsError${itemId}`);
 
         if (value.trim() === "") {
             errorMessageElement!.textContent = "Technical specifications cannot be empty.";
@@ -90,23 +92,23 @@ export default function CreatePR({ itemName, availableQuantity, pendingQuantity,
 
                 <div className="input-group">
                     <div className="field-group">
-                        <label htmlFor="requestQty">Request Quantity</label>
-                        <input type="number" id="requestQty" min="1" max={availableQuantity} value={requestQuantity} onChange={handleRequestQuantityChange} />
-                        <p className="error-message" id="requestQtyError"></p>
+                        <label htmlFor={`requestQty${itemId}`}>Request Quantity</label>
+                        <input type="number" id={`requestQty${itemId}`} min="1" max={availableQuantity} value={requestQuantity} onChange={handleRequestQuantityChange} />
+                        <p className="error-message" id={`requestQtyError${itemId}`}></p>
                     </div>
                     <div className="field-group">
-                        <label htmlFor="priceCatalogue">Price Catalogue (PHP)</label>
-                        <input type="number" id="priceCatalogue" value={priceCatalogue} readOnly />
+                        <label htmlFor={`priceCatalog${itemId}`}>Price Catalog (PHP)</label>
+                        <input type="number" id={`priceCatalog${itemId}`} value={priceCatalog} readOnly />
                     </div>
                 </div>
                 <div className="field-group">
-                    <label htmlFor="specifications">Technical Specifications</label>
-                    <textarea id="specifications" rows={4} placeholder="Enter technical specifications..." value={techSpecs} onChange={handleTechSpecsChange}></textarea>
-                    <p className="error-message" id="specsError"></p>
+                    <label htmlFor={`specifications${itemId}`}>Technical Specifications</label>
+                    <textarea id={`specifications${itemId}`} rows={4} placeholder="Enter technical specifications..." value={techSpecs} onChange={handleTechSpecsChange}></textarea>
+                    <p className="error-message" id={`specsError${itemId}`}></p>
                 </div>
                 <div className="total-price">
                     <p>Total Amount:</p>
-                    <h4>PHP {totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h4>
+                    <h4>PHP {totalPrice?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? '0.00'}</h4>
                 </div>
                 <div className="action-btns">
                     <div className="cancel-btn-container">
@@ -138,11 +140,11 @@ export default function CreatePR({ itemName, availableQuantity, pendingQuantity,
                         </>}
                 </div>
             </dialog>
-            <PrintPR 
+            <PrintPR
                 itemName={itemName}
                 itemDescription={techSpecs}
                 quantity={requestQuantity}
-                unitPrice={priceCatalogue}
+                unitPrice={priceCatalog}
                 requestedDate={new Date().toLocaleDateString()}
                 isOpen={isPrintPreviewOpen}
                 onClose={() => setIsPrintPreviewOpen(false)}

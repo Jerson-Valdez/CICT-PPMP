@@ -14,8 +14,14 @@
     & > .card-content {
         @apply w-full;
 
-        & > h3 {
+        & > .title-fiscal-container {
+            @apply flex flex-row items-center justify-between w-full;
+            & > h3 {
             @apply text-xs font-semibold;
+            }
+            & > .status {
+                @apply bg-gray-200;
+            }
         }
         & > p {
             @apply text-xs;

@@ -3,8 +3,8 @@ import "./settings.css";
 import { IconUser, IconEye, IconEyeOff, IconShield, IconCheck, IconX } from '@tabler/icons-react';
 
 export default function Settings() {
-    const email: string = "user@example.com";
-    const initialFullName: string = "Jerson Doe";
+    const [email, setEmail] = useState("user@example.com");
+    const [initialFullName, setInitialFullName] = useState("John Doe");
     const [fullName, setFullName] = useState(initialFullName);
 
     const [currentPassword, setCurrentPassword] = useState('');

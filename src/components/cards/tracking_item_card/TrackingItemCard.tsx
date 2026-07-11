@@ -4,8 +4,9 @@ import "./tracking-item-card.css";
 import { IconChevronRight, IconPackage, IconChartHistogram, IconClock, IconCircleDashedCheck, IconCircleFilled, IconFileStack } from '@tabler/icons-react';
 
 interface TrackingItemCardProps {
-    id: number;
+    itemId: number;
     itemName: string;
+    unitMeasurement: string;
     priceCatalog: number;
     plannedQuantity: number;
     availableQuantity: number;
@@ -15,7 +16,7 @@ interface TrackingItemCardProps {
     prHistoryCount: number;
 }
 
-export default function TrackingItemCard({id, itemName, priceCatalog, plannedQuantity, availableQuantity, pendingQuantity, fulfilledQuantity, prHistory, prHistoryCount}: TrackingItemCardProps) {
+export default function TrackingItemCard({itemId, itemName, unitMeasurement, priceCatalog, plannedQuantity, availableQuantity, pendingQuantity, fulfilledQuantity, prHistory, prHistoryCount}: TrackingItemCardProps) {
 
         const availablePercentage: number = (availableQuantity / plannedQuantity) * 100;
         const pendingPercentage: number = (pendingQuantity / plannedQuantity) * 100;
@@ -34,7 +35,7 @@ export default function TrackingItemCard({id, itemName, priceCatalog, plannedQua
                     <IconChevronRight size={24} className={`chevron-icon ${togglePRHistory ? 'rotated' : ''}`}/>
                     <div className="item-name">
                         <h3>{itemName}</h3>
-                        <p>{plannedQuantity} units • PHP {priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        <p>{plannedQuantity} {unitMeasurement} • PHP {priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     </div>
                     <p>PHP {priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                 </div>
@@ -79,9 +80,10 @@ export default function TrackingItemCard({id, itemName, priceCatalog, plannedQua
                     {prHistory.map((pr, index) => (
                         <PRHistoryCard
                             key={index}
-                            id={pr.id}
+                            prId={pr.prId}
                             quantity={pr.quantity}
                             itemName={itemName}
+                            unitMeasurement={unitMeasurement}
                             priceCatalog={priceCatalog}
                             specifications={pr.specifications}
                             status={pr.status}

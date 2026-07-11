@@ -6,7 +6,12 @@ import { IconLayoutSidebarLeftCollapse } from '@tabler/icons-react';
 import { useState } from 'react';
 import UploadPPMP from '../dialogs/uploadPPMP/UploadPPMP';
 
-export default function Header() {
+interface HeaderProps {
+  userFullName: string;
+  userEmailAddress: string;
+}
+
+export default function Header({ userFullName, userEmailAddress }: HeaderProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isUploadPPMPDialogOpen, setIsUploadPPMPDialogOpen] = useState(false);
 
@@ -88,11 +93,11 @@ export default function Header() {
       </button>*/}
       <div className="user-profile">
         <div className="user-icon">
-          <IconUser size={24} />
+          <p>{userFullName.charAt(0)}</p>
         </div>
         <div className="user-info">
-          <span className="name">Jerson Patrick Valdez</span>
-          <span className="email">jerson.valdez@example.com</span>
+          <span className="name">{userFullName}</span>
+          <span className="email">{userEmailAddress}</span>
         </div>
       </div>
     </header>

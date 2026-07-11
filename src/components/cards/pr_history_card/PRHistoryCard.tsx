@@ -6,9 +6,10 @@ import {notify, confirm} from "../../dialogs/global_dialog/DialogService";
 import { toast } from "../../toast/ToastService";
 
 interface PRHistoryCardProps {
-    id: number;
+    prId: number;
     quantity: number;
     itemName: string;
+    unitMeasurement: string;
     specifications: string;
     priceCatalog: number;
     status: string;
@@ -16,7 +17,7 @@ interface PRHistoryCardProps {
     dateFulfilled?: string | null;
 }
 
-export default function PRHistoryCard({id, quantity, itemName, priceCatalog, specifications, status, dateRequested, dateFulfilled}: PRHistoryCardProps) {
+export default function PRHistoryCard({prId, quantity, itemName, unitMeasurement, priceCatalog, specifications, status, dateRequested, dateFulfilled}: PRHistoryCardProps) {
     const [isPrintPROpen, setPrintPROpen] = useState(false);
 
     function handleArrivedClick() {
@@ -44,11 +45,11 @@ export default function PRHistoryCard({id, quantity, itemName, priceCatalog, spe
             </div>
             <div className="info">
                 <div className="pr-number-status-container">
-                    <p className="pr-number">PR-00{id}</p>
+                    <p className="pr-number">PR-{prId}</p>
                     <p className={`status ${status.toLowerCase()}`}>{status}</p>
                 </div>
                 <p className="specifications">{itemName} • {specifications}</p>
-                <p className="pr-quantity">Quantity: {quantity} units</p>
+                <p className="pr-quantity">Quantity: {quantity} {unitMeasurement}</p>
             </div>
             <div className="date-button-container">
                 <p className="pr-date">{dateRequested}</p>
@@ -69,7 +70,7 @@ export default function PRHistoryCard({id, quantity, itemName, priceCatalog, spe
                             </button>
                         </div>
                         <PrintPR
-                            id={id}
+                            prId={prId}
                             itemName={itemName}
                             itemDescription={specifications}
                             quantity={quantity}

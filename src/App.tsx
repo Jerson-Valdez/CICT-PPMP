@@ -31,13 +31,17 @@ function AppWrapper() {
   const location = useLocation()
   const noNavPaths = ['/', '/login', '/forgot-password', '/reset-password'];
   const hideNav = noNavPaths.some(path => matchPath(path, location.pathname));
-
+  const fiscalYears= [2022, 2023, 2024, 2025];
+  const currentFiscalYear = 2022;
+  const role = 'admin'; // Replace with the actual role of the user
+  const userFullName = 'Jerson Patrick Valdez'; // Replace with the actual full name of the user
+  const userEmailAddress = '@jerson@gmail.com'; // Replace with the actual email address of the user
   return(
     <>
       {!hideNav && (
         <>
-          <Nav />
-          <Header />
+          <Nav userRole={role} fiscalYear={fiscalYears} />
+          <Header userFullName={userFullName} userEmailAddress={userEmailAddress} />
         </>
       )}
         <Routes>

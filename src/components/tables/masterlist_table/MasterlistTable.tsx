@@ -3,7 +3,14 @@ import CreatePR from '../../dialogs/create_PR/CreatePR';
 import '../table-design.css';
 import { IconSearch, IconFileTypeXls, IconFilter, IconFileStack } from '@tabler/icons-react';
 
-export default function MasterlistTable({ itemCount, unitCount, exportFunction, data }: { itemCount: number, unitCount: number, exportFunction?: () => void, data: any[] }) {
+interface MasterlistTableProps {
+    itemCount: number;
+    unitCount: number;
+    exportFunction?: () => void;
+    data: any[];
+}
+
+export default function MasterlistTable({ itemCount, unitCount, exportFunction, data }: MasterlistTableProps) {
 
     const [openDialogIndex, setOpenDialogIndex] = useState<number | null>(null);
 
@@ -25,11 +32,11 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
                     <IconFilter size={24} />
                     <select className="filter-select">
                         <option value="">Filter by:</option>
-                        <option value="ascending">Ascending Item Name</option>
-                        <option value="descending">Descending Item Name</option>
-                        <option value="available">Available Items</option>
-                        <option value="pending">Pending Items</option>
-                        <option value="fulfilled">Fulfilled Items</option>
+                        <option value="ascendingByItemName">Ascending Item Name</option>
+                        <option value="descendingByItemName">Descending Item Name</option>
+                        <option value="availableItems">Available Items</option>
+                        <option value="pendingItems">Pending Items</option>
+                        <option value="fulfilledItems">Fulfilled Items</option>
                     </select>
                 </div>
             </div>
@@ -51,14 +58,14 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
                     <tbody>
                         {data.map((item, index) => (
                             <tr key={index}>
-                                <td>{item.itemDescription}</td>
+                                <td>{item.itemName}</td>
                                 <td>{item.unitMeasurement}</td>
                                 <td>{item.plannedQuantity}</td>
                                 <td>{item.availableQuantity}</td>
                                 <td>{item.pendingQuantity}</td>
                                 <td>{item.fulfilledQuantity}</td>
-                                <td>{item.priceCatalogue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                <td>{(item.plannedQuantity * item.priceCatalogue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>{item.priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>{(item.plannedQuantity * item.priceCatalog).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 <td>
                                     {item.availableQuantity > 0 ? (
                                         <>
@@ -71,11 +78,12 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
                                             
                                             <CreatePR 
                                                 key={index} 
-                                                itemName={item.itemDescription} 
+                                                itemId={item.itemId}
+                                                itemName={item.itemName} 
                                                 availableQuantity={item.availableQuantity} 
                                                 pendingQuantity={item.pendingQuantity} 
                                                 fulfilledQuantity={item.fulfilledQuantity} 
-                                                priceCatalogue={item.priceCatalogue}
+                                                priceCatalog={item.priceCatalog}
                                                 isOpen={openDialogIndex === index} 
                                                 onClose={() => setOpenDialogIndex(null)}
                                             />

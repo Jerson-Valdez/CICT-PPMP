@@ -3,12 +3,56 @@ import UserManagementTable from "../../components/tables/user_management_table/U
 import "./user-management.css";
 import { IconUser, IconEye, IconEyeOff } from '@tabler/icons-react';
 
+interface User {
+    userId: number;
+    fullName: string;
+    email: string;
+    role: string;
+    dateCreated: string;
+    status: string;
+}
+
 export default function UserManagement() {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [departmentRole, setDepartmentRole] = useState('Staff');
     const [temporaryPassword, setTemporaryPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+    const [users, setUsers] = useState<User[]>([
+        {
+            userId: 1,
+            fullName: "Jerson Doe",
+            email: "Doe@gmail.com",
+            role: "Staff",
+            dateCreated: "2023-01-01",
+            status: "Active"
+        },
+        {
+            userId: 2,
+            fullName: "Jane Smith",
+            email: "Smith@gmail.com",
+            role: "Dean",
+            dateCreated: "2023-02-15",
+            status: "Inactive"
+        },
+        {
+            userId: 3,
+            fullName: "Michael Johnson",
+            email: "Johnson@gmail.com",
+            role: "Staff",
+            dateCreated: "2023-03-10",
+            status: "Active"
+        },
+        {
+            userId: 4,
+            fullName: "Emily Davis",
+            email: "Davis@gmail.com",
+            role: "Staff",
+            dateCreated: "2023-04-05",
+            status: "Active"
+        },
+    ]);
 
     function togglePasswordVisibility() {
         setIsPasswordVisible(!isPasswordVisible);
@@ -54,44 +98,6 @@ export default function UserManagement() {
         }
     }
 
-    interface User {
-        fullName: string;
-        email: string;
-        role: string;
-        dateCreated: string;
-        status: string;
-    }
-    const users: User[] = [
-        {
-            fullName: "John Doe",
-            email: "Doe@gmail.com",
-            role: "Staff",
-            dateCreated: "2023-01-01",
-            status: "Active"
-        },
-        {
-            fullName: "Jane Smith",
-            email: "Smith@gmail.com",
-            role: "Dean",
-            dateCreated: "2023-02-15",
-            status: "Inactive"
-        },
-        {
-            fullName: "Michael Johnson",
-            email: "Johnson@gmail.com",
-            role: "Staff",
-            dateCreated: "2023-03-10",
-            status: "Active"
-        },
-        {
-            fullName: "Emily Davis",
-            email: "Davis@gmail.com",
-            role: "Staff",
-            dateCreated: "2023-04-05",
-            status: "Active"
-        }
-    ];
-
   return (
     <main className="page-container usermanagement">
       <div className="create-user-container">
@@ -120,8 +126,8 @@ export default function UserManagement() {
             <div className="field-group">
                 <label htmlFor="departmentRole">Department Role</label>
                 <select id="departmentRole" onChange={(e) => setDepartmentRole(e.target.value)}>
-                    <option value="Staff">Staff</option>
-                    <option value="Dean">Dean</option>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
                 </select>
                 <p className="error-message" id="departmentRoleError"></p>
             </div>

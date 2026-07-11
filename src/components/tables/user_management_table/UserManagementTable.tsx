@@ -1,7 +1,17 @@
 import "../table-design.css";
-import { IconRestore ,IconUserCheck,IconUserCancel,IconTrash } from '@tabler/icons-react';
-
+import { IconRestore ,IconUserCheck,IconUserCancel,IconTrash, IconUserUp } from '@tabler/icons-react';
+import {notify, confirm} from "../../dialogs/global_dialog/DialogService";
+import {toast} from "../../toast/ToastService";
 export default function UserManagementTable({data}: {data: any[]}) {
+
+    function handlePromotion(userId: number) {
+        confirm("Admin Promotion", "Are you sure you want to promote this user? Note: you will be demoted once this user was promoted.", "warning", "Yes Promote")
+            .then((confirmed) => {
+                if (confirmed) {
+                    toast.success("User promoted successfully!");
+                }
+            });
+    }
     return (
         <div className="table-container approvals">
             <div className="table-title-container">
@@ -17,7 +27,7 @@ export default function UserManagementTable({data}: {data: any[]}) {
                         <th><h3>Full Name</h3><p>Identification of the User</p></th>
                         <th><h3>Email</h3><p>Email Address</p></th>
                         <th><h3>Role</h3><p>Access Level</p></th>
-                        <th><h3>Date Created</h3><p>When the account was created</p></th>
+                        <th><h3>Date Created</h3><p>Account Creation Date</p></th>
                         <th><h3>Status</h3><p>Current state of activity</p></th>
                         <th colSpan={2}><h3>Action</h3><p>Available Actions</p></th>
                     </tr>
@@ -36,8 +46,11 @@ export default function UserManagementTable({data}: {data: any[]}) {
                             </td>
                             <td>
                                 <div className="button-container">
-                                    <button className="btn-solid blue">
+                                    <button className="btn-solid gray">
                                             <IconRestore size={18} /> Reset Password
+                                    </button>
+                                    <button className="btn-solid blue" onClick={() => handlePromotion(user.userId)}>
+                                            <IconUserUp size={18} /> Promote
                                     </button>
                                     {user.status === "Active" ? (
                                         <button className="btn-solid red">

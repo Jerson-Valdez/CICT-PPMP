@@ -43,8 +43,11 @@
         @apply flex flex-row items-center gap-2 px-2;
 
         & .user-icon{
-            @apply text-white p-2.5 rounded-full;
+            @apply text-white p-1.5 px-4 rounded-full;
             background-color: var(--primary);
+            & > p{
+                @apply text-2xl font-bold;
+            }
         }
 
         & .user-info {

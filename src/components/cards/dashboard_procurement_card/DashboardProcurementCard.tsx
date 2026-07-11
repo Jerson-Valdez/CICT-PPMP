@@ -10,21 +10,21 @@ import {
 } from '@tabler/icons-react';
 
 interface ProcurementCardProps {
-    icon?: string;
-    title: string;
+    actionType?: string;
     description: string;
     date: string;
     value?: number;
     userFullName?: string;
+    fiscalYear?: number | string;
 }
 
 export default function DashboardProcurementCard({
-    icon = 'default', 
-    title, 
+    actionType = 'default',
     description, 
     date, 
     value, 
-    userFullName
+    userFullName,
+    fiscalYear
 }: ProcurementCardProps) {
 
     const colorMap: Record<string, string> = {
@@ -49,8 +49,8 @@ export default function DashboardProcurementCard({
         default: <IconClock size={18} />
     };
 
-    const activeColor = colorMap[icon] || colorMap.default;
-    const ActiveIcon = iconMap[icon] || iconMap.default;
+    const activeColor = colorMap[actionType] || colorMap.default;
+    const ActiveIcon = iconMap[actionType] || iconMap.default;
 
     return (
         <div className="dashboard-procurement-card">
@@ -61,7 +61,10 @@ export default function DashboardProcurementCard({
             </div>
             
             <div className="card-content">
-                <h3>{title}</h3>
+                <div className="title-fiscal-container">
+                    <h3>{actionType}</h3>
+                    {fiscalYear && <div className="status"><p>FY {fiscalYear}</p></div>}
+                </div>
                 <p>{description}</p>
                 <div className="date-value-container">
                     <span>Made by: {userFullName} • {date}</span>

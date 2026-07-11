@@ -50,9 +50,9 @@ export default function InLieuApprovalTable({data}: {data: any[]}) {
                             <td>{item.requestedBy}</td>
                             <td>
                                 <div className="original-items">
-                                    {item.originalItems.map((i: any) => (
-                                        <div key={i.id} className="original-item">
-                                            <span>-{i.count} {i.unitMeasurement} • </span>
+                                    {item.inLieuReducedItems.map((i: any) => (
+                                        <div key={i.itemId} className="original-item">
+                                            <span>-{i.quantity} {i.unitMeasurement} • </span>
                                             <span>{i.itemName}</span>
                                         </div>
                                     ))}
@@ -60,9 +60,9 @@ export default function InLieuApprovalTable({data}: {data: any[]}) {
                             </td>
                             <td>
                                 <div className="proposed-items">
-                                    {item.proposedItems.map((i: any) => (
-                                        <div key={i.id} className="proposed-item">
-                                            <span>+{i.count} {i.unitMeasurement} • </span>
+                                    {item.inLieuAdditionItems.map((i: any) => (
+                                        <div key={i.itemId} className="proposed-item">
+                                            <span>+{i.quantity} {i.unitMeasurement} • </span>
                                             <span>{i.itemName}</span>
                                         </div>
                                     ))}
@@ -98,11 +98,11 @@ export default function InLieuApprovalTable({data}: {data: any[]}) {
                                 </div>
                                 <ViewInLieu
                                     key={item.id}
-                                    inLieuId={item.id}
+                                    inLieuId={item.inLieuId}
                                     requestDate={item.requestDate}
                                     requestedBy={item.requestedBy}
-                                    originalItems={item.originalItems}
-                                    proposedItems={item.proposedItems}
+                                    originalItems={item.inLieuReducedItems}
+                                    proposedItems={item.inLieuAdditionItems}
                                     budgetImpact={item.budgetImpact}
                                     status={item.status}
                                     isOpen={openDialogIndex === index} 

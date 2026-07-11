@@ -8,88 +8,59 @@ import { Link } from 'react-router';
 import LoadingWrapper from '../../components/wrappers/loading wrapper/LoadingWrapper';
 import DashboardSkeleton from '../../components/skeleton/skeleton_pages/DashboardSkeleton';
 
+interface DashboardData {
+    icon: JSX.Element;
+    iconColor: string;
+    title: string;
+    description: string;
+    value: number;
+    color: string;
+    additionalInfo?: string;
+}
+
 export default function Dashboard(){
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+    const [totalAnnualBudget, setTotalAnnualBudget] = useState(5000000);
+    const [committedFunds, setCommittedFunds] = useState(1250000);
+    const [availableLieuPoolFunds, setAvailableLieuPoolFunds] = useState(3050000);
+    const [openFunds, setOpenFunds] = useState(700000);
+    const [requestedFunds, setRequestedFunds] = useState(625000);
+    const [arrivedFunds, setArrivedFunds] = useState(625000);
+    const [pendingInLieuCount, setPendingInLieuCount] = useState(5);
+    const [committedFundsPercentage, setCommittedFundsPercentage] = useState(0);
+    const [openFundsPercentage, setOpenFundsPercentage] = useState(0);
+    const [logs, setLogs] = useState([
+        {actionType: "rejected", description: "Purchase requests that have been rejected", date: "2023-10-15", value: 20000, userFullName: "John Doe", fiscalYear: 2024},
+        {actionType: "upload", description: "Purchase requests that have been uploaded", date: "2023-10-15", userFullName: "John Doe", fiscalYear: 2024},
+        {actionType: "approved", description: "Purchase requests that have been approved", date: "2023-10-15", value: 50000, userFullName: "John Doe", fiscalYear: 2024},
+    ]);
 
     useEffect(() => {
         const loadDashboardData = async () => {
             try {
                 await new Promise(resolve => setTimeout(resolve, 500));
             } finally {
-                setIsLoading(false);
+                setIsInitialLoading(false);
             }
         };
 
         loadDashboardData();
     }, []);
 
-    interface DashboardData {
-        icon: JSX.Element;
-        iconColor: string;
-        title: string;
-        description: string;
-        value: number;
-        color: string;
-        additionalInfo?: string;
-    }
-
     const dashboardData: DashboardData[] = [
-        {
-            icon: <IconWallet size={24} />,
-            iconColor: "blue",
-            title: "Total Annual Budget",
-            description: "FY 2026 Allocation",
-            value: 5000000,
-            color: "blue-purple",
-        },
-        {
-            icon: <IconFilter2Check size={24} />,
-            iconColor: "green",
-            title: "Committed Funds", 
-            description: "Items in PR/Arrived",
-            value: 1250000,
-            color: "green-teal",
-            additionalInfo: " 57.0% Utilized"
-        },
-        {
-            icon: <IconStatusChange size={24} />,
-            iconColor: "yellow",
-            title: "Available Lieu Pool",
-            description: "Planned but not requested",
-            value: 3050000,
-            color: "yellow-red",
-        },
-        {
-            icon: <IconCurrencyDollarOff size={24} />,
-            iconColor: "purple",
-            title: "Open Funds",
-            description: "Not planned funds",
-            value: 700000,
-            color: "purple-black",
-        },
-        {
-            icon: <IconGitPullRequestDraft size={24} />,
-            iconColor: "blue",
-            title: "Purchase Request",
-            description: "Funds currently in PR",
-            value: 625000,
-            color: "cyan-blue",
-        },
-        {
-            icon: <IconChecklist size={24} />,
-            iconColor: "green",
-            title: "Arrived Items",
-            description: "Allocated funds of arrived items",
-            value: 625000,
-            color: "green-yellow",
-        },
+        {icon: <IconWallet size={24} />, iconColor: "blue", title: "Total Annual Budget", description: "FY 2026 Allocation", value: totalAnnualBudget, color: "blue-purple",},
+        {icon: <IconFilter2Check size={24} />, iconColor: "green", title: "Committed Funds", description: "Items in PR/Arrived", value: committedFunds,color: "green-teal",additionalInfo: `${committedFundsPercentage?.toFixed(1)}% Utilized`},
+        {icon: <IconStatusChange size={24} />, iconColor: "yellow", title: "Available Lieu Pool", description: "Planned but not requested", value: availableLieuPoolFunds, color: "yellow-red",},
+        {icon: <IconCurrencyDollarOff size={24} />, iconColor: "purple", title: "Open Funds", description: "Not planned funds", value: openFunds, color: "purple-black", additionalInfo: `${openFundsPercentage?.toFixed(1)}% Unutilized`},
+        {icon: <IconGitPullRequestDraft size={24} />, iconColor: "blue", title: "Purchase Request", description: "Funds currently in PR", value: requestedFunds, color: "cyan-blue",},
+        {icon: <IconChecklist size={24} />, iconColor: "green", title: "Arrived Items", description: "Allocated funds of arrived items", value: arrivedFunds,  color: "green-yellow",},
     ];
-
-    const inLieuAlert:number = 1;
 
     return (
         <main className="page-container dashboard">
-            <LoadingWrapper isLoading={isLoading} skeleton={<DashboardSkeleton />}>
+            <LoadingWrapper isLoading={isInitialLoading} skeleton={<DashboardSkeleton />}>
                 
                 <div className="dashboard-card-container">
                     {dashboardData.map((data, index) => (
@@ -104,19 +75,21 @@ export default function Dashboard(){
                             additionalInfo={data.additionalInfo}
                         />
                     ))}
-                    <div className="alert-card">
-                        <div className="icon yellow">
-                            <IconAlertCircle size={24} />
+                    {pendingInLieuCount > 0 && (
+                        <div className="alert-card">
+                            <div className="icon yellow">
+                                <IconAlertCircle size={24} />
+                            </div>
+                            <div className="content">
+                                <h3>In Lieu Approval</h3>
+                                <span>{pendingInLieuCount}</span>
+                                <p>In-Lieu requests that require approval.</p>
+                            </div>
+                            <Link to="/in-lieu-approvals" className="view-details">
+                                View Details <IconArrowRight size={16} />
+                            </Link>
                         </div>
-                        <div className="content">
-                            <h3>In Lieu Approval</h3>
-                            <span>{inLieuAlert}</span>
-                            <p>In-Lieu requests that require approval.</p>
-                        </div>
-                        <Link to="/in-lieu-approvals" className="view-details">
-                            View Details <IconArrowRight size={16} />
-                        </Link>
-                    </div>
+                    )}
                 </div>
 
                 <div className="lower-dashboard-container">
@@ -128,64 +101,17 @@ export default function Dashboard(){
                             </div>
                         </div>
                         <div className="content-container">
-                            <DashboardProcurementCard 
-                                icon="rejected"
-                                title="Rejected PR" 
-                                description="Purchase requests that have been rejected" 
-                                date="2023-10-15" 
-                                value={20000}
-                                userFullName="John Doe"
+                            {logs.map((log, index) => (
+                                <DashboardProcurementCard
+                                    key={index}
+                                    actionType={log.actionType}
+                                    description={log.description}
+                                    date={log.date}
+                                    value={log.value}
+                                    userFullName={log.userFullName}
+                                    fiscalYear={log.fiscalYear}
                                 />
-                            <DashboardProcurementCard 
-                                icon="upload"
-                                title="Uploaded PR" 
-                                description="Purchase requests that have been uploaded" 
-                                date="2023-10-15" 
-                                userFullName="John Doe"
-                                />
-                            <DashboardProcurementCard 
-                                icon="approved"
-                                title="Purchase Request" 
-                                description="Purchase request  of 10 SSD is requested" 
-                                date="2023-10-15" 
-                                value={50000}
-                                userFullName="John Doe"
-                                />
-                                <DashboardProcurementCard 
-                                icon="pr"
-                                title="Purchase Request" 
-                                description="Purchase request  of 10 SSD is requested" 
-                                date="2023-10-15" 
-                                value={50000}
-                                userFullName="John Doe"/>
-                                <DashboardProcurementCard 
-                                icon="reallocate"
-                                title="Purchase Request" 
-                                description="Purchase request  of 10 SSD is requested" 
-                                date="2023-10-15" 
-                                value={50000}
-                                userFullName="John Doe"/>
-                                <DashboardProcurementCard 
-                                icon="pr"
-                                title="Purchase Request" 
-                                description="Purchase request  of 10 SSD is requested" 
-                                date="2023-10-15" 
-                                value={50000}
-                                userFullName="John Doe"/>
-                                <DashboardProcurementCard 
-                                icon="requested"
-                                title="Purchase Request" 
-                                description="Purchase request  of 10 SSD is requested" 
-                                date="2023-10-15" 
-                                value={50000}
-                                userFullName="John Doe"/>
-                                <DashboardProcurementCard 
-                                icon="upload"
-                                title="Purchase Request" 
-                                description="Purchase request  of 10 SSD is requestedsddsdd" 
-                                date="2023-10-15" 
-                                value={50000}
-                                userFullName="John Doe"/>
+                            ))}
                         </div>
                     </div>
 

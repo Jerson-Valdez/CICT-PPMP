@@ -1,71 +1,82 @@
 import InLieuApprovalTable from "../../components/tables/in_lieu_approval_table/InLieuApprovalTable";
 import "./in-lieu-approvals.css";
 
+interface Item{
+    itemId: number;
+    quantity: number;
+    itemName: string;
+    unitMeasurement: string;
+    priceCatalog: number;
+    availableQuantityAfter?: number;
+    plannedQuantity?: number;
+}
+interface BudgetImpact {
+    originalItemsTotal: number;
+    proposedItemsTotal: number;
+    difference: number;
+}
+interface InLieuApprovalData {
+    inLieuId: number;
+    requestDate: string;
+    requestedBy: string;
+    inLieuReducedItems: Item[];
+    inLieuAdditionItems: Item[];
+    budgetImpact: BudgetImpact;
+    status: string;
+}
+
 export default function InLieuApprovals() {
-    interface Item{
-        id: number;
-        count: number;
-        itemName: string;
-        unitMeasurement: string;
-        priceCatalog: number;
-    }
-    interface BudgetImpact {
-        originalItemsTotal: number;
-        proposedItemsTotal: number;
-        difference: number;
-    }
-    interface InLieuApprovalData {
-        id: number;
-        requestDate: string;
-        requestedBy: string;
-        originalItems: Item[];
-        proposedItems: Item[];
-        budgetImpact: BudgetImpact;
-        status: string;
-    }
 
     const inLieuApprovalData: InLieuApprovalData[] = [
         {
-            id: 1,
+            inLieuId: 1,
             requestDate: "2024-06-01",
             requestedBy: "John Doe",
-            originalItems: [
+            inLieuReducedItems: [
                 {
-                    id: 1,
-                    count: 10,
+                    itemId: 1,
+                    quantity: 10,
                     itemName: "ddr 4 ram",
                     unitMeasurement: "pieces",
-                    priceCatalog: 100.00
+                    priceCatalog: 100.00,
+                    availableQuantityAfter: -25,
+                    plannedQuantity: 5
                 },
                 {
-                    id: 2,
-                    count: 10,
+                    itemId: 2,
+                    quantity: 10,
                     itemName: "sd card",
                     unitMeasurement: "pieces",
-                    priceCatalog: 200.00
+                    priceCatalog: 200.00,
+                    availableQuantityAfter: 5,
+                    plannedQuantity: 5
                 },
                 {
-                    id: 3,
-                    count: 10,
+                    itemId: 3,
+                    quantity: 10,
                     itemName: "Solid State Drive (1TB NVMe Gen4)",
                     unitMeasurement: "pieces",
-                    priceCatalog: 300.00
+                    priceCatalog: 300.00,
+                    availableQuantityAfter: 5,
+                    plannedQuantity: 5
                 },
                 {
-                    id: 4,
-                    count: 10,
+                    itemId: 4,
+                    quantity: 10,
                     itemName: "sd card",
                     unitMeasurement: "pieces",
-                    priceCatalog: 200.00
+                    priceCatalog: 200.00,
+                    availableQuantityAfter: 5,
+                    plannedQuantity: 5
                 },
             ],
-            proposedItems: [
+            inLieuAdditionItems: [
                 {
-                    id: 2,
-                    count: 5,
+                    itemId: 2,
+                    quantity: 5,
                     itemName: "Item 2",
                     unitMeasurement: "pieces",
-                    priceCatalog: 150.00
+                    priceCatalog: 150.00,
                 }
             ],
             budgetImpact: {
@@ -76,25 +87,27 @@ export default function InLieuApprovals() {
             status: "Pending"
         },
         {
-            id: 1,
+            inLieuId: 2,
             requestDate: "2024-06-01",
             requestedBy: "John Doe",
-            originalItems: [
+            inLieuReducedItems: [
                 {
-                    id: 1,
-                    count: 10,
+                    itemId: 1,
+                    quantity: 10,
                     itemName: "Item 1",
                     unitMeasurement: "pieces",
-                    priceCatalog: 100.00
+                    priceCatalog: 100.00,
+                    availableQuantityAfter: 5,
+                    plannedQuantity: 5
                 }
             ],
-            proposedItems: [
+            inLieuAdditionItems: [
                 {
-                    id: 2,
-                    count: 5,
+                    itemId: 2,
+                    quantity: 5,
                     itemName: "Item 2",
                     unitMeasurement: "pieces",
-                    priceCatalog: 150.00
+                    priceCatalog: 150.00,
                 }
             ],
             budgetImpact: {

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useReactToPrint } from "react-to-print"; 
 
 interface PrintPRProps {
-    id: number;
+    prId?: number;
     itemName: string;
     itemDescription: string;
     quantity: number;
@@ -14,7 +14,7 @@ interface PrintPRProps {
     onClose: () => void;
 }
 
-export default function PrintPR({ id, itemName, itemDescription, quantity, unitPrice, requestedDate, isOpen, onClose }: PrintPRProps) {
+export default function PrintPR({ prId, itemName, itemDescription, quantity, unitPrice, requestedDate, isOpen, onClose }: PrintPRProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const printRef = useRef<HTMLDivElement>(null);
     const printDate = new Date().toLocaleDateString();
@@ -45,7 +45,7 @@ export default function PrintPR({ id, itemName, itemDescription, quantity, unitP
 
     const handlePrint = useReactToPrint({
         contentRef: printRef, 
-        documentTitle: `Purchase_Request_${id || 'New'}`,
+        documentTitle: `Purchase_Request_${prId || 'New'}`,
         pageStyle: `
             @page {
                 size: auto;
@@ -71,7 +71,7 @@ export default function PrintPR({ id, itemName, itemDescription, quantity, unitP
                 </div>
                 <hr />
                 <div className="pr-id-date">
-                    <p>PR ID: <span>PR-00{id}</span></p>
+                    <p>PR ID: <span>PR-{prId}</span></p>
                     <p>Date: <span>{printDate}</span></p>
                 </div>
                 <div className="pr-unit-date">
