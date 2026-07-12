@@ -2,6 +2,7 @@ import "./upload-ppmp.css";
 import { useRef, useEffect, useState } from "react";
 import { IconFileTypeXls, IconCircleFilled, IconCircleCheckFilled, IconArrowNarrowRightDashed, IconCloudUpload, IconX, IconArrowNarrowLeftDashed } from '@tabler/icons-react';
 import InfoNote from "../../notes/info_note/InfoNote";
+import { toast } from "../../toast/ToastService";
 
 interface UploadPPMPProps {
     isOpen: boolean;
@@ -13,15 +14,17 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [fileUploaded, setFileUploaded] = useState<File | null>(null);
     const [totalABC, setTotalABC] = useState(0);
+    const [previewData, setPreviewData] = useState<Array<Record<string, string | number>>>([]);
 
     const rowStartOptions = Array.from({ length: 100 }, (_, i) => i + 1);
+    const letterOptions = Array.from({ length: 26 }, (_, i) => 
+        String.fromCharCode(65 + i)
+    );
     const [selectedRowStart, setSelectedRowStart] = useState<number | null>(null);
-    const [selectedColumnMappings, setSelectedColumnMappings] = useState<{ [key: string]: string | null }>({
-        itemName: null,
-        unit: null,
-        totalQuantity: null,
-        pricePerUnit: null,
-    });
+    const [selectedItemName, setSelectedItemName] = useState<number | null>(null);
+    const [selectedUnit, setSelectedUnit] = useState<number | null>(null);
+    const [selectedTotalQuantity, setSelectedTotalQuantity] = useState<number | null>(null);
+    const [selectedPricePerUnit, setSelectedPricePerUnit] = useState<number | null>(null);
 
     const [uploadFileStep, setUploadFileStep] = useState("current");
     const [mapColumnsStep, setMapColumnsStep] = useState("upcoming");
@@ -82,14 +85,59 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
     function handleTotalABCChange(e: React.ChangeEvent<HTMLInputElement>) {
         const value = parseFloat(e.target.value);
         const errorMessageElement = document.getElementById("totalABCErrors");
-        setTotalABC(0);
 
         if (isNaN(value) || value <= 0) {
             errorMessageElement!.textContent = "Total ABC must be a positive number.";
+            setTotalABC(0);
         } else {
             errorMessageElement!.textContent = "";
             setTotalABC(value);
         }
+    }
+
+    async function PPMPPreview() {
+        if (!fileUploaded || selectedRowStart === null || selectedItemName === null || selectedUnit === null || selectedTotalQuantity === null || selectedPricePerUnit === null) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileUploaded);
+        formData.append("totalABC", String(totalABC));
+        formData.append("startRow", String(selectedRowStart));
+        formData.append("itemName", String(selectedItemName));
+        formData.append("unit", String(selectedUnit));
+        formData.append("quantity", String(selectedTotalQuantity));
+        formData.append("unitPrice", String(selectedPricePerUnit));
+        const response = await fetch("http://127.0.0.1:8000/api/ppmp/", {
+            method: "POST",
+            body: formData
+        });
+
+        const responseData = await response.json();
+        const rows = Array.isArray(responseData) ? responseData : responseData.data ?? [];
+        setPreviewData(rows);
+        console.log(responseData);
+    }
+
+    async function handleImport() {
+        if (!fileUploaded || selectedRowStart === null || selectedItemName === null || selectedUnit === null || selectedTotalQuantity === null || selectedPricePerUnit === null) {
+            return;
+        }
+        const formData = new FormData();
+        formData.append("file", fileUploaded);
+        formData.append("totalABC", String(totalABC));
+        formData.append("startRow", String(selectedRowStart));
+        formData.append("itemName", String(selectedItemName));
+        formData.append("unit", String(selectedUnit));
+        formData.append("quantity", String(selectedTotalQuantity));
+        formData.append("unitPrice", String(selectedPricePerUnit));
+        const response = await fetch("http://127.0.0.1:8000/api/import/", {
+            method: "POST",
+            body: formData
+        });
+
+        const responseData = await response.json();
+        console.log(responseData);
     }
 
     return (
@@ -185,7 +233,7 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                                 <h5>Row Start</h5>
                                 <p>Where was the first row of data located in the spreadsheet?</p>
                             </div>
-                            <select value={selectedRowStart ?? ""} onChange={(e) => setSelectedRowStart(Number(e.target.value))}>
+                            <select value={selectedRowStart ?? ""} onChange={(e) => setSelectedRowStart(e.target.value ? Number(e.target.value) : null)}>
                                 <option value="">Select a row</option>
                                 {rowStartOptions.map((option) => (
                                     <option key={option} value={option}>
@@ -203,9 +251,13 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                                 <h5>Item Name</h5>
                                 <p>General Description</p>
                             </div>
-                            <select>
-                                <option value="option1">Option 1</option>
-                                <option value="option2">Option 2</option>
+                            <select value={selectedItemName ?? ""} onChange={(e) => setSelectedItemName(e.target.value === "" ? null : Number(e.target.value))}>
+                                <option value="">Select a column</option>
+                                {letterOptions.map((option, index) => (
+                                    <option key={option} value={index}>
+                                        {option}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="group">
@@ -213,9 +265,13 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                                 <h5>Unit</h5>
                                 <p>Unit of Measurement</p>
                             </div>
-                            <select>
-                                <option value="option1">Option 1</option>
-                                <option value="option2">Option 2</option>
+                            <select value={selectedUnit ?? ""} onChange={(e) => setSelectedUnit(e.target.value === "" ? null : Number(e.target.value))}>
+                                <option value="">Select a column</option>
+                                {letterOptions.map((option, index) => (
+                                    <option key={option} value={index}>
+                                        {option}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="group">
@@ -223,9 +279,13 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                                 <h5>Total Quantity</h5>
                                 <p>Total Planned Quantity</p>
                             </div>
-                            <select>
-                                <option value="option1">Option 1</option>
-                                <option value="option2">Option 2</option>
+                            <select value={selectedTotalQuantity ?? ""} onChange={(e) => setSelectedTotalQuantity(e.target.value === "" ? null : Number(e.target.value))}>
+                                <option value="">Select a column</option>
+                                {letterOptions.map((option, index) => (
+                                    <option key={option} value={index}>
+                                        {option}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="group">
@@ -233,9 +293,13 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                                 <h5>Price/Unit</h5>
                                 <p>Price Catalogue per Unit</p>
                             </div>
-                            <select>
-                                <option value="option1">Option 1</option>
-                                <option value="option2">Option 2</option>
+                            <select value={selectedPricePerUnit ?? ""} onChange={(e) => setSelectedPricePerUnit(e.target.value === "" ? null : Number(e.target.value))}>
+                                <option value="">Select a column</option>
+                                {letterOptions.map((option, index) => (
+                                    <option key={option} value={index}>
+                                        {option}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -257,24 +321,15 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Sample Item 1</td>
-                                    <td>pcs</td>
-                                    <td>100</td>
-                                    <td>50.00</td>
-                                </tr>
-                                <tr>
-                                    <td>Sample Item 2</td>
-                                    <td>box</td>
-                                    <td>200</td>
-                                    <td>30.00</td>
-                                </tr>
-                                <tr>
-                                    <td>Sample Item 3</td>
-                                    <td>kg</td>
-                                    <td>150</td>
-                                    <td>20.00</td>
-                                </tr>
+                                {previewData && previewData.map((row, index) => (
+                                    <tr key={index}>
+                                        <td>{row.Description ?? row.Description ?? ""}</td>
+                                        <td>{row.Unit ?? row.Unit}</td>
+                                        <td>{row.Quantity ?? row.Quantity ?? ""}</td>
+                                        <td>{row.CatalogPrice ?? row.CatalogPrice ?? ""}</td>
+                                        <td>{row.TotalAmount ?? row.TotalAmount ?? ""}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
@@ -302,19 +357,22 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                         <IconArrowNarrowRightDashed size={18} color="white"/>
                     </button>
                 )}
-                {mapColumnsStep === "current" && selectedColumnMappings.itemName && selectedColumnMappings.unit && selectedColumnMappings.totalQuantity && selectedColumnMappings.pricePerUnit && selectedColumnMappings.rowStart && totalABC > 0 && (
-                    <button className="btn-solid green" onClick={() => {
+                {mapColumnsStep === "current" && selectedItemName !== null && selectedUnit !== null && selectedTotalQuantity !== null && selectedPricePerUnit !== null && selectedRowStart !== null && totalABC > 0 && (
+                    <button className="btn-solid green" onClick={async () => {
                         setMapColumnsStep("done");
                         setPreviewImportStep("current");
+                        await PPMPPreview();
                     }}>
                         Preview Data
                         <IconArrowNarrowRightDashed size={18} color="white"/>
                     </button>
                 )}
                 {previewImportStep === "current" && (
-                    <button className="btn-solid green" onClick={() => {
+                    <button className="btn-solid green" onClick={async () => {
                         setPreviewImportStep("done");
                         onClose();
+                        await handleImport();
+                        toast.success("PPMP data imported successfully!");
                     }}>
                         Import
                         <IconArrowNarrowRightDashed size={18} color="white"/>

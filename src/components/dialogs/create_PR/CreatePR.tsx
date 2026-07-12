@@ -2,9 +2,10 @@ import "./create-pr.css";
 import { IconFileStack, IconChartHistogram, IconClock, IconCircleDashedCheck, IconX, IconPrinter } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from "react";
 import PrintPR from "../print_PR/PrintPR";
+import { getAccessToken, getUserID } from "../../../../supadb"
 
 interface CreatePRProps {
-    itemId: number;
+    itemID: string;
     itemName: string;
     availableQuantity: number;
     pendingQuantity: number;
@@ -14,7 +15,7 @@ interface CreatePRProps {
     onClose: () => void;
 }
 
-export default function CreatePR({itemId, itemName, availableQuantity, pendingQuantity, fulfilledQuantity, priceCatalog, isOpen, onClose }: CreatePRProps) {
+export default function CreatePR({itemID, itemName, availableQuantity, pendingQuantity, fulfilledQuantity, priceCatalog, isOpen, onClose }: CreatePRProps) {
     const [requestQuantity, setRequestQuantity] = useState(1);
     const [techSpecs, setTechSpecs] = useState("");
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -46,7 +47,7 @@ export default function CreatePR({itemId, itemName, availableQuantity, pendingQu
 
     function handleRequestQuantityChange(e: React.ChangeEvent<HTMLInputElement>) {
         const value = parseInt(e.target.value);
-        const errorMessageElement = document.getElementById(`requestQtyError${itemId}`);
+        const errorMessageElement = document.getElementById(`requestQtyError${itemID}`);
         setRequestQuantity(0);
 
         if (value < 1 || value > availableQuantity) {
@@ -59,7 +60,7 @@ export default function CreatePR({itemId, itemName, availableQuantity, pendingQu
 
     function handleTechSpecsChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
         const value = e.target.value;
-        const errorMessageElement = document.getElementById(`specsError${itemId}`);
+        const errorMessageElement = document.getElementById(`specsError${itemID}`);
 
         if (value.trim() === "") {
             errorMessageElement!.textContent = "Technical specifications cannot be empty.";
@@ -68,6 +69,27 @@ export default function CreatePR({itemId, itemName, availableQuantity, pendingQu
             errorMessageElement!.textContent = "";
             setTechSpecs(value);
         }
+    }
+
+    async function handlePurchaseRequest() {
+        console.log("Creating Purchase Request with the following details:");
+        if (requestQuantity < 1 || requestQuantity > availableQuantity) {
+            alert(`Request quantity must be between 1 and ${availableQuantity}.`);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("item_id", Number(itemID).toString());
+        formData.append("specifications", String(techSpecs));
+        formData.append("request_quantity", String(requestQuantity));
+        formData.append("user_id", String(await getUserID(await getAccessToken() || "")));
+        const response = await fetch("http://127.0.0.1:8000/api/purchase_request/", {
+            method: "POST",
+            body: formData
+        });
+
+        const responseData = await response.json();
+        console.log(responseData);
     }
 
     return(
@@ -92,19 +114,19 @@ export default function CreatePR({itemId, itemName, availableQuantity, pendingQu
 
                 <div className="input-group">
                     <div className="field-group">
-                        <label htmlFor={`requestQty${itemId}`}>Request Quantity</label>
-                        <input type="number" id={`requestQty${itemId}`} min="1" max={availableQuantity} value={requestQuantity} onChange={handleRequestQuantityChange} />
-                        <p className="error-message" id={`requestQtyError${itemId}`}></p>
+                        <label htmlFor={`requestQty${itemID}`}>Request Quantity</label>
+                        <input type="number" id={`requestQty${itemID}`} min="1" max={availableQuantity} value={requestQuantity} onChange={handleRequestQuantityChange} />
+                        <p className="error-message" id={`requestQtyError${itemID}`}></p>
                     </div>
                     <div className="field-group">
-                        <label htmlFor={`priceCatalog${itemId}`}>Price Catalog (PHP)</label>
-                        <input type="number" id={`priceCatalog${itemId}`} value={priceCatalog} readOnly />
+                        <label htmlFor={`priceCatalog${itemID}`}>Price Catalog (PHP)</label>
+                        <input type="number" id={`priceCatalog${itemID}`} value={priceCatalog} readOnly />
                     </div>
                 </div>
                 <div className="field-group">
-                    <label htmlFor={`specifications${itemId}`}>Technical Specifications</label>
-                    <textarea id={`specifications${itemId}`} rows={4} placeholder="Enter technical specifications..." value={techSpecs} onChange={handleTechSpecsChange}></textarea>
-                    <p className="error-message" id={`specsError${itemId}`}></p>
+                    <label htmlFor={`specifications${itemID}`}>Technical Specifications</label>
+                    <textarea id={`specifications${itemID}`} rows={4} placeholder="Enter technical specifications..." value={techSpecs} onChange={handleTechSpecsChange}></textarea>
+                    <p className="error-message" id={`specsError${itemID}`}></p>
                 </div>
                 <div className="total-price">
                     <p>Total Amount:</p>
@@ -123,7 +145,7 @@ export default function CreatePR({itemId, itemName, availableQuantity, pendingQu
                                 <IconPrinter size={18} />
                                 Print Preview
                             </button>
-                            <button className="btn-solid blue">
+                            <button className="btn-solid blue" onClick={() => handlePurchaseRequest()}>
                                 <IconFileStack size={18} />
                                 Create PR
                             </button>

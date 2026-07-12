@@ -58,39 +58,39 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
                     <tbody>
                         {data.map((item, index) => (
                             <tr key={index}>
-                                <td>{item.itemName}</td>
-                                <td>{item.unitMeasurement}</td>
-                                <td>{item.plannedQuantity}</td>
-                                <td>{item.availableQuantity}</td>
-                                <td>{item.pendingQuantity}</td>
-                                <td>{item.fulfilledQuantity}</td>
-                                <td>{item.priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                <td>{(item.plannedQuantity * item.priceCatalog).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>{item.ItemName}</td>
+                                <td>{item.UnitName}</td>
+                                <td>{item.PlannedQuantity | 0}</td>
+                                <td>{item.AvailableQuantity | 0}</td>
+                                <td>{item.PendingQuantity | 0}</td>
+                                <td>{item.ReceivedQuantity | 0}</td>
+                                <td>{item.PricePerUnit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>{(item.PlannedQuantity * item.PricePerUnit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 <td>
-                                    {item.availableQuantity > 0 ? (
+                                    {item.AvailableQuantity > 0 ? (
                                         <>
                                             <button 
                                                 className="btn-solid blue" 
                                                 onClick={() => setOpenDialogIndex(index)}
                                             >
-                                                <IconFileStack size={18} /> Create PR ({item.availableQuantity} avail.)
+                                                <IconFileStack size={18} /> Create PR ({item.AvailableQuantity} avail.)
                                             </button>
                                             
                                             <CreatePR 
                                                 key={index} 
-                                                itemId={item.itemId}
-                                                itemName={item.itemName} 
-                                                availableQuantity={item.availableQuantity} 
-                                                pendingQuantity={item.pendingQuantity} 
-                                                fulfilledQuantity={item.fulfilledQuantity} 
-                                                priceCatalog={item.priceCatalog}
+                                                itemID={item.ItemID}
+                                                itemName={item.ItemName} 
+                                                availableQuantity={item.AvailableQuantity} 
+                                                pendingQuantity={item.PendingQuantity} 
+                                                fulfilledQuantity={item.ReceivedQuantity} 
+                                                priceCatalog={item.PricePerUnit}
                                                 isOpen={openDialogIndex === index} 
                                                 onClose={() => setOpenDialogIndex(null)}
                                             />
                                         </>
                                     ) : (
                                         <button className="btn-solid blue" disabled>
-                                            <IconFileStack size={18} /> Create PR ({item.availableQuantity} avail.)
+                                            <IconFileStack size={18} /> Create PR ({item.AvailableQuantity} avail.)
                                         </button>
                                     )}
                                 </td>

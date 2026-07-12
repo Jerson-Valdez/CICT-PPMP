@@ -1,10 +1,12 @@
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import './nav.css';
 import bulsu from '../../assets/univlogo/bulsu_logo.svg';
 import cict from '../../assets/univlogo/cict_logo.svg';
 import arrow_secondary from '../../assets/designs/arrow_secondary.svg';
 import { IconLayoutDashboard, IconClipboardList, IconChartColumn, IconTransform, IconChecklist, IconUsers, IconSettings2, IconCalendarWeek, IconLogout2 } from '@tabler/icons-react';
 import type { JSX } from 'react/jsx-dev-runtime';
+import { getAccessToken, logoutUser } from "../../../supadb"
+import { toast } from '../toast/ToastService.js';
 
 interface NavItem {
     name: string;
@@ -39,6 +41,19 @@ export default function Nav({ userRole, fiscalYear }: NavProps) {
         {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} />},
     ]
 
+    const navigate = useNavigate();
+    async function handleLogout() {
+        await logoutUser();
+        navigate('/login');
+    }
+
+    async function checkAccess(){
+        const accessToken = await getAccessToken();
+        if(!accessToken){
+            navigate('/login');
+            toast.error("User not logged in. Please log in again.");
+        }
+    }
 
     return (
         <nav className="nav-container">
@@ -72,14 +87,14 @@ export default function Nav({ userRole, fiscalYear }: NavProps) {
                         key={index} 
                         to={link.to} 
                         className="nav-link"
-                        onClick={() => console.log(`Navigating to ${link.name}`)}>
+                        onClick={checkAccess}>
                         {link.icon}
                         <span>{link.name}</span>
                     </NavLink>
                 ))}
             </div>
             <hr />
-            <button className="logout-button">
+            <button className="logout-button" onClick={handleLogout}>
                 <IconLogout2 size={24} />
                 Logout
             </button>

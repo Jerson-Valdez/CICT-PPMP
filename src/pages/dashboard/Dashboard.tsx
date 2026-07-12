@@ -7,6 +7,9 @@ import alab from '../../assets/icons/alab.svg';
 import { Link } from 'react-router';
 import LoadingWrapper from '../../components/wrappers/loading wrapper/LoadingWrapper';
 import DashboardSkeleton from '../../components/skeleton/skeleton_pages/DashboardSkeleton';
+import { useNavigate } from 'react-router';
+import { toast } from '../../components/toast/ToastService';
+import { getAccessToken } from '../../../supadb';
 
 interface DashboardData {
     icon: JSX.Element;
@@ -19,6 +22,7 @@ interface DashboardData {
 }
 
 export default function Dashboard(){
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -39,6 +43,11 @@ export default function Dashboard(){
 
     useEffect(() => {
         const loadDashboardData = async () => {
+            const accessToken = await getAccessToken();
+            if(!accessToken){
+                navigate('/login');
+                toast.error("User not logged in. Please log in again.");
+            }
             try {
                 await new Promise(resolve => setTimeout(resolve, 500));
             } finally {

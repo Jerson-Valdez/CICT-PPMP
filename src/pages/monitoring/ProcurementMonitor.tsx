@@ -5,6 +5,9 @@ import "./procurement-monitor.css";
 import { IconSearch, IconFilter } from '@tabler/icons-react';
 import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWrapper";
 import MonitoringSkeleton from "../../components/skeleton/skeleton_pages/MonitoringSkeleton";
+import { useNavigate } from 'react-router';
+import { toast } from '../../components/toast/ToastService';
+import { getAccessToken } from '../../../supadb';
 
 interface ItemsCountCardData {
     icon: string;
@@ -42,8 +45,15 @@ export default function ProcurementMonitor() {
     const [totalPendingItemCount, setTotalPendingItemCount] = useState(12);
     const [totalFulfilledItemCount, setTotalFulfilledItemCount] = useState(58);
         
+    const navigate = useNavigate();
+
     useEffect(() => {
         const loadPpmpMonitoringData = async () => {
+            const accessToken = await getAccessToken();
+            if(!accessToken){
+                navigate('/login');
+                toast.error("User not logged in. Please log in again.");
+            }
             try {
                 await new Promise(resolve => setTimeout(resolve, 500));
             } finally {
