@@ -28,9 +28,9 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
         return matchesSearch && matchesStatus;
     });
 
-    if (filterOption === "ascendingByItemName") {
+    if (filterOption === "ascendingByitemName") {
         processedData.sort((a, b) => a.itemName.localeCompare(b.itemName));
-    } else if (filterOption === "descendingByItemName") {
+    } else if (filterOption === "descendingByitemName") {
         processedData.sort((a, b) => b.itemName.localeCompare(a.itemName));
     }
 
@@ -53,8 +53,8 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
                     <IconFilter size={24} />
                     <select className="filter-select" value={filterOption} onChange={(e) => setFilterOption(e.target.value)}>
                         <option value="">Filter by:</option>
-                        <option value="ascendingByItemName">Ascending Item Name</option>
-                        <option value="descendingByItemName">Descending Item Name</option>
+                        <option value="ascendingByitemName">Ascending Item Name</option>
+                        <option value="descendingByitemName">Descending Item Name</option>
                         <option value="availableItems">Available Items</option>
                         <option value="pendingItems">Pending Items</option>
                         <option value="fulfilledItems">Fulfilled Items</option>
@@ -79,39 +79,39 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
                     <tbody>
                         {processedData.map((item, index) => (
                             <tr key={index}>
-                                <td>{item.ItemName}</td>
-                                <td>{item.UnitName}</td>
-                                <td>{item.PlannedQuantity | 0}</td>
-                                <td>{item.AvailableQuantity | 0}</td>
-                                <td>{item.PendingQuantity | 0}</td>
-                                <td>{item.ReceivedQuantity | 0}</td>
-                                <td>{item.PricePerUnit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                <td>{(item.PlannedQuantity * item.PricePerUnit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>{item.itemName}</td>
+                                <td>{item.unitMeasurement}</td>
+                                <td>{item.plannedQuantity | 0}</td>
+                                <td>{item.availableQuantity | 0}</td>
+                                <td>{item.pendingQuantity | 0}</td>
+                                <td>{item.fulfilledQuantity | 0}</td>
+                                <td>{item.priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td>{(item.plannedQuantity * item.priceCatalog).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                 <td>
-                                    {item.AvailableQuantity > 0 ? (
+                                    {item.availableQuantity > 0 ? (
                                         <>
                                             <button 
                                                 className="btn-solid blue" 
                                                 onClick={() => setOpenDialogIndex(index)}
                                             >
-                                                <IconFileStack size={18} /> Create PR ({item.AvailableQuantity} avail.)
+                                                <IconFileStack size={18} /> Create PR ({item.availableQuantity} avail.)
                                             </button>
                                             
                                             <CreatePR 
                                                 key={index} 
                                                 itemID={item.ItemID}
-                                                itemName={item.ItemName} 
-                                                availableQuantity={item.AvailableQuantity} 
-                                                pendingQuantity={item.PendingQuantity} 
-                                                fulfilledQuantity={item.ReceivedQuantity} 
-                                                priceCatalog={item.PricePerUnit}
+                                                itemName={item.itemName} 
+                                                availableQuantity={item.availableQuantity} 
+                                                pendingQuantity={item.pendingQuantity} 
+                                                fulfilledQuantity={item.fulfilledQuantity} 
+                                                priceCatalog={item.priceCatalog}
                                                 isOpen={openDialogIndex === index} 
                                                 onClose={() => setOpenDialogIndex(null)}
                                             />
                                         </>
                                     ) : (
                                         <button className="btn-solid blue" disabled>
-                                            <IconFileStack size={18} /> Create PR ({item.AvailableQuantity} avail.)
+                                            <IconFileStack size={18} /> Create PR ({item.availableQuantity} avail.)
                                         </button>
                                     )}
                                 </td>
