@@ -6,7 +6,6 @@ import LoadingWrapper from '../../components/wrappers/loading wrapper/LoadingWra
 import PpmpMasterlistSkeleton from '../../components/skeleton/skeleton_pages/PpmpMasterlistSkeleton';
 import { toast } from '../../components/toast/ToastService';
 import { useOutletContext } from 'react-router';
-import { showCircleLoadingDialog } from '../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService';
 
 interface PPMPItem {
     itemId: number;
@@ -40,25 +39,48 @@ export default function PpmpMasterlist() {
             try {
                 const formData = new FormData();
                 formData.append('year', String(selectedFiscalYear));
-                await fetch('https://test-ppmp.onrender.com/api/masterlist/', {
-                    method: "POST",
-                    body: formData
-                }).then(response =>{
-                    if(!response.ok){
-                        toast.error("Failed to fetch PPMP data. Please try again later.");
-                    }
-                    return response.json()
-                })
-                .then(result =>{
-                    setPpmpTableData(result);
-                    setFiscalYearHolder(selectedFiscalYear);
-                })
-            } finally {
+
+                const [masterlistResponse, countsResponse] = await Promise.all([
+
+                    fetch('https://test-ppmp.onrender.com/api/masterlist/', {
+                        method: "POST",
+                        body: formData
+                    }),
+                    fetch('https://test-ppmp.onrender.com/api/masterlist_cards/', {
+                        method: "POST",
+                        body: formData
+                    })
+                ]);
+
+                if (!countsResponse.ok) {
+                    toast.error("Failed to fetch PPMP counts. Please try again later.");
+                } else {
+                    const countsResult = await countsResponse.json();
+                    setTotalPlannedItemCount(countsResult.totalPlannedItemCount);
+                    setTotalAvailableItemCount(countsResult.totalAvailableItemCount);
+                    setTotalPendingItemCount(countsResult.totalPendingItemCount);
+                    setTotalFulfilledItemCount(countsResult.totalFulfilledItemCount);
+                    setTotalPlannedFunds(countsResult.totalPlannedFunds);
+                }
+
+                if (!masterlistResponse.ok) {
+                    toast.error("Failed to fetch PPMP masterlist data. Please try again later.");
+                }
+                else {
+                    const masterlistResult = await masterlistResponse.json();
+                    setPpmpTableData(masterlistResult);
+                }
+            } catch (error) {
+                console.error("Error fetching PPMP masterlist data:", error);
+                toast.error("Network error. Please try again later.");
+            }
+            finally {
                 setIsInitialLoading(false);
+                setFiscalYearHolder(selectedFiscalYear);
             }
         };
-
         loadPpmpTableData();
+                
     }, [selectedFiscalYear]);
 
     const ItemsCountCardData: {icon: string, title: string, count: number, color: string}[] = [

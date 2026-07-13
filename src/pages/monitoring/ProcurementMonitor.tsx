@@ -5,8 +5,8 @@ import "./procurement-monitor.css";
 import { IconSearch, IconFilter } from '@tabler/icons-react';
 import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWrapper";
 import MonitoringSkeleton from "../../components/skeleton/skeleton_pages/MonitoringSkeleton";
-import { useNavigate } from 'react-router';
 import { toast } from '../../components/toast/ToastService';
+import { useOutletContext } from 'react-router';
 import { getAccessToken } from '../../../supadb';
 
 interface ItemsCountCardData {
@@ -40,104 +40,63 @@ export default function ProcurementMonitor() {
     const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
+    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: number }>();
+    const [fiscalYearHolder, setFiscalYearHolder] = useState<number | null>(null);
+
     const [totalPlannedItemCount, setTotalPlannedItemCount] = useState(258);
     const [totalAvailableItemCount, setTotalAvailableItemCount] = useState(189);
     const [totalPendingItemCount, setTotalPendingItemCount] = useState(12);
     const [totalFulfilledItemCount, setTotalFulfilledItemCount] = useState(58);
-        
-    const navigate = useNavigate();
 
-    const [ppmpMonitoringData, setPpmpMonitoringData] = useState<ppmpMonitoringData[]>([
-        {
-            itemId: 1,
-            itemName: "Solid State Drive (1TB NVMe Gen4)",
-            unitMeasurement: "unit",
-            priceCatalog: 4500.00,
-            plannedQuantity: 10,
-            availableQuantity: 9,
-            pendingQuantity: 1,
-            fulfilledQuantity: 0,
-            prHistory: [
-                {
-                    prId: 1,
-                    quantity: 5,
-                    specifications: "5 pieces of Solid State Drive (1TB NVMe Gen4)",
-                    status: "Pending",
-                    dateRequested: "2023-10-01",
-                },
-                {
-                    prId: 2,
-                    quantity: 4,
-                    specifications: "4 pieces of Solid State Drive (1TB NVMe Gen4)",
-                    status: "Fulfilled",
-                    dateRequested: "2023-10-05",
-                    dateFulfilled: "2023-10-10",
-                },
-                {
-                    prId: 3,
-                    quantity: 2,
-                    specifications: "2 pieces of Solid State Drive (1TB NVMe Gen4)",
-                    status: "Cancelled",
-                    dateRequested: "2023-10-01",
-                }
-            ],
-            prHistoryCount: 1,
-        },
-        {   
-            itemId: 2,
-            itemName: "LED Monitor (24-inch IPS, 144Hz)",
-            unitMeasurement: "unit",
-            priceCatalog: 8500.00,
-            plannedQuantity: 5,
-            availableQuantity: 5,
-            pendingQuantity: 0,
-            fulfilledQuantity: 0,
-            prHistory: [
-                {
-                    prId: 3,
-                    quantity: 5,
-                    specifications: "5 units of LED Monitor (24-inch IPS, 144Hz)",
-                    status: "Available",
-                    dateRequested: "2023-10-03",
-                },
-            ],
-            prHistoryCount: 0,
-        },
-        {
-            itemId: 3,
-            itemName: "Mechanical Keyboard (Hot-swappable)",
-            unitMeasurement: "piece",
-            priceCatalog: 2200.00,
-            plannedQuantity: 15,
-            availableQuantity: 5,
-            pendingQuantity: 10,
-            fulfilledQuantity: 0,
-            prHistory: [],
-            prHistoryCount: 0,
-        },
-    ]);
+    const [ppmpMonitoringData, setPpmpMonitoringData] = useState<ppmpMonitoringData[]>([]);
 
     useEffect(() => {
         const loadPpmpMonitoringData = async () => {
-            const accessToken = await getAccessToken();
-            if(!accessToken){
-                navigate('/login');
-                toast.error("User not logged in. Please log in again.");
-            }
+            handlePpmpMonitoringFiscalYearChange(selectedFiscalYear);
             try {
-                await new Promise(resolve => setTimeout(resolve, 500));
-            } finally {
+                const formData = new FormData();
+                formData.append('year', String(selectedFiscalYear));
+
+                const [monitoringResponse] = await Promise.all([
+
+                    fetch('https://test-ppmp.onrender.com/api/procurement_monitoring/', {
+                        method: "POST",
+                        body: formData
+                    })
+                ]);
+
+                if (!monitoringResponse.ok) {
+                    toast.error("Failed to fetch PPMP monitoring data. Please try again later.");
+                } else {
+                    const monitoringResult = await monitoringResponse.json();
+
+                    console.log("PPMP monitoring data retrieved: ", monitoringResult);
+
+                    setTotalPlannedItemCount(monitoringResult.totalPlannedItemCount || 0);
+                    setTotalAvailableItemCount(monitoringResult.totalAvailableItemCount || 0);
+                    setTotalPendingItemCount(monitoringResult.totalPendingItemCount || 0);
+                    setTotalFulfilledItemCount(monitoringResult.totalFulfilledItemCount || 0);
+                    
+                    setPpmpMonitoringData(monitoringResult.ppmpMonitoringData || []);
+                    
+                    setFiscalYearHolder(selectedFiscalYear);
+                }
+            } catch (error) {
+                console.error("Error fetching PPMP monitoring data:", error);
+                toast.error("Network error. Please try again later.");
+            }
+            finally {
                 setIsInitialLoading(false);
             }
         };
-
         loadPpmpMonitoringData();
-    }, []);
+                
+    }, [selectedFiscalYear]);
 
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [filterOption, setFilterOption] = useState<string>("");
 
-    let processedData = ppmpMonitoringData.filter((item) => {
+    const processedData = ppmpMonitoringData.filter((item) => {
         const searchLower = searchTerm.toLowerCase();
         const matchesSearch = searchTerm === "" || item.itemName.toLowerCase().includes(searchLower);
 
@@ -161,6 +120,13 @@ export default function ProcurementMonitor() {
         {icon: 'clock', title: 'Total Pending Items', count: totalPendingItemCount, color: 'yellow'},
         {icon: 'check', title: 'Total Fulfilled Items', count: totalFulfilledItemCount, color: 'green'},
     ];
+
+    function handlePpmpMonitoringFiscalYearChange(newFiscalYear: number) {
+        if (newFiscalYear !== fiscalYearHolder) {
+            setIsInitialLoading(true);
+            setFiscalYearHolder(newFiscalYear);
+        }
+    }
 
   return (
     <main className="page-container monitoring">

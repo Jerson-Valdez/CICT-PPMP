@@ -10,6 +10,8 @@ import DashboardSkeleton from '../../components/skeleton/skeleton_pages/Dashboar
 import { useNavigate } from 'react-router';
 import { toast } from '../../components/toast/ToastService';
 import { getAccessToken } from '../../../supadb';
+import { useOutletContext } from 'react-router';
+import { showCircleLoadingDialog } from '../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService';
 
 interface DashboardData {
     icon: JSX.Element;
@@ -25,6 +27,9 @@ export default function Dashboard(){
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: number }>();
+    const [fiscalYearHolder, setFiscalYearHolder] = useState<number | null>(null);
 
     const [totalAnnualBudget, setTotalAnnualBudget] = useState(5000000);
     const [committedFunds, setCommittedFunds] = useState(1250000);
@@ -43,15 +48,48 @@ export default function Dashboard(){
 
     useEffect(() => {
         const loadDashboardData = async () => {
+            handleDashboardFiscalYearChange(selectedFiscalYear);
             try {
-                await new Promise(resolve => setTimeout(resolve, 500));
-            } finally {
+                const formData = new FormData();
+                formData.append('year', String(selectedFiscalYear));
+
+                const [dashboardCardsResponse] = await Promise.all([
+
+                    fetch('https://test-ppmp.onrender.com/api/dashboard_cards/', {
+                        method: "POST",
+                        body: formData
+                    })
+                ]);
+
+                if (!dashboardCardsResponse.ok) {
+                    toast.error("Failed to fetch dashboard cards data. Please try again later.");
+                } else {
+                    const dashboardCardsResult = await dashboardCardsResponse.json();
+                    setTotalAnnualBudget(dashboardCardsResult.totalAnnualBudget);
+                    setCommittedFunds(dashboardCardsResult.committedFunds);
+                    setAvailableLieuPoolFunds(dashboardCardsResult.availableLieuPoolFunds);
+                    setOpenFunds(dashboardCardsResult.openFunds);
+                    setRequestedFunds(dashboardCardsResult.requestedFunds);
+                    setArrivedFunds(dashboardCardsResult.arrivedFunds);
+                    setPendingInLieuCount(dashboardCardsResult.pendingInLieuCount);
+
+                    console.log("Pending In Lieu Count: ", dashboardCardsResult.pendingInLieuCount);
+
+                    setCommittedFundsPercentage((dashboardCardsResult.committedFunds / dashboardCardsResult.totalAnnualBudget) * 100);
+                    setOpenFundsPercentage((dashboardCardsResult.openFunds / dashboardCardsResult.totalAnnualBudget) * 100);
+                }
+
+            } catch (error) {
+                console.error("Error fetching dashboard cards data:", error);
+                toast.error("Network error. Please try again later.");
+            }
+            finally {
                 setIsInitialLoading(false);
             }
         };
-
         loadDashboardData();
-    }, []);
+                
+    }, [selectedFiscalYear]);
 
     const dashboardData: DashboardData[] = [
         {icon: <IconWallet size={24} />, iconColor: "blue", title: "Total Annual Budget", description: "FY 2026 Allocation", value: totalAnnualBudget, color: "blue-purple",},
@@ -61,6 +99,13 @@ export default function Dashboard(){
         {icon: <IconGitPullRequestDraft size={24} />, iconColor: "blue", title: "Purchase Request", description: "Funds currently in PR", value: requestedFunds, color: "cyan-blue",},
         {icon: <IconChecklist size={24} />, iconColor: "green", title: "Arrived Items", description: "Allocated funds of arrived items", value: arrivedFunds,  color: "green-yellow",},
     ];
+
+    function handleDashboardFiscalYearChange(newFiscalYear: number) {
+        if (newFiscalYear !== fiscalYearHolder) {
+            setIsInitialLoading(true);
+            setFiscalYearHolder(newFiscalYear);
+        }
+    }
 
     return (
         <main className="page-container dashboard">
