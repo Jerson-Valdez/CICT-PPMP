@@ -3,6 +3,7 @@ import { useRef, useEffect, useState } from "react";
 import { IconFileTypeXls, IconCircleFilled, IconCircleCheckFilled, IconArrowNarrowRightDashed, IconCloudUpload, IconX, IconArrowNarrowLeftDashed } from '@tabler/icons-react';
 import InfoNote from "../../notes/info_note/InfoNote";
 import { toast } from "../../toast/ToastService";
+import { showCircleLoadingDialog } from "../circle_loading_dialog/CircleLoadingDialogService";
 
 interface UploadPPMPProps {
     isOpen: boolean;
@@ -13,7 +14,7 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [fileUploaded, setFileUploaded] = useState<File | null>(null);
-    const [totalABC, setTotalABC] = useState(0);
+    const [totalABC, setTotalABC] = useState<number | null>(null);
     const [previewData, setPreviewData] = useState<Array<Record<string, string | number>>>([]);
 
     const rowStartOptions = Array.from({ length: 100 }, (_, i) => i + 1);
@@ -53,7 +54,7 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
         onClose();
     };
 
-    const year = new Date().getFullYear();
+    const year = 2024;
 
     function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
         const file = event.target.files?.[0];
@@ -85,10 +86,10 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
     function handleTotalABCChange(e: React.ChangeEvent<HTMLInputElement>) {
         const value = parseFloat(e.target.value);
         const errorMessageElement = document.getElementById("totalABCErrors");
+        setTotalABC(null);
 
         if (isNaN(value) || value <= 0) {
             errorMessageElement!.textContent = "Total ABC must be a positive number.";
-            setTotalABC(0);
         } else {
             errorMessageElement!.textContent = "";
             setTotalABC(value);
@@ -108,15 +109,32 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
         formData.append("unit", String(selectedUnit));
         formData.append("quantity", String(selectedTotalQuantity));
         formData.append("unitPrice", String(selectedPricePerUnit));
-        const response = await fetch("https://test-ppmp.onrender.com/api/ppmp/", {
-            method: "POST",
-            body: formData
-        });
+        formData.append("year", String(year));
 
-        const responseData = await response.json();
-        const rows = Array.isArray(responseData) ? responseData : responseData.data ?? [];
-        setPreviewData(rows);
-        console.log(responseData);
+        const closeLoading = showCircleLoadingDialog();
+        try {
+            const response = await fetch("https://test-ppmp.onrender.com/api/ppmp/", {
+                method: "POST",
+                body: formData
+            });
+            if (!response.ok) {
+                throw new Error("Failed to fetch preview data.");
+                toast.error("Failed to fetch preview data. Please try again later.");
+            }else{
+                const responseData = await response.json();
+                const rows = Array.isArray(responseData) ? responseData : responseData.data ?? [];
+                setPreviewData(rows);
+                console.log(responseData);
+                console.log("Preview data set:", rows);
+            }
+        } catch (error) {
+            setMapColumnsStep("current");
+            setPreviewImportStep("upcoming");
+            toast.error("Error fetching preview data. Please try again later.");
+            console.error("Error fetching preview data:", error);
+        } finally {
+            closeLoading();
+        }
     }
 
     async function handleImport() {
@@ -131,13 +149,39 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
         formData.append("unit", String(selectedUnit));
         formData.append("quantity", String(selectedTotalQuantity));
         formData.append("unitPrice", String(selectedPricePerUnit));
-        const response = await fetch("https://test-ppmp.onrender.com/api/import/", {
-            method: "POST",
-            body: formData
-        });
+        formData.append("year", String(year));
+        const closeLoading = showCircleLoadingDialog();
+        try {
+            toast.info("Importing data. This may take a few moments...");
+            const response = await fetch("https://test-ppmp.onrender.com/api/import/", {
+                method: "POST",
+                body: formData
+            });
 
-        const responseData = await response.json();
-        console.log(responseData);
+            if (!response.ok) {
+                toast.error("Failed to import data. Please try again later.");
+                throw new Error("Failed to import data.");
+            }else{
+                const responseData = await response.json();
+                toast.success("Data imported successfully.");
+                setUploadFileStep("current");
+                setMapColumnsStep("upcoming");
+                setPreviewImportStep("upcoming");
+                setFileUploaded(null);
+                setTotalABC(null);
+                setSelectedRowStart(null);
+                setSelectedItemName(null);
+                setSelectedUnit(null);
+                setSelectedTotalQuantity(null);
+                setSelectedPricePerUnit(null);
+                console.log(responseData);
+            }
+        } catch (error) {
+            console.error("Error importing data:", error);
+            toast.error("Error importing data. Please try again later.");
+        } finally {
+            closeLoading();
+        }
     }
 
     return (
@@ -224,7 +268,7 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                                 <p>Total Approved Budget for Contract value</p>
                             </div>
                             <div className="field-group">
-                                <input type="number" onChange={handleTotalABCChange} min={1} step={0.01} placeholder="Enter the Total ABC"/>
+                                <input type="number" value={totalABC ?? ""} onChange={handleTotalABCChange} min={1} step={0.01} placeholder="Enter the Total ABC"/>
                                 <p className="error-message" id="totalABCErrors"></p>
                             </div>
                         </div>
@@ -317,7 +361,8 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                                     <th>Item Name</th>
                                     <th>Unit</th>
                                     <th>Total Quantity</th>
-                                    <th>Price/Unit</th>
+                                    <th>Price/Unit (PHP)</th>
+                                    <th>Total Amount (PHP)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -357,7 +402,7 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                         <IconArrowNarrowRightDashed size={18} color="white"/>
                     </button>
                 )}
-                {mapColumnsStep === "current" && selectedItemName !== null && selectedUnit !== null && selectedTotalQuantity !== null && selectedPricePerUnit !== null && selectedRowStart !== null && totalABC > 0 && (
+                {mapColumnsStep === "current" && selectedItemName !== null && selectedUnit !== null && selectedTotalQuantity !== null && selectedPricePerUnit !== null && selectedRowStart !== null && totalABC !== null && totalABC > 0 && (
                     <button className="btn-solid green" onClick={async () => {
                         setMapColumnsStep("done");
                         setPreviewImportStep("current");
@@ -367,12 +412,11 @@ export default function UploadPPMP({ isOpen, onClose }: UploadPPMPProps) {
                         <IconArrowNarrowRightDashed size={18} color="white"/>
                     </button>
                 )}
-                {previewImportStep === "current" && (
+                {previewImportStep === "current" && previewData && (
                     <button className="btn-solid green" onClick={async () => {
                         setPreviewImportStep("done");
                         onClose();
                         await handleImport();
-                        toast.success("PPMP data imported successfully!");
                     }}>
                         Import
                         <IconArrowNarrowRightDashed size={18} color="white"/>
