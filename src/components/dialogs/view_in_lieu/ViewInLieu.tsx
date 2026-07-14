@@ -82,7 +82,7 @@ export default function ViewInLieu({inLieuId, requestDate, requestedBy, status, 
             </div>
             <div className="content" ref={printRef}>
                 <div className="top-content">
-                    <p><strong>Request Date: </strong> {requestDate}</p>
+                    <p><strong>Request Date: </strong> {new Date(requestDate ?? '').toLocaleString('en-PH')}</p>
                     <p><strong>Requested By: </strong> {requestedBy}</p>
                     <div><strong>Current Status: </strong> <div className={`status ${status?.toLowerCase()}`}>{status}</div></div>
                 </div>

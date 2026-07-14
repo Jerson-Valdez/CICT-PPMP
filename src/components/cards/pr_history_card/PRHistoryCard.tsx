@@ -59,7 +59,7 @@ export default function PRHistoryCard({prId, quantity, itemName, unitMeasurement
                 <p className="pr-quantity">Quantity: {quantity} {unitMeasurement}</p>
             </div>
             <div className="date-button-container">
-                <p className="pr-date">{dateRequested}</p>
+                <p className="pr-date">{new Date(dateRequested).toLocaleString('en-PH')}</p>
                 {status === "Pending" && (
                     <>
                         <div className="button-container">
@@ -69,7 +69,7 @@ export default function PRHistoryCard({prId, quantity, itemName, unitMeasurement
                             </button>
                             <button className="btn-solid green" onClick={handleArrivedClick}>
                                 <IconChecklist size={16} />
-                                Arrived
+                                Fulfill PR
                             </button>
                             <button className="btn-solid red" onClick={handleCancelClick}>
                                 <IconCancel size={16} />

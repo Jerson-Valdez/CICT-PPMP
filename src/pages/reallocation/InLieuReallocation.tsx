@@ -318,7 +318,7 @@ export default function InLieuReallocation() {
                     </div>
                 )}
                 <ViewInLieu 
-                    requestDate={new Date().toLocaleDateString()}
+                    requestDate={new Date().toLocaleString('en-PH')}
                     requestedBy="John Doe"
                     originalItems={selectedLieuItems.map(item => ({
                         itemId: item.itemId,

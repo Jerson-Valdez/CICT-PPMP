@@ -50,10 +50,10 @@
     &.pending {
         @apply bg-yellow-500/20 text-yellow-500 border-yellow-500;
     }
-    &.fulfilled, &.approved, &.active {
+    &.fulfilled, &.approved, &.active, &.activated {
         @apply bg-green-500/20 text-green-500 border-green-500;
     }
-    &.cancelled, &.inactive, &.rejected {
+    &.cancelled, &.inactive, &.deactivated, &.rejected {
         @apply bg-red-500/20 text-red-500 border-red-500;
     }
 }

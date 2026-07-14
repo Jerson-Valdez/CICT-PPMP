@@ -30,7 +30,7 @@ export default function DashboardProcurementCard({
     const colorMap: Record<string, string> = {
         rejected: 'red',
         approved: 'green',
-        arrived: 'green',
+        fulfilled: 'green',
         requested: 'blue',
         reallocate: 'orange',
         upload: 'purple',
@@ -67,7 +67,7 @@ export default function DashboardProcurementCard({
                 </div>
                 <p>{description}</p>
                 <div className="date-value-container">
-                    <span>Made by: {userFullName} • {date}</span>
+                    <span>Made by: {userFullName} • {new Date(date).toLocaleString('en-PH')}</span>
                     {value !== undefined && (
                         <p className="value">
                             PHP {value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

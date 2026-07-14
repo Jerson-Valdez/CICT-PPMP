@@ -27,7 +27,7 @@
     & > .top-content{
         @apply flex flex-row items-center justify-between w-full gap-2 px-4;
         & > p{
-            @apply flex flex-row items-center;
+            @apply flex flex-row items-center text-xs;
         }
         & > div{
             @apply flex flex-row items-center gap-2;

@@ -76,7 +76,7 @@ export default function PrintPR({ prId, itemName, itemDescription, quantity, uni
                 </div>
                 <div className="pr-unit-date">
                     <p>Unit: <span>CICT Department</span></p>
-                    <p>Requested Date: <span>{requestedDate}</span></p>
+                    <p>Requested Date: <span>{new Date(requestedDate).toLocaleString('en-PH')}</span></p>
                 </div>
                 <table>
                     <thead>

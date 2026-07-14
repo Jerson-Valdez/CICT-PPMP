@@ -2,9 +2,12 @@ import "../table-design.css";
 import { useState } from "react";
 import { IconSearch, IconFilter, IconFileStack, IconChecklist, IconX } from '@tabler/icons-react';
 import ViewInLieu from "../../dialogs/view_in_lieu/ViewInLieu";
+import { useOutletContext } from 'react-router';
 
 export default function InLieuApprovalTable({ data }: { data: any[] }) {
     const [openDialogIndex, setOpenDialogIndex] = useState<number | null>(null);
+
+    const { userRole } = useOutletContext<{ userRole: string }>();
 
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [filterOption, setFilterOption] = useState<string>("");
@@ -79,7 +82,7 @@ export default function InLieuApprovalTable({ data }: { data: any[] }) {
 
                             return (
                                 <tr key={index}>
-                                    <td>{item.requestDate}</td>
+                                    <td>{new Date(item.requestDate).toLocaleString('en-PH')}</td>
                                     <td>{item.requestedBy}</td>
                                     <td>
                                         <div className="original-items">
@@ -124,7 +127,7 @@ export default function InLieuApprovalTable({ data }: { data: any[] }) {
                                             <button className="btn-solid blue" onClick={() => setOpenDialogIndex(index)}>
                                                 <IconFileStack size={18} /> View
                                             </button>
-                                            {item.status.toLowerCase() === "pending" && (
+                                            {item.status.toLowerCase() === "pending" && userRole === "Admin" &&(
                                                 <>
                                                     <button className="btn-solid green">
                                                         <IconChecklist size={18} /> Approve
