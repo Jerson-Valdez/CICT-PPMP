@@ -7,7 +7,6 @@ import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWra
 import MonitoringSkeleton from "../../components/skeleton/skeleton_pages/MonitoringSkeleton";
 import { toast } from '../../components/toast/ToastService';
 import { useOutletContext } from 'react-router';
-import { getAccessToken } from '../../../supadb';
 
 interface ItemsCountCardData {
     icon: string;
@@ -37,7 +36,6 @@ interface ppmpMonitoringData {
 }
 
 export default function ProcurementMonitor() {
-    const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: number }>();
@@ -163,7 +161,6 @@ export default function ProcurementMonitor() {
                     {processedData.map((item, index) => (
                         <TrackingItemCard 
                             key={index}
-                            itemId={item.itemId} 
                             itemName={item.itemName}
                             unitMeasurement={item.unitMeasurement}
                             priceCatalog={item.priceCatalog}

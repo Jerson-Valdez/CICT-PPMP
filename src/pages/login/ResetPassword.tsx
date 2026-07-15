@@ -99,9 +99,11 @@ export default function ResetPassword(){
                                 {specialCharacter ? <IconCheck size={20} /> : <IconX size={20} />} Include at least one special character
                             </li>
                         </ul>
-                        <button type="submit" className='btn-primary-rd-shadow'>
-                            <strong>Reset Password</strong>
-                        </button>
+                        {confirmPassword && !confirmPasswordError && eightCharacter && upperLowerCase && number && specialCharacter ? (
+                            <button type="submit" className='submit-button'>Reset Password</button>
+                        ) : (
+                            <button type="submit" className='submit-button' disabled>Reset Password</button>
+                        )}
                     </form>
                 </div>
             </div>

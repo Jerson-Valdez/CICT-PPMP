@@ -4,7 +4,7 @@ import { IconFileTypeXls, IconCircleFilled, IconCircleCheckFilled, IconArrowNarr
 import InfoNote from "../../notes/info_note/InfoNote";
 import { toast } from "../../toast/ToastService";
 import { showCircleLoadingDialog } from "../circle_loading_dialog/CircleLoadingDialogService";
-import {notify, confirm} from "../../dialogs/global_dialog/DialogService";
+import { confirm} from "../../dialogs/global_dialog/DialogService";
 
 interface UploadPPMPProps {
     fiscalYears: number[];

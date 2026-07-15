@@ -22,7 +22,6 @@ export default function PpmpMasterlist() {
     const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: number }>();
     const [fiscalYearHolder, setFiscalYearHolder] = useState<number | null>(null);
 
-    const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const [totalPlannedItemCount, setTotalPlannedItemCount] = useState(0);

@@ -1,5 +1,5 @@
 import "./toast.css";
-import { IconCircleCheck, IconExclamationCircle, IconXboxX, IconAlertTriangle, IconX } from '@tabler/icons-react';
+import { IconCircleCheck, IconExclamationCircle, IconXboxX, IconAlertTriangle } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 
 export interface ToastProps {

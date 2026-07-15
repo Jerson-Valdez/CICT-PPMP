@@ -5,11 +5,10 @@ import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWra
 import SettingsSkeleton from "../../components/skeleton/skeleton_pages/SettingsSkeleton";
 
 export default function Settings() {
-    const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-    const [email, setEmail] = useState("user@example.com");
-    const [initialFullName, setInitialFullName] = useState("John Doe");
+    const [email, setEmail] = useState("");
+    const [initialFullName, setInitialFullName] = useState("");
     const [fullName, setFullName] = useState(initialFullName);
 
     const [currentPassword, setCurrentPassword] = useState('');
@@ -42,6 +41,8 @@ export default function Settings() {
     useEffect(() => {
         const loadSettingsData = async () => {
             try {
+                setInitialFullName("John Doe");
+                setEmail("user@example.com");
                 await new Promise(resolve => setTimeout(resolve, 500));
             } finally {
                 setIsInitialLoading(false);
