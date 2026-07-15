@@ -4,7 +4,6 @@ import "./tracking-item-card.css";
 import { IconChevronRight, IconPackage, IconChartHistogram, IconClock, IconCircleDashedCheck, IconCircleFilled, IconFileStack } from '@tabler/icons-react';
 
 interface TrackingItemCardProps {
-    itemId: number;
     itemName: string;
     unitMeasurement: string;
     priceCatalog: number;
@@ -16,7 +15,7 @@ interface TrackingItemCardProps {
     prHistoryCount: number;
 }
 
-export default function TrackingItemCard({itemId, itemName, unitMeasurement, priceCatalog, plannedQuantity, availableQuantity, pendingQuantity, fulfilledQuantity, prHistory, prHistoryCount}: TrackingItemCardProps) {
+export default function TrackingItemCard({itemName, unitMeasurement, priceCatalog, plannedQuantity, availableQuantity, pendingQuantity, fulfilledQuantity, prHistory, prHistoryCount}: TrackingItemCardProps) {
 
         const availablePercentage: number = (availableQuantity / plannedQuantity) * 100;
         const pendingPercentage: number = (pendingQuantity / plannedQuantity) * 100;

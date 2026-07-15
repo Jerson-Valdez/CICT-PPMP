@@ -30,7 +30,6 @@ interface InLieuApprovalData {
 }
 
 export default function InLieuApprovals() {
-    const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const inLieuApprovalData: InLieuApprovalData[] = [

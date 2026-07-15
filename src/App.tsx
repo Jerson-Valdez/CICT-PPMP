@@ -20,7 +20,6 @@ import Nav from './components/nav/Nav';
 import Header from './components/header/Header';
 import { getAccessToken } from '../supadb';
 import { toast } from './components/toast/ToastService';
-import { showCircleLoadingDialog } from './components/dialogs/circle_loading_dialog/CircleLoadingDialogService'; // Assuming you have this!
 
 function PrivateLayout() {
     const navigate = useNavigate();
@@ -91,6 +90,15 @@ function PrivateLayout() {
     function handleFiscalYearChange(event: React.ChangeEvent<HTMLSelectElement>) {
         const newFiscalYear = parseInt(event.target.value);
         setSelectedFiscalYear(newFiscalYear);
+        toast.success(`Fiscal year changed to ${newFiscalYear}`);
+    }
+
+    if (isCheckingAuth) {
+        return (
+            <div className="h-screen w-screen flex items-center justify-center">
+                <p>Verifying session...</p>
+            </div>
+        );
     }
 
     return (

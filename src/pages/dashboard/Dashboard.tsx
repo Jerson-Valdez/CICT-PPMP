@@ -1,17 +1,14 @@
 import { useState, useEffect, type JSX } from 'react'; // 1. Added useState and useEffect
 import DashboardCard from '../../components/cards/dashboard_card/DashboardCard';
 import './dashboard.css';
-import { IconWallet, IconFilter2Check, IconStatusChange, IconCurrencyDollarOff, IconGitPullRequestDraft, IconChecklist, IconScale, IconChartBarOff, IconTransform, IconClockDollar, IconAlertCircle, IconArrowRight } from '@tabler/icons-react';
+import { IconWallet, IconFilter2Check, IconStatusChange, IconCurrencyDollarOff, IconGitPullRequestDraft, IconChecklist, IconChartBarOff, IconTransform, IconClockDollar, IconAlertCircle, IconArrowRight } from '@tabler/icons-react';
 import DashboardProcurementCard from '../../components/cards/dashboard_procurement_card/DashboardProcurementCard';
 import alab from '../../assets/icons/alab.svg';
 import { Link } from 'react-router';
 import LoadingWrapper from '../../components/wrappers/loading wrapper/LoadingWrapper';
 import DashboardSkeleton from '../../components/skeleton/skeleton_pages/DashboardSkeleton';
-import { useNavigate } from 'react-router';
 import { toast } from '../../components/toast/ToastService';
-import { getAccessToken } from '../../../supadb';
 import { useOutletContext } from 'react-router';
-import { showCircleLoadingDialog } from '../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService';
 
 interface DashboardData {
     icon: JSX.Element;
@@ -24,8 +21,6 @@ interface DashboardData {
 }
 
 export default function Dashboard(){
-    const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: number }>();
@@ -60,6 +55,12 @@ export default function Dashboard(){
                         body: formData
                     })
                 ]);
+
+                setLogs([
+                    {actionType: "rejected", description: "Purchase requests that have been rejected", date: "2023-10-15", value: 20000, userFullName: "John Doe", fiscalYear: 2024},
+                    {actionType: "upload", description: "Purchase requests that have been uploaded", date: "2023-10-15", userFullName: "John Doe", fiscalYear: 2024},
+                    {actionType: "approved", description: "Purchase requests that have been approved", date: "2023-10-15", value: 50000, userFullName: "John Doe", fiscalYear: 2024},
+                ])
 
                 if (!dashboardCardsResponse.ok) {
                     toast.error("Failed to fetch dashboard cards data. Please try again later.");

@@ -15,7 +15,6 @@ interface User {
 }
 
 export default function UserManagement() {
-    const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const [fullName, setFullName] = useState('');
@@ -24,44 +23,45 @@ export default function UserManagement() {
     const [temporaryPassword, setTemporaryPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-    const [users, setUsers] = useState<User[]>([
-        {
-            userId: 1,
-            fullName: "Jerson Doe",
-            email: "Doe@gmail.com",
-            role: "Staff",
-            dateCreated: "2023-01-01",
-            status: "Active"
-        },
-        {
-            userId: 2,
-            fullName: "Jane Smith",
-            email: "Smith@gmail.com",
-            role: "Dean",
-            dateCreated: "2023-02-15",
-            status: "Inactive"
-        },
-        {
-            userId: 3,
-            fullName: "Michael Johnson",
-            email: "Johnson@gmail.com",
-            role: "Staff",
-            dateCreated: "2023-03-10",
-            status: "Active"
-        },
-        {
-            userId: 4,
-            fullName: "Emily Davis",
-            email: "Davis@gmail.com",
-            role: "Staff",
-            dateCreated: "2023-04-05",
-            status: "Active"
-        },
-    ]);
+    const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
         const loadPpmpReallocationData = async () => {
             try {
+                setUsers([
+                    {
+                        userId: 1,
+                        fullName: "Jerson Doe",
+                        email: "Doe@gmail.com",
+                        role: "Staff",
+                        dateCreated: "2023-01-01",
+                        status: "Active"
+                    },
+                    {
+                        userId: 2,
+                        fullName: "Jane Smith",
+                        email: "Smith@gmail.com",
+                        role: "Dean",
+                        dateCreated: "2023-02-15",
+                        status: "Inactive"
+                    },
+                    {
+                        userId: 3,
+                        fullName: "Michael Johnson",
+                        email: "Johnson@gmail.com",
+                        role: "Staff",
+                        dateCreated: "2023-03-10",
+                        status: "Active"
+                    },
+                    {
+                        userId: 4,
+                        fullName: "Emily Davis",
+                        email: "Davis@gmail.com",
+                        role: "Staff",
+                        dateCreated: "2023-04-05",
+                        status: "Active"
+                    },
+                ])
                 await new Promise(resolve => setTimeout(resolve, 500));
             } finally {
                 setIsInitialLoading(false);

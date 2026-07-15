@@ -1,13 +1,14 @@
 import "../table-design.css";
 import { IconRestore ,IconUserCheck,IconUserCancel,IconTrash, IconUserUp } from '@tabler/icons-react';
-import {notify, confirm} from "../../dialogs/global_dialog/DialogService";
-import {toast} from "../../toast/ToastService";
+import { confirm } from "../../dialogs/global_dialog/DialogService";
+import { toast } from "../../toast/ToastService";
 export default function UserManagementTable({data}: {data: any[]}) {
 
     function handlePromotion(userId: number) {
         confirm("Admin Promotion", "Are you sure you want to promote this user? Note: you will be demoted once this user was promoted.", "warning", "Yes Promote")
             .then((confirmed) => {
                 if (confirmed) {
+                    console.log(`User with ID ${userId} promoted to Admin.`);
                     toast.success("User promoted successfully!");
                 }
             });

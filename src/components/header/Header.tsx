@@ -1,12 +1,10 @@
 import './header.css';
-import { IconUpload, IconBell, IconUser } from '@tabler/icons-react';
-import { useLocation, useNavigate } from 'react-router';
+import { IconUpload } from '@tabler/icons-react';
+import { useLocation } from 'react-router';
 import { IconLayoutSidebarLeftExpand } from '@tabler/icons-react';
 import { IconLayoutSidebarLeftCollapse } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import UploadPPMP from '../dialogs/uploadPPMP/UploadPPMP';
-import { getAccessToken } from '../../../supadb';
-import { toast } from '../toast/ToastService';
 
 interface HeaderProps {
   userFullName: string;

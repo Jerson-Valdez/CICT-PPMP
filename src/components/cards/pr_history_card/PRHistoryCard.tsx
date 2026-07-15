@@ -2,7 +2,7 @@ import { useState } from "react";
 import PrintPR from "../../dialogs/print_PR/PrintPR";
 import "./pr-history-card.css";
 import { IconClock, IconCircleDashedCheck, IconPrinter, IconChecklist, IconCancel } from '@tabler/icons-react';
-import {notify, confirm} from "../../dialogs/global_dialog/DialogService";
+import { confirm} from "../../dialogs/global_dialog/DialogService";
 import { toast } from "../../toast/ToastService";
 import { showCircleLoadingDialog } from "../../dialogs/circle_loading_dialog/CircleLoadingDialogService";
 

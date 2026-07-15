@@ -3,8 +3,7 @@ import { IconPrinter, IconTransfer, IconX, IconCheck, IconSearch, IconShoppingCa
 import alabIcon from "../../assets/icons/alab.svg";
 import NewItemCard from "../../components/cards/new_item_card/NewItemCard";
 import LieuItemCard from "../../components/cards/lieu_item_card/LieuItemCard";
-import { useEffect, useRef, useState } from "react";
-import InfoNote from "../../components/notes/info_note/InfoNote";
+import { useEffect, useState } from "react";
 import WarningNote from "../../components/notes/warning_note/WarningNote";
 import ViewInLieu from "../../components/dialogs/view_in_lieu/ViewInLieu";
 import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWrapper";
@@ -36,23 +35,23 @@ interface ppmpReallocationData {
 }
 
 export default function InLieuReallocation() {
-    const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     const [isPrintPROpen, setPrintPROpen] = useState(false);
 
-    const [openFunds, setOpenFunds] = useState(1000000);
+    const [openFunds, setOpenFunds] = useState<number>(0);
 
-    const [ppmpReallocationData, setPpmpReallocationData] = useState<ppmpReallocationData[]>([
-        { itemId: 1, itemName: "Solid State Drive (1TB NVMe Gen4)", unitMeasurement: "piece", plannedQuantity: 10, availableQuantity: 9, pendingQuantity: 1, fulfilledQuantity: 0, priceCatalog: 4500.00 },
-        { itemId: 2, itemName: "LED Monitor (24-inch IPS, 144Hz)", unitMeasurement: "unit", plannedQuantity: 5, availableQuantity: 5, pendingQuantity: 0, fulfilledQuantity: 0, priceCatalog: 8500.00 },
-        { itemId: 3, itemName: "Mechanical Keyboard (Hot-swappable)", unitMeasurement: "piece", plannedQuantity: 15, availableQuantity: 5, pendingQuantity: 10, fulfilledQuantity: 0, priceCatalog: 2200.00 },
-        { itemId: 4, itemName: "Mechanical Keyboard (Hot-swappable)", unitMeasurement: "piece", plannedQuantity: 15, availableQuantity: 0, pendingQuantity: 15, fulfilledQuantity: 0, priceCatalog: 2200.00 }
-    ]);
+    const [ppmpReallocationData, setPpmpReallocationData] = useState<ppmpReallocationData[]>([]);
 
     useEffect(() => {
         const loadPpmpReallocationData = async () => {
             try {
+                setPpmpReallocationData([
+                    { itemId: 1, itemName: "Solid State Drive (1TB NVMe Gen4)", unitMeasurement: "piece", plannedQuantity: 10, availableQuantity: 9, pendingQuantity: 1, fulfilledQuantity: 0, priceCatalog: 4500.00 },
+                    { itemId: 2, itemName: "LED Monitor (24-inch IPS, 144Hz)", unitMeasurement: "unit", plannedQuantity: 5, availableQuantity: 5, pendingQuantity: 0, fulfilledQuantity: 0, priceCatalog: 8500.00 },
+                    { itemId: 3, itemName: "Mechanical Keyboard (Hot-swappable)", unitMeasurement: "piece", plannedQuantity: 15, availableQuantity: 5, pendingQuantity: 10, fulfilledQuantity: 0, priceCatalog: 2200.00 },
+                    { itemId: 4, itemName: "Mechanical Keyboard (Hot-swappable)", unitMeasurement: "piece", plannedQuantity: 15, availableQuantity: 0, pendingQuantity: 15, fulfilledQuantity: 0, priceCatalog: 2200.00 }])
+                setOpenFunds(10000);
                 await new Promise(resolve => setTimeout(resolve, 500));
             } finally {
                 setIsInitialLoading(false);
