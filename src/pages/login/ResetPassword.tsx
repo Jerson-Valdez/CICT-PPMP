@@ -1,5 +1,5 @@
 import LeftLoginContainer from '../../components/containers/left_login_container/LeftLoginContainer';
-import './Login.css';
+import './login.css';
 import { IconLock } from '@tabler/icons-react';
 import { IconEye } from '@tabler/icons-react';
 import { IconEyeOff } from '@tabler/icons-react';

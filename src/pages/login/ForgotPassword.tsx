@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import LeftLoginContainer from '../../components/containers/left_login_container/LeftLoginContainer';
-import './Login.css';
+import './login.css';
 import { IconUser } from '@tabler/icons-react';
 import { useState } from 'react';
 
