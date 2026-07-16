@@ -1,20 +1,22 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useNavigate } from 'react-router';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { FourSquare } from 'react-loading-indicators';
 import './App.css';
-import { useEffect, useState } from 'react';
 
 // Pages
 import Landing from './pages/landing/Landing';
 import Login from './pages/login/Login';
 import ForgotPassword from './pages/login/ForgotPassword';
 import ResetPassword from './pages/login/ResetPassword';
-import Dashboard from './pages/dashboard/Dashboard';
-import PpmpMasterlist from './pages/masterlist/PpmpMasterlist';
-import ProcurementMonitor from './pages/monitoring/ProcurementMonitor';
-import InLieuReallocation from './pages/reallocation/InLieuReallocation';
-import InLieuApprovals from './pages/approvals/InLieuApprovals';
-import UserManagement from './pages/usermanagement/UserManagement';
-import Settings from './pages/settings/Settings';
+
+//for lazy loading
+const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
+const PpmpMasterlist = lazy(() => import('./pages/masterlist/PpmpMasterlist'));
+const ProcurementMonitor = lazy(() => import('./pages/monitoring/ProcurementMonitor'));
+const InLieuReallocation = lazy(() => import('./pages/reallocation/InLieuReallocation'));
+const InLieuApprovals = lazy(() => import('./pages/approvals/InLieuApprovals'));
+const UserManagement = lazy(() => import('./pages/usermanagement/UserManagement'));
+const Settings = lazy(() => import('./pages/settings/Settings'));
 
 // Components
 import Nav from './components/nav/Nav';
@@ -109,7 +111,13 @@ function PrivateLayout() {
             <Header userFullName={userFullName} userEmailAddress={userEmailAddress} fiscalYears={fiscalYears} />
 
             <main className="main-content-wrapper">
-                <Outlet context={{ userRole, selectedFiscalYear }} /> 
+                <Suspense fallback={
+                    <div className="h-screen w-screen flex items-center justify-center">
+                        <FourSquare color="var(--primary)" size="large" text="Loading page..." />
+                    </div>
+                }>
+                    <Outlet context={{ userRole, selectedFiscalYear }} /> 
+                </Suspense>
             </main>
         </>
     );

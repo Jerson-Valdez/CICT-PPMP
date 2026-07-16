@@ -1,66 +1,48 @@
 @import "tailwindcss";
 
-.login-page-container {
-    @apply flex justify-center items-center py-3 max-md:px-4 max-sm:px-0 max-sm:py-0 min-h-screen;
-    background: 
-        linear-gradient(
-            color-mix(in srgb, var(--text-black) 50%, transparent), 
-            color-mix(in srgb, var(--primary) 90%, transparent)
-        ),
-        url("../../assets/univlogo/cict_logo.svg") right 1% center / 50% auto no-repeat,
-        url("../../assets/univlogo/bulsu_logo.svg") left 1% center / 30% auto no-repeat var(--primary);
+.left-right-container {
+    @apply flex flex-row items-stretch justify-start w-full overflow-hidden h-full max-md:flex-col-reverse max-md:w-full; 
+    
+    & form{
+        @apply flex flex-col items-center justify-center w-1/2 px-45 max-md:px-10 max-md:w-full max-sm:py-5 max-md:h-screen py-38 gap-4 h-screen max-sm:px-5 max-xl:px-10;
 
-    & .left-right-container {
-        @apply flex flex-row items-stretch justify-start w-6xl overflow-hidden shadow-2xl rounded-xl h-[calc(100vh-2rem)] max-md:flex-col max-md:w-full; 
-    }
-
-    & .form-container {
-        @apply flex flex-col items-center justify-center w-1/2 h-full px-10 max-md:px-5 max-md:w-full max-sm:px-2 max-sm:py-5;
-        background-color: var(--sf-bg-secondary);
-
-        &.reset-password {
-            & > form {
-                @apply py-30;
-
-                & > ul {
-                    @apply flex flex-col items-start justify-center gap-2 w-full px-5;
-                    color: var(--text-gray);
-
-                    & > li {
-                        @apply flex gap-2 text-sm;
-                    }
-                    & > .valid {
-                        @apply text-green-500;
-                    }
-                }
+        & > img{
+                @apply w-30 h-auto;
             }
+
+        & h2{
+            @apply text-3xl font-bold -mb-4;
+            color: var(--primary);
+        }
+
+        & > p {
+            @apply text-sm text-center;
+            color: var(--text-gray);
         }
         
-        & form{
-            @apply flex flex-col items-center justify-center bg-white px-10 py-38 rounded-xl gap-3 w-full shadow-xl max-sm:px-5;
+        & .forgot-password {
+            @apply self-end text-sm font-medium hover:underline;
+            color: var(--primary);
+        }
 
-            & h2{
-                @apply text-3xl font-bold;
-                color: var(--primary);
-            }
+        & .btn-primary-rd-shadow{
+            @apply w-full py-3;
+        }
 
-            & > p {
-                @apply text-sm text-center;
-                color: var(--text-gray);
-            }
-           
-            & .forgot-password {
-                @apply self-end text-sm font-medium hover:underline;
-                color: var(--primary);
-            }
+        & .btn-secondary {
+            @apply w-full py-3;
+        }
 
-            & .btn-primary-rd-shadow{
-                @apply w-full py-3;
-            }
+        & > ul {
+            @apply flex flex-col items-start justify-center gap-2 w-full px-5;
+            color: var(--text-gray);
 
-            & .btn-secondary {
-                @apply w-full py-3;
+            & > li {
+                @apply flex gap-2 text-sm;
+            }
+            & > .valid {
+                @apply text-green-500;
             }
         }
-    }
+    }  
 }

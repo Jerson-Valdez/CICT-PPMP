@@ -19,8 +19,8 @@ interface PPMPItem {
 }
 
 export default function PpmpMasterlist() {
-    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: number }>();
-    const [fiscalYearHolder, setFiscalYearHolder] = useState<number | null>(null);
+    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: string }>();
+    const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -95,7 +95,7 @@ export default function PpmpMasterlist() {
         alert("Exporting latest PPMP data...");
     }
 
-    function handleMasterlistFiscalYearChange(newFiscalYear: number) {
+    function handleMasterlistFiscalYearChange(newFiscalYear: string) {
         if (newFiscalYear !== fiscalYearHolder) {
             setIsInitialLoading(true);
             setFiscalYearHolder(newFiscalYear);

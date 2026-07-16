@@ -32,8 +32,8 @@ interface Log {
 export default function Dashboard(){
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: number }>();
-    const [fiscalYearHolder, setFiscalYearHolder] = useState<number | null>(null);
+    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: string }>();
+    const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
     const [totalAnnualBudget, setTotalAnnualBudget] = useState(5000000);
     const [committedFunds, setCommittedFunds] = useState(1250000);
@@ -106,7 +106,7 @@ export default function Dashboard(){
         {icon: <IconChecklist size={24} />, iconColor: "green", title: "Arrived Items", description: "Allocated funds of arrived items", value: arrivedFunds,  color: "green-yellow",},
     ];
 
-    function handleDashboardFiscalYearChange(newFiscalYear: number) {
+    function handleDashboardFiscalYearChange(newFiscalYear: string) {
         if (newFiscalYear !== fiscalYearHolder) {
             setIsInitialLoading(true);
             setFiscalYearHolder(newFiscalYear);

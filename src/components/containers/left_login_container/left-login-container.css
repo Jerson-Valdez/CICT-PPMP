@@ -1,29 +1,21 @@
 @import 'tailwindcss';
 
-.left-side{
-    @apply flex flex-col items-start justify-center gap-6 w-1/2 h-full max-md:hidden;
-    background: linear-gradient(180deg, var(--primary) 0%, var(--sf-bg) 100%);
+.left-side {
+    @apply flex flex-col items-start justify-center gap-6 w-1/2 h-screen max-md:w-full relative z-0;
+    background: linear-gradient(to bottom, var(--primary), var(--sf-bg));
 
-    & .univ-logos {
-        @apply flex flex-row items-center justify-start gap-2;
-        margin-top: 5rem;
-        margin-left: 3rem;
-
-        & img:first-child {
-            @apply h-auto w-30 min-w-20;
-            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25));
-        }
-        & img:nth-child(2) {
-            @apply h-auto w-35 min-w-20;
-            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.25));
-        }
+    &::before {
+        content: "";
+        @apply absolute inset-0 -z-10;
+        background: url("../../../assets/univlogo/bulsu_logo.svg") center / cover no-repeat;
+        opacity: 0.05;
     }
 
     & .hero-text {
         @apply flex flex-col items-baseline justify-center gap-1 px-12;
 
         & h1 {
-            @apply text-4xl font-black text-white;
+            @apply text-5xl font-black text-white;
 
             &:first-child span:first-child, &:nth-child(3) {
                 color: var(--secondary);
@@ -37,11 +29,6 @@
         & p {
             @apply text-sm text-left;
             color: var(--text-white);
-
         }
-    }
-
-    & img.login-left-design {
-        @apply w-full h-auto;
     }
 }

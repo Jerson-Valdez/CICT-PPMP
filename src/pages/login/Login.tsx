@@ -1,15 +1,12 @@
 import './login.css';
-import { IconUser } from '@tabler/icons-react';
-import { IconLock } from '@tabler/icons-react';
-import { IconEye } from '@tabler/icons-react';
-import { IconEyeOff } from '@tabler/icons-react';
-import { IconArrowNarrowRight } from '@tabler/icons-react';
+import { IconUser, IconLock, IconEye, IconEyeOff, IconArrowNarrowRight,  } from '@tabler/icons-react';
 import { Link, useNavigate } from 'react-router';
 import { useEffect, useState } from 'react';
 import LeftLoginContainer from '../../components/containers/left_login_container/LeftLoginContainer';
 import { toast } from '../../components/toast/ToastService.js';
 import { supabase } from '../../../supadb';
 import { showCircleLoadingDialog } from '../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService';
+import cict from '../../assets/univlogo/cict_logo.svg';
 
 export default function Login(){
     const navigate = useNavigate();
@@ -107,38 +104,36 @@ export default function Login(){
     }
 
     return (
-        <main className="login-page-container">
-            <div className="left-right-container">
-                <LeftLoginContainer />
-                <div className='form-container'>
-                    <form action="">
-                        <div className="field-group">
-                            <label htmlFor="email">Email Address</label>
-                            <div className="input-field">
-                                <IconUser />
-                                <input type="email" id="email" name="email" value={email} placeholder='Email' required onChange={handleEmailChange} />
-                            </div>
-                            <p id='emailError' className='error-message'>{emailError}</p>
-                        </div>
-                        <div className="field-group">
-                            <label htmlFor="password">Password</label>
-                            <div className="input-field">
-                                <IconLock />
-                                <input type={showPassword ? "text" : "password"} id="password" name="password" value={password} onChange={handlePasswordChange} placeholder='Password' required />
-                                <button type="button" className="toggle-password cursor-pointer" onClick={togglePasswordVisibility}>
-                                    {showPassword ? <IconEyeOff className="eye-off-icon" /> : <IconEye className="eye-icon" />}
-                                </button>
-                            </div>
-                            <p id='passwordError' className='error-message'>{passwordError}</p>
-                        </div>
-                        <Link to="/forgot-password" className='forgot-password'>Forgot Password?</Link>
-                        <button type="submit" className='btn-primary-rd-shadow' onClick={(e) => { e.preventDefault(); login(); }}>
-                            <strong>Login</strong>
-                            <IconArrowNarrowRight />
-                        </button>
-                    </form>
+        <main className="left-right-container">
+            <LeftLoginContainer />
+            <form action="">
+                <img src={cict} alt="CICT Logo"/>
+                <div className="field-group">
+                    <label htmlFor="email">Email Address</label>
+                    <div className="input-field">
+                        <IconUser />
+                        <input type="email" id="email" name="email" value={email} placeholder='Email' required onChange={handleEmailChange} />
+                    </div>
+                    <p id='emailError' className='error-message'>{emailError}</p>
                 </div>
-            </div>
+                <div className="field-group">
+                    <label htmlFor="password">Password</label>
+                    <div className="input-field">
+                        <IconLock />
+                        <input type={showPassword ? "text" : "password"} id="password" name="password" value={password} onChange={handlePasswordChange} placeholder='Password' required />
+                        <button type="button" className="toggle-password cursor-pointer" onClick={togglePasswordVisibility}>
+                            {showPassword ? <IconEyeOff className="eye-off-icon" /> : <IconEye className="eye-icon" />}
+                        </button>
+                    </div>
+                    <p id='passwordError' className='error-message'>{passwordError}</p>
+                </div>
+                <Link to="/forgot-password" className='forgot-password'>Forgot Password?</Link>
+                <button type="submit" className='btn-primary-rd-shadow' onClick={(e) => { e.preventDefault(); login(); }}>
+                    <strong>Login</strong>
+                    <IconArrowNarrowRight />
+                </button>
+                <Link to="/" className='btn-secondary'>Back</Link>
+            </form>
         </main>
     );
 }
