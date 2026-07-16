@@ -38,8 +38,8 @@ interface ppmpMonitoringData {
 export default function ProcurementMonitor() {
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: number }>();
-    const [fiscalYearHolder, setFiscalYearHolder] = useState<number | null>(null);
+    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: string }>();
+    const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
     const [totalPlannedItemCount, setTotalPlannedItemCount] = useState(258);
     const [totalAvailableItemCount, setTotalAvailableItemCount] = useState(189);
@@ -119,7 +119,7 @@ export default function ProcurementMonitor() {
         {icon: 'check', title: 'Total Fulfilled Items', count: totalFulfilledItemCount, color: 'green'},
     ];
 
-    function handlePpmpMonitoringFiscalYearChange(newFiscalYear: number) {
+    function handlePpmpMonitoringFiscalYearChange(newFiscalYear: string) {
         if (newFiscalYear !== fiscalYearHolder) {
             setIsInitialLoading(true);
             setFiscalYearHolder(newFiscalYear);
