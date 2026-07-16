@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import "./circle-loading-dialog.css";
+import { FourSquare } from "react-loading-indicators";
 
 export interface CircleLoadingDialogProps {
     isOpen: boolean;
@@ -22,7 +23,7 @@ export default function CircleLoadingDialog({ isOpen }: CircleLoadingDialogProps
 
     return (
         <dialog ref={dialogRef} className="circle-loading-dialog">
-            <div className="circle-loading-spinner"></div>
+            <FourSquare color="var(--primary)" size="large" text="Loading..."/>
         </dialog>
     );
 }

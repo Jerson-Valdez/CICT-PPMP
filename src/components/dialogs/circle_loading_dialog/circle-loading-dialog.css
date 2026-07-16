@@ -2,11 +2,4 @@
 
 .circle-loading-dialog {
     @apply fixed flex-col items-center justify-center p-20 bg-transparent left-0 right-0 top-1/2 -translate-y-1/2 mx-auto transition-opacity duration-300 ease-in-out;
-    & > .circle-loading-spinner {
-        @apply w-12 h-12 border-8 border-white rounded-full animate-spin;
-        border-top-color: var(--primary);
-        border-right-color: var(--primary);
-        border-bottom-color: var(--primary);
-        box-shadow: var(--red-shadow);
-    }
 }
