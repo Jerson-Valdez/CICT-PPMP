@@ -85,7 +85,10 @@ export default function CreatePR({itemId, itemName, availableQuantity, pendingQu
         formData.append("user_id", String(await getUserID(await getAccessToken() || "")));
         const response = await fetch("http://127.0.0.1:8000/api/purchase_request/", {
             method: "POST",
-            body: formData
+            body: formData,
+            headers: {
+                "Authorization": `Bearer ${await getAccessToken() || ""}`
+            }
         });
 
         const responseData = await response.json();

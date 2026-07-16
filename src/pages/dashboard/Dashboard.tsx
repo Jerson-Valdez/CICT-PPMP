@@ -20,6 +20,15 @@ interface DashboardData {
     additionalInfo?: string;
 }
 
+interface Log {
+    actionType: string;
+    description: string;
+    date: string;
+    value?: number;
+    userFullName: string;
+    fiscalYear: number;
+}
+
 export default function Dashboard(){
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -35,11 +44,7 @@ export default function Dashboard(){
     const [pendingInLieuCount, setPendingInLieuCount] = useState(5);
     const [committedFundsPercentage, setCommittedFundsPercentage] = useState(0);
     const [openFundsPercentage, setOpenFundsPercentage] = useState(0);
-    const [logs, setLogs] = useState([
-        {actionType: "rejected", description: "Purchase requests that have been rejected", date: "2023-10-15", value: 20000, userFullName: "John Doe", fiscalYear: 2024},
-        {actionType: "upload", description: "Purchase requests that have been uploaded", date: "2023-10-15", userFullName: "John Doe", fiscalYear: 2024},
-        {actionType: "approved", description: "Purchase requests that have been approved", date: "2023-10-15", value: 50000, userFullName: "John Doe", fiscalYear: 2024},
-    ]);
+    const [logs, setLogs] = useState<Log[]>([]);
 
     useEffect(() => {
         const loadDashboardData = async () => {
