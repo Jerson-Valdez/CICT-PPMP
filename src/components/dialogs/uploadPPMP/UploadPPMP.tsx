@@ -133,23 +133,29 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                 method: "POST",
                 body: formData
             });
+            const responseData = await response.json();
             if (!response.ok) {
-                console.log(response);
-                toast.error("Failed to fetch preview data. Please try again later.");
-            }else{
-                const responseData = await response.json();
-                if(responseData.error){
-                    notify("Error", "Your totalABC (Approved Budget for Contract) value is less than the sum of the total amount of all items in the uploaded file. Please check your file or the totalABC value and try again.", "error");
-                    toast.error(responseData.error);
-                }else{
-                    const rows = Array.isArray(responseData) ? responseData : responseData.data ?? [];
-                    setPreviewData(rows);
-                    console.log(responseData);
-                    console.log("Preview data set:", rows);
-                    setMapColumnsStep("done");
-                    setPreviewImportStep("current");
+                if (responseData.errors) {
+                    notify(
+                        "Invalid Excel",
+                        responseData.errors.message + " Please recheck your table mapping.",
+                        "error"
+                    );
+
+                    console.table(responseData.errors.rows);
+                } else if (responseData.error) {
+                    notify("Error", responseData.error, "error");
+                } else {
+                    toast.error("Unknown server error.");
                 }
+
+                return;
             }
+
+            const rows = responseData.data ?? [];
+            setPreviewData(rows);
+            setMapColumnsStep("done");
+            setPreviewImportStep("current");
         } catch (error) {
             setMapColumnsStep("current");
             setPreviewImportStep("upcoming");

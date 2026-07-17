@@ -3,10 +3,13 @@ import { IconFileStack, IconChartHistogram, IconClock, IconCircleDashedCheck, Ic
 import { useEffect, useRef, useState } from "react";
 import PrintPR from "../print_PR/PrintPR";
 import { getAccessToken, getUserID } from "../../../../supadb"
+import { notify, confirm } from "../../dialogs/global_dialog/DialogService";
+import { toast } from "../../toast/ToastService";
 import { useOutletContext } from "react-router";
+import { showCircleLoadingDialog } from "../circle_loading_dialog/CircleLoadingDialogService";
 
 interface CreatePRProps {
-    itemId: string;
+    itemId: number;
     itemName: string;
     unitMeasurement: string;
     availableQuantity: number;
@@ -14,15 +17,16 @@ interface CreatePRProps {
     fulfilledQuantity: number;
     priceCatalog: number;
     isOpen: boolean;
+    purchaseRequestQuantityChange: (prQuantity: number, itemId: number) => void;
     onClose: () => void;
 }
 
-export default function CreatePR({itemId, itemName, unitMeasurement, availableQuantity, pendingQuantity, fulfilledQuantity, priceCatalog, isOpen, onClose }: CreatePRProps) {
-    const [requestQuantity, setRequestQuantity] = useState(1);
+export default function CreatePR({itemId, itemName, unitMeasurement, availableQuantity, pendingQuantity, fulfilledQuantity, priceCatalog, isOpen, purchaseRequestQuantityChange, onClose }: CreatePRProps) {
+    const [requestQuantity, setRequestQuantity] = useState<number | null>(1);
     const [techSpecs, setTechSpecs] = useState("");
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
-    const totalPrice = priceCatalog * requestQuantity;
+    const totalPrice = priceCatalog * (requestQuantity || 0);
     const { userFullName } = useOutletContext<{ userFullName: string }>();
 
     useEffect(() => {
@@ -51,10 +55,10 @@ export default function CreatePR({itemId, itemName, unitMeasurement, availableQu
     function handleRequestQuantityChange(e: React.ChangeEvent<HTMLInputElement>) {
         const value = e.target.valueAsNumber;
         const errorMessageElement = document.getElementById(`requestQtyError${itemId}`);
+        setRequestQuantity(null);
 
         if (!Number.isFinite(value) || value < 1 || value > availableQuantity) {
             errorMessageElement!.textContent = `Request quantity must be between 1 and ${availableQuantity}.`;
-            setRequestQuantity(0);
         } else {
             errorMessageElement!.textContent = "";
             setRequestQuantity(value);
@@ -75,27 +79,44 @@ export default function CreatePR({itemId, itemName, unitMeasurement, availableQu
     }
 
     async function handlePurchaseRequest() {
-        console.log("Creating Purchase Request with the following details:");
-        if (requestQuantity < 1 || requestQuantity > availableQuantity) {
-            alert(`Request quantity must be between 1 and ${availableQuantity}.`);
+        if (requestQuantity === null || requestQuantity < 1 || requestQuantity > availableQuantity) {
+            toast.error("Invalid request quantity. Please ensure it is between 1 and the available quantity.");
             return;
         }
-
+        
         const formData = new FormData();
         formData.append("item_id", String(itemId));
         formData.append("specifications", String(techSpecs));
         formData.append("request_quantity", String(requestQuantity));
         formData.append("user_id", String(await getUserID(await getAccessToken() || "")));
-        const response = await fetch("http://127.0.0.1:8000/api/purchase_request/", {
-            method: "POST",
-            body: formData,
-            headers: {
-                "Authorization": `Bearer ${await getAccessToken() || ""}`
-            }
-        });
 
-        const responseData = await response.json();
-        console.log(responseData);
+        const closeLoading = showCircleLoadingDialog();
+        try {
+            const response = await fetch("https://test-ppmp.onrender.com/api/purchase_request/", {   
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Authorization": `Bearer ${await getAccessToken() || ""}`
+                }
+            });
+            const responseData = await response.json();
+            if (!response.ok) {
+                toast.error(responseData.message || "Failed to create purchase request. Please try again later.");
+                return;
+            }else{
+                onClose();
+                purchaseRequestQuantityChange(requestQuantity, itemId);
+                toast.success("Purchase request created successfully.");
+                console.log(responseData);
+                setRequestQuantity(1);
+                setTechSpecs("");
+            }
+        }catch (error) {
+            console.error("Error creating purchase request:", error);
+            toast.error("Network error. Please try again later.");
+        }finally {
+            closeLoading();
+        }
     }
 
     return(
@@ -121,7 +142,7 @@ export default function CreatePR({itemId, itemName, unitMeasurement, availableQu
                 <div className="input-group">
                     <div className="field-group">
                         <label htmlFor={`requestQty${itemId}`}>Request Quantity</label>
-                        <input type="number" id={`requestQty${itemId}`} min="1" max={availableQuantity} value={requestQuantity} onChange={handleRequestQuantityChange} />
+                        <input type="number" id={`requestQty${itemId}`} min="1" max={availableQuantity} value={requestQuantity ?? ''} onChange={handleRequestQuantityChange} />
                         <p className="error-message" id={`requestQtyError${itemId}`}></p>
                     </div>
                     <div className="field-group">
@@ -173,7 +194,7 @@ export default function CreatePR({itemId, itemName, unitMeasurement, availableQu
                 unitMeasurement={unitMeasurement}
                 requestedBy={userFullName}
                 itemDescription={techSpecs}
-                quantity={requestQuantity}
+                quantity={requestQuantity ?? 0}
                 unitPrice={priceCatalog}
                 requestedDate={new Date().toLocaleDateString()}
                 isOpen={isPrintPreviewOpen}

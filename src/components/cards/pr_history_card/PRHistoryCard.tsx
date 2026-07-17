@@ -5,10 +5,12 @@ import { IconClock, IconCircleDashedCheck, IconPrinter, IconChecklist, IconCance
 import { confirm} from "../../dialogs/global_dialog/DialogService";
 import { toast } from "../../toast/ToastService";
 import { showCircleLoadingDialog } from "../../dialogs/circle_loading_dialog/CircleLoadingDialogService";
+import { getAccessToken } from "../../../../supadb";
 
 interface PRHistoryCardProps {
     prId: number;
     quantity: number;
+    itemId: number;
     itemName: string;
     unitMeasurement: string;
     specifications: string;
@@ -17,31 +19,81 @@ interface PRHistoryCardProps {
     requestedBy?: string;
     dateRequested: string;
     dateFulfilled?: string | null;
+    handlePrHistoryStatusChange: (itemId: number, prId: number, newStatus: string, quantity: number) => void;
 }
 
-export default function PRHistoryCard({prId, quantity, itemName, unitMeasurement, priceCatalog, specifications, status, requestedBy, dateRequested, dateFulfilled}: PRHistoryCardProps) {
+export default function PRHistoryCard({prId, quantity, itemId, itemName, unitMeasurement, priceCatalog, specifications, status, requestedBy, dateRequested, dateFulfilled, handlePrHistoryStatusChange}: PRHistoryCardProps) {
     const [isPrintPROpen, setPrintPROpen] = useState(false);
 
     function handleArrivedClick() {
-        confirm("Arrive", "Are you sure you want to mark this PR as arrived?", "info", "Yes Mark as Arrived")
-            .then((confirmed) => {
+        confirm("Arrive", "Confirmation if you want to mark this PR as arrived/fulfilled?", "info", "Yes Mark as Fulfilled")
+            .then(async (confirmed) => {
                 if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('prId', String(prId));
+                    formData.append('status', "Fulfilled");
+
                     const loading = showCircleLoadingDialog();
 
-                    setTimeout(() => {
-                        toast.success("PR marked as arrived successfully!");
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/procurement_status/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            throw new Error("Failed to mark PR as fulfilled.");
+                        }else {
+                            handlePrHistoryStatusChange(itemId, prId, "Fulfilled", quantity);
+                            toast.success("PR marked as fulfilled successfully!");
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while marking PR as fulfilled.");
+                    }
+                    finally {
                         loading();
-                    }, 1000);
-
+                    }
                 }
             });
     }
+
     function handleCancelClick() {
-        confirm("Cancel", "Are you sure you want to cancel this PR?", "warning", "Yes Cancel PR")
-            .then((confirmed) => {
+        confirm("Cancel", "Are you sure you want to cancel this PR \n Note: You cannot undo this action?", "warning", "Yes Cancel PR")
+            .then(async (confirmed) => {
                 if (confirmed) {
-                    toast.error("PR cancelled successfully!");
-                } 
+
+                    const formData = new FormData();
+                    formData.append('prId', String(prId));
+                    formData.append('status', "Cancelled");
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/procurement_status/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            throw new Error("Failed to mark PR as cancelled.");
+                        }else {
+                            handlePrHistoryStatusChange(itemId, prId, "Cancelled", quantity);
+                            toast.success("PR marked as Cancelled successfully!");
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while marking PR as cancelled.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
             });
     }
     return (    

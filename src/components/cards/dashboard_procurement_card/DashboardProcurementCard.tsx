@@ -49,8 +49,8 @@ export default function DashboardProcurementCard({
         default: <IconClock size={18} />
     };
 
-    const activeColor = colorMap[actionType] || colorMap.default;
-    const ActiveIcon = iconMap[actionType] || iconMap.default;
+    const activeColor = colorMap[actionType.toLowerCase()] || colorMap.default;
+    const ActiveIcon = iconMap[actionType.toLowerCase()] || iconMap.default;
 
     return (
         <div className="dashboard-procurement-card">
@@ -67,7 +67,7 @@ export default function DashboardProcurementCard({
                 </div>
                 <p>{description}</p>
                 <div className="date-value-container">
-                    <span>Made by: {userFullName} • {new Date(date).toLocaleString('en-PH')}</span>
+                    <span>Made by: <strong>{userFullName}</strong> • {new Date(date).toLocaleString('en-PH')}</span>
                     {value !== undefined && (
                         <p className="value">
                             PHP {value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

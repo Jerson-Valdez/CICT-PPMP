@@ -25,12 +25,11 @@
         }
         & > p {
             @apply text-xs;
-            color: var(--text-gray);
         }
         & > .date-value-container {
             @apply flex flex-row items-center justify-between w-full mt-1;
             & > span {
-                @apply text-[10px] font-semibold;
+                @apply text-xs;
                 color: var(--text-gray);
             }
             & > p {

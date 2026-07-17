@@ -4,6 +4,7 @@ import "./tracking-item-card.css";
 import { IconChevronRight, IconPackage, IconChartHistogram, IconClock, IconCircleDashedCheck, IconCircleFilled, IconFileStack } from '@tabler/icons-react';
 
 interface TrackingItemCardProps {
+    itemId: number;
     itemName: string;
     unitMeasurement: string;
     priceCatalog: number;
@@ -13,9 +14,10 @@ interface TrackingItemCardProps {
     fulfilledQuantity: number;
     prHistory: any[];
     prHistoryCount: number;
+    handlePrHistoryStatusChange: (itemId: number, prId: number, newStatus: string, quantity: number) => void;
 }
 
-export default function TrackingItemCard({itemName, unitMeasurement, priceCatalog, plannedQuantity, availableQuantity, pendingQuantity, fulfilledQuantity, prHistory, prHistoryCount}: TrackingItemCardProps) {
+export default function TrackingItemCard({itemId, itemName, unitMeasurement, priceCatalog, plannedQuantity, availableQuantity, pendingQuantity, fulfilledQuantity, prHistory, prHistoryCount, handlePrHistoryStatusChange}: TrackingItemCardProps) {
 
         const availablePercentage: number = (availableQuantity / plannedQuantity) * 100;
         const pendingPercentage: number = (pendingQuantity / plannedQuantity) * 100;
@@ -81,6 +83,7 @@ export default function TrackingItemCard({itemName, unitMeasurement, priceCatalo
                             key={index}
                             prId={pr.prId}
                             quantity={pr.quantity}
+                            itemId={itemId}
                             itemName={itemName}
                             unitMeasurement={unitMeasurement}
                             priceCatalog={priceCatalog}
@@ -89,6 +92,7 @@ export default function TrackingItemCard({itemName, unitMeasurement, priceCatalo
                             requestedBy={pr.requestedBy ? pr.requestedBy : 'N/A'}
                             dateRequested={pr.dateRequested}
                             dateFulfilled={pr.dateFulfilled? pr.dateFulfilled : null}
+                            handlePrHistoryStatusChange = {handlePrHistoryStatusChange}
                         />
                     ))}
                 </div>

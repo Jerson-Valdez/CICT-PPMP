@@ -7,6 +7,7 @@ import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWra
 import MonitoringSkeleton from "../../components/skeleton/skeleton_pages/MonitoringSkeleton";
 import { toast } from '../../components/toast/ToastService';
 import { useOutletContext } from 'react-router';
+import { getAccessToken } from "../../../supadb";
 
 interface ItemsCountCardData {
     icon: string;
@@ -42,10 +43,10 @@ export default function ProcurementMonitor() {
     const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: string }>();
     const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
-    const [totalPlannedItemCount, setTotalPlannedItemCount] = useState(258);
-    const [totalAvailableItemCount, setTotalAvailableItemCount] = useState(189);
-    const [totalPendingItemCount, setTotalPendingItemCount] = useState(12);
-    const [totalFulfilledItemCount, setTotalFulfilledItemCount] = useState(58);
+    const [totalPlannedItemCount, setTotalPlannedItemCount] = useState<number>(0);
+    const [totalAvailableItemCount, setTotalAvailableItemCount] = useState<number>(0);
+    const [totalPendingItemCount, setTotalPendingItemCount] = useState<number>(0);
+    const [totalFulfilledItemCount, setTotalFulfilledItemCount] = useState<number>(0);
 
     const [ppmpMonitoringData, setPpmpMonitoringData] = useState<ppmpMonitoringData[]>([]);
 
@@ -60,7 +61,10 @@ export default function ProcurementMonitor() {
 
                     fetch('https://test-ppmp.onrender.com/api/procurement_monitoring/', {
                         method: "POST",
-                        body: formData
+                        body: formData,
+                        headers: {
+                            "Authorization": `Bearer ${await getAccessToken() || ""}`
+                        }
                     })
                 ]);
 
@@ -120,6 +124,51 @@ export default function ProcurementMonitor() {
         {icon: 'check', title: 'Total Fulfilled Items', count: totalFulfilledItemCount, color: 'green'},
     ];
 
+    function handlePrHistoryStatusChange(itemId: number, prId: number, newStatus: string, quantity: number) {
+        setPpmpMonitoringData(prevTableData => 
+            prevTableData.map(item => {
+                if (item.itemId === itemId) {
+                    if (newStatus === "Fulfilled") {
+                        return {
+                            ...item,
+                            fulfilledQuantity: item.fulfilledQuantity + quantity,
+                            pendingQuantity: item.pendingQuantity - quantity,
+                            prHistory: item.prHistory.map(pr => {
+                                if (pr.prId === prId) {
+                                    return { ...pr, status: newStatus, dateFulfilled: new Date().toISOString() };
+                                }
+                                return pr;
+                            }
+                        )
+                    }
+                    } else if (newStatus === "Cancelled") {
+                        return {
+                            ...item,
+                            availableQuantity: item.availableQuantity + quantity,
+                            pendingQuantity: item.pendingQuantity - quantity,
+                            prHistory: item.prHistory.map(pr => {
+                                if (pr.prId === prId) {
+                                    return { ...pr, status: newStatus };
+                                }
+                                return pr;
+                            }
+                        )
+                    };
+                    }
+                }
+                return item;
+            })
+        );
+
+        if (newStatus === "Fulfilled") {
+            setTotalFulfilledItemCount(prevCount => prevCount + quantity);
+            setTotalPendingItemCount(prevCount => prevCount - quantity);
+        }else if (newStatus === "Cancelled") {
+            setTotalAvailableItemCount(prevCount => prevCount + quantity);
+            setTotalPendingItemCount(prevCount => prevCount - quantity);
+        }
+    }
+
     function handlePpmpMonitoringFiscalYearChange(newFiscalYear: string) {
         if (newFiscalYear !== fiscalYearHolder) {
             setIsInitialLoading(true);
@@ -162,6 +211,7 @@ export default function ProcurementMonitor() {
                     {processedData.map((item, index) => (
                         <TrackingItemCard 
                             key={index}
+                            itemId={item.itemId}
                             itemName={item.itemName}
                             unitMeasurement={item.unitMeasurement}
                             priceCatalog={item.priceCatalog}
@@ -171,6 +221,7 @@ export default function ProcurementMonitor() {
                             fulfilledQuantity={item.fulfilledQuantity}
                             prHistory={item.prHistory}
                             prHistoryCount={item.prHistoryCount}
+                            handlePrHistoryStatusChange = {handlePrHistoryStatusChange}
                         />
                     ))}
             </div>

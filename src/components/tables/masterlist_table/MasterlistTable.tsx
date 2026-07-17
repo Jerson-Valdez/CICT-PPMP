@@ -7,10 +7,11 @@ interface MasterlistTableProps {
     itemCount: number;
     unitCount: number;
     exportFunction?: () => void;
+    purchaseRequestQuantityChange: (prQuantity: number, itemId: number) => void;
     data: any[];
 }
 
-export default function MasterlistTable({ itemCount, unitCount, exportFunction, data }: MasterlistTableProps) {
+export default function MasterlistTable({ itemCount, unitCount, exportFunction, purchaseRequestQuantityChange, data }: MasterlistTableProps) {
 
     const [openDialogIndex, setOpenDialogIndex] = useState<number | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -107,6 +108,7 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
                                                 fulfilledQuantity={item.fulfilledQuantity} 
                                                 priceCatalog={item.priceCatalog}
                                                 isOpen={openDialogIndex === index} 
+                                                purchaseRequestQuantityChange={purchaseRequestQuantityChange}
                                                 onClose={() => setOpenDialogIndex(null)}
                                             />
                                         </>

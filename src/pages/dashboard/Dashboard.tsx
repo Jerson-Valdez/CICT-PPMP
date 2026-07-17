@@ -9,6 +9,7 @@ import LoadingWrapper from '../../components/wrappers/loading wrapper/LoadingWra
 import DashboardSkeleton from '../../components/skeleton/skeleton_pages/DashboardSkeleton';
 import { toast } from '../../components/toast/ToastService';
 import { useOutletContext } from 'react-router';
+import { getAccessToken } from '../../../supadb';
 
 interface DashboardData {
     icon: JSX.Element;
@@ -57,15 +58,12 @@ export default function Dashboard(){
 
                     fetch('https://test-ppmp.onrender.com/api/dashboard_cards/', {
                         method: "POST",
-                        body: formData
+                        body: formData,
+                        headers: {
+                            "Authorization": `Bearer ${await getAccessToken() || ""}`
+                        }
                     })
                 ]);
-
-                setLogs([
-                    {actionType: "rejected", description: "Purchase requests that have been rejected", date: "2023-10-15", value: 20000, userFullName: "John Doe", fiscalYear: 2024},
-                    {actionType: "upload", description: "Purchase requests that have been uploaded", date: "2023-10-15", userFullName: "John Doe", fiscalYear: 2024},
-                    {actionType: "approved", description: "Purchase requests that have been approved", date: "2023-10-15", value: 50000, userFullName: "John Doe", fiscalYear: 2024},
-                ])
 
                 if (!dashboardCardsResponse.ok) {
                     toast.error("Failed to fetch dashboard cards data. Please try again later.");
@@ -79,7 +77,10 @@ export default function Dashboard(){
                     setArrivedFunds(dashboardCardsResult.arrivedFunds);
                     setPendingInLieuCount(dashboardCardsResult.pendingInLieuCount);
 
+                    setLogs((dashboardCardsResult.logs || []).slice().reverse());
+
                     console.log("Pending In Lieu Count: ", dashboardCardsResult.pendingInLieuCount);
+                    console.log("Dashboard cards data retrieved: ", dashboardCardsResult);
 
                     setCommittedFundsPercentage((dashboardCardsResult.committedFunds / dashboardCardsResult.totalAnnualBudget) * 100);
                     setOpenFundsPercentage((dashboardCardsResult.openFunds / dashboardCardsResult.totalAnnualBudget) * 100);

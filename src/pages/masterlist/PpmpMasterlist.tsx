@@ -6,6 +6,7 @@ import LoadingWrapper from '../../components/wrappers/loading wrapper/LoadingWra
 import PpmpMasterlistSkeleton from '../../components/skeleton/skeleton_pages/PpmpMasterlistSkeleton';
 import { toast } from '../../components/toast/ToastService';
 import { useOutletContext } from 'react-router';
+import { getAccessToken } from '../../../supadb';
 
 interface PPMPItem {
     itemId: number;
@@ -43,11 +44,17 @@ export default function PpmpMasterlist() {
 
                     fetch('https://test-ppmp.onrender.com/api/masterlist/', {
                         method: "POST",
-                        body: formData
+                        body: formData,
+                        headers: {
+                            "Authorization": `Bearer ${await getAccessToken() || ""}`
+                        }
                     }),
                     fetch('https://test-ppmp.onrender.com/api/masterlist_cards/', {
                         method: "POST",
-                        body: formData
+                        body: formData,
+                        headers: {
+                            "Authorization": `Bearer ${await getAccessToken() || ""}`
+                        }
                     })
                 ]);
 
@@ -90,9 +97,49 @@ export default function PpmpMasterlist() {
         {icon: 'businessplan', title: 'Total Planned Price', count: totalPlannedFunds, color: 'royal-red'},
     ];
 
-    function exportLatestPPMP() {
-        // Placeholder function for exporting the latest PPMP data
-        alert("Exporting latest PPMP data...");
+    const exportLatestPPMP = async () => {
+        try {
+            toast.info("Exporting the latest PPMP. Please wait...");
+            const response = await fetch(`https://test-ppmp.onrender.com/api/export/?year=${selectedFiscalYear}`, {
+                method: "GET",
+                headers: { Authorization: `Bearer ${await getAccessToken() || ""}` }
+            });
+            if (!response.ok) {
+                toast.error("Failed to export the latest PPMP. Please try again later.");
+            }
+            else {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `Revised_PPMP_${selectedFiscalYear}_as_of_${new Date().toISOString().split('T')[0]}.xlsx`);
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode?.removeChild(link);
+                toast.success("Latest PPMP exported successfully!");
+            }
+        } catch (error) {
+            console.error("Error exporting the latest PPMP:", error);
+            toast.error("Network error. Please try again later.");
+        }
+    };
+
+    function handlePRQuantityChange(prQuantity: number, itemId: number) {
+        setPpmpTableData(prevTableData => 
+            prevTableData.map(item => {
+                if (item.itemId === itemId) {
+                    return {
+                        ...item,
+                        availableQuantity: item.availableQuantity - prQuantity,
+                        pendingQuantity: item.pendingQuantity + prQuantity
+                    };
+                }
+                return item;
+            })
+        );
+
+        setTotalAvailableItemCount(prevCount => prevCount - prQuantity);
+        setTotalPendingItemCount(prevCount => prevCount + prQuantity);
     }
 
     function handleMasterlistFiscalYearChange(newFiscalYear: string) {
@@ -120,6 +167,7 @@ export default function PpmpMasterlist() {
                     unitCount={189} 
                     data={ppmpTableData}
                     exportFunction={exportLatestPPMP}
+                    purchaseRequestQuantityChange={handlePRQuantityChange}
                     />
             </LoadingWrapper>
         </main>
