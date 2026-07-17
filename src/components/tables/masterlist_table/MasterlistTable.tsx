@@ -100,7 +100,8 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
                                             <CreatePR 
                                                 key={index} 
                                                 itemId={item.itemId}
-                                                itemName={item.itemName} 
+                                                itemName={item.itemName}
+                                                unitMeasurement={item.unitMeasurement} 
                                                 availableQuantity={item.availableQuantity} 
                                                 pendingQuantity={item.pendingQuantity} 
                                                 fulfilledQuantity={item.fulfilledQuantity} 

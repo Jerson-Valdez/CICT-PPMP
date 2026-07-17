@@ -7,17 +7,20 @@ interface PrintPRProps {
     prId?: number;
     itemName: string;
     itemDescription: string;
+    unitMeasurement: string;
     quantity: number;
     unitPrice: number;
     requestedDate: string;
+    requestedBy?: string;
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default function PrintPR({ prId, itemName, itemDescription, quantity, unitPrice, requestedDate, isOpen, onClose }: PrintPRProps) {
+export default function PrintPR({ prId, itemName, itemDescription, unitMeasurement, quantity, unitPrice, requestedDate, requestedBy, isOpen, onClose }: PrintPRProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const printRef = useRef<HTMLDivElement>(null);
     const printDate = new Date().toLocaleDateString();
+    const stockPropertyNoCounter = 1;
     const totalPrice = quantity * unitPrice;
 
     useEffect(() => {
@@ -64,56 +67,95 @@ export default function PrintPR({ prId, itemName, itemDescription, quantity, uni
             </div>
             
             <div className="print-purchase-request-info" ref={printRef}>
-                <h4>Bulacan State University</h4>   
-                <p>CICT Department Procurement</p>
                 <div className="pr-title">
                     <h3>PURCHASE REQUEST</h3>
                 </div>
-                <hr />
-                <div className="pr-id-date">
-                    <p>PR ID: <span>PR-{prId}</span></p>
-                    <p>Date: <span>{printDate}</span></p>
-                </div>
-                <div className="pr-unit-date">
-                    <p>Unit: <span>CICT Department</span></p>
-                    <p>Requested Date: <span>{new Date(requestedDate).toLocaleString('en-PH')}</span></p>
+
+                <div className="entity-fundcluster">
+                    <p>Entity: <strong>Bulacan State University</strong></p>
+                    <p>Fund Cluster: __________________________</p>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th>Item Description</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Total Price</th>
+                            <td colSpan={2}>
+                                <div>
+                                    <p>Office Section:</p>
+                                    <p>-</p>
+                                </div>
+                            </td>
+                            <td colSpan={2}>
+                                <div>
+                                    <p>PR No.: <strong>{prId}</strong></p>
+                                    <p>Responsibility Center Code: </p>
+                                </div>
+                            </td>
+                            <td colSpan={2}>
+                                <div>
+                                    <p>Date: {printDate}</p>
+                                    <p>Requested Date: {new Date(requestedDate).toLocaleString('en-PH')}</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><strong>Stock/Property No.</strong></th>
+                            <th><strong>Unit</strong></th>
+                            <th><strong>Item Description</strong></th>
+                            <th><strong>Quantity</strong></th>
+                            <th><strong>Unit Cost</strong></th>
+                            <th><strong>Total Cost</strong></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><div className="item-description">
-                                    <h4>{itemName}</h4>
-                                    <p>{itemDescription}</p>
+                            <td>{stockPropertyNoCounter}</td>
+                            <td>{unitMeasurement}</td>
+                            <td>
+                                <div>
+                                    <p className="font-semibold">{itemName}</p>
+                                    <p className="font-light">{itemDescription}</p>
                                 </div>
                             </td>
                             <td>{quantity}</td>
-                            <td>PHP {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                            <td>PHP {totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>{unitPrice.toFixed(2)}</td>
+                            <td>{totalPrice.toFixed(2)}</td>
                         </tr>
                         <tr>
-                            <td colSpan={3} className="total-label">Grand Total:</td>
-                            <td>PHP {totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><strong>{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td>
+                        </tr>
+                        <tr>
+                            <td colSpan={6} className="purpose">
+                                <p>Purpose: </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className="sign" colSpan={2}></td>
+                            <td className="sign-label" colSpan={2}><strong>Requested by:</strong></td>
+                            <td className="sign-label" colSpan={2}><strong>Approved:</strong></td>
+                        </tr>
+                        <tr>
+                            <td className="sign" colSpan={2}><strong>Signature:</strong></td>
+                            <td className="sign signature" colSpan={2}></td>
+                            <td className="sign signature" colSpan={2}></td>
+                        </tr>
+                        <tr>
+                            <td className="sign" colSpan={2}><strong>Printed Name:</strong></td>
+                            <td className="sign-label" colSpan={2}><strong>{requestedBy}</strong></td>
+                            <td className="sign-label" colSpan={2}><strong>DR. TEODY C. SAN ANDRES</strong></td>
+                        </tr>
+                        <tr><td className="sign" colSpan={2}><strong>Designation:</strong></td>
+                            <td className="sign-label" colSpan={2}><p className="text-xs italic font-light">, CICT</p></td>
+                            <td className="sign-label" colSpan={2}><p className="text-xs italic font-light">University President</p></td>
                         </tr>
                     </tbody>
                 </table>
-                <div className="signature-row">
-                    <div className="signature">
-                        <hr />
-                        <p>Requested By:</p>
-                    </div>
-                    <div className="signature">
-                        <hr />
-                        <p>Approved By:</p>
-                    </div>
-                </div>
+                <p>To be accomplished by the Procurement Office:</p>
+                <p>Included in the: 2025 Revised PPMP</p> 
             </div>
             
             <div className="action-btns">

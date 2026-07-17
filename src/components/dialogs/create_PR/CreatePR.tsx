@@ -3,10 +3,12 @@ import { IconFileStack, IconChartHistogram, IconClock, IconCircleDashedCheck, Ic
 import { useEffect, useRef, useState } from "react";
 import PrintPR from "../print_PR/PrintPR";
 import { getAccessToken, getUserID } from "../../../../supadb"
+import { useOutletContext } from "react-router";
 
 interface CreatePRProps {
     itemId: string;
     itemName: string;
+    unitMeasurement: string;
     availableQuantity: number;
     pendingQuantity: number;
     fulfilledQuantity: number;
@@ -15,12 +17,13 @@ interface CreatePRProps {
     onClose: () => void;
 }
 
-export default function CreatePR({itemId, itemName, availableQuantity, pendingQuantity, fulfilledQuantity, priceCatalog, isOpen, onClose }: CreatePRProps) {
+export default function CreatePR({itemId, itemName, unitMeasurement, availableQuantity, pendingQuantity, fulfilledQuantity, priceCatalog, isOpen, onClose }: CreatePRProps) {
     const [requestQuantity, setRequestQuantity] = useState(1);
     const [techSpecs, setTechSpecs] = useState("");
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
     const totalPrice = priceCatalog * requestQuantity;
+    const { userFullName } = useOutletContext<{ userFullName: string }>();
 
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -107,7 +110,7 @@ export default function CreatePR({itemId, itemName, availableQuantity, pendingQu
                         <p>Create a new purchase request for approval.</p>
                     </div>
                 </div>
-                <p className="item-name">{itemName}</p>
+                <p className="item-name">{itemName} • ({unitMeasurement})</p>
 
                 <div className="status-count-container">
                     <div className="status-count-card"><div className="icon-count blue"><IconChartHistogram size={24}/> <p>{availableQuantity}</p></    div><p>AVAILABLE</p></div>
@@ -167,6 +170,8 @@ export default function CreatePR({itemId, itemName, availableQuantity, pendingQu
             </dialog>
             <PrintPR
                 itemName={itemName}
+                unitMeasurement={unitMeasurement}
+                requestedBy={userFullName}
                 itemDescription={techSpecs}
                 quantity={requestQuantity}
                 unitPrice={priceCatalog}

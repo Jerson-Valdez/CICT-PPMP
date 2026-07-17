@@ -14,11 +14,12 @@ interface PRHistoryCardProps {
     specifications: string;
     priceCatalog: number;
     status: string;
+    requestedBy?: string;
     dateRequested: string;
     dateFulfilled?: string | null;
 }
 
-export default function PRHistoryCard({prId, quantity, itemName, unitMeasurement, priceCatalog, specifications, status, dateRequested, dateFulfilled}: PRHistoryCardProps) {
+export default function PRHistoryCard({prId, quantity, itemName, unitMeasurement, priceCatalog, specifications, status, requestedBy, dateRequested, dateFulfilled}: PRHistoryCardProps) {
     const [isPrintPROpen, setPrintPROpen] = useState(false);
 
     function handleArrivedClick() {
@@ -82,6 +83,8 @@ export default function PRHistoryCard({prId, quantity, itemName, unitMeasurement
                             itemDescription={specifications}
                             quantity={quantity}
                             unitPrice={priceCatalog} 
+                            requestedBy={requestedBy}
+                            unitMeasurement={unitMeasurement}
                             requestedDate={dateRequested}
                             isOpen={isPrintPROpen}
                             onClose={() => {setPrintPROpen(false)}}

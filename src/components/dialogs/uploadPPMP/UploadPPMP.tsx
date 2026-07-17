@@ -4,7 +4,7 @@ import { IconFileTypeXls, IconCircleFilled, IconCircleCheckFilled, IconArrowNarr
 import InfoNote from "../../notes/info_note/InfoNote";
 import { toast } from "../../toast/ToastService";
 import { showCircleLoadingDialog } from "../circle_loading_dialog/CircleLoadingDialogService";
-import { confirm} from "../../dialogs/global_dialog/DialogService";
+import { notify, confirm} from "../../dialogs/global_dialog/DialogService";
 
 interface UploadPPMPProps {
     fiscalYears: string[];
@@ -18,6 +18,7 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
     const [fileUploaded, setFileUploaded] = useState<File | null>(null);
     const [totalABC, setTotalABC] = useState<number | null>(null);
     const [previewData, setPreviewData] = useState<Array<Record<string, string | number>>>([]);
+    const [isPpmpExist, setIsPpmpExist] = useState(false);
 
     const rowStartOptions = Array.from({ length: 100 }, (_, i) => i + 1);
     const letterOptions = Array.from({ length: 26 }, (_, i) => 
@@ -33,7 +34,7 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
     const [mapColumnsStep, setMapColumnsStep] = useState("upcoming");
     const [previewImportStep, setPreviewImportStep] = useState("upcoming");
 
-    const year = "2025";
+    const year = "2021";
 
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -42,7 +43,8 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
         if (isOpen) {
             if (!dialog.hasAttribute('open')) {
                 if (year.toString() === fiscalYears.find(fy => fy === year.toString())) {
-                    toast.warning("Current fiscal year is already present in the system. Uploading a new PPMP will overwrite the existing data for this year.");
+                    setIsPpmpExist(true);
+                    toast.warning("Current fiscal year already exists.");
                     confirm("Overwrite Existing Data", "Note: Current fiscal year is already present in the system. Uploading a new PPMP will overwrite the existing data for this year.", "warning", "Yes, Overwrite")
                     .then((confirmed) => {
                         if (confirmed) {
@@ -127,19 +129,26 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
 
         const closeLoading = showCircleLoadingDialog();
         try {
-            const response = await fetch("https://test-ppmp.onrender.com/api/ppmp/", {
+            const response = await fetch("https://test-ppmp.onrender.com/api/preview/", {
                 method: "POST",
                 body: formData
             });
             if (!response.ok) {
-                throw new Error("Failed to fetch preview data.");
+                console.log(response);
                 toast.error("Failed to fetch preview data. Please try again later.");
             }else{
                 const responseData = await response.json();
-                const rows = Array.isArray(responseData) ? responseData : responseData.data ?? [];
-                setPreviewData(rows);
-                console.log(responseData);
-                console.log("Preview data set:", rows);
+                if(responseData.error){
+                    notify("Error", "Your totalABC (Approved Budget for Contract) value is less than the sum of the total amount of all items in the uploaded file. Please check your file or the totalABC value and try again.", "error");
+                    toast.error(responseData.error);
+                }else{
+                    const rows = Array.isArray(responseData) ? responseData : responseData.data ?? [];
+                    setPreviewData(rows);
+                    console.log(responseData);
+                    console.log("Preview data set:", rows);
+                    setMapColumnsStep("done");
+                    setPreviewImportStep("current");
+                }
             }
         } catch (error) {
             setMapColumnsStep("current");
@@ -152,9 +161,19 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
     }
 
     async function handleImport() {
+        confirm("Overwrite Existing Data", "Note: Current fiscal year is already present in the system. Uploading a new PPMP will overwrite the existing data for this year.", "warning", "Yes, Overwrite and Import")
+        .then((confirmed) => {
+            if (confirmed) {
+                proceedImport();
+            }
+        })
+    }
+
+    const proceedImport = async () => {
         if (!fileUploaded || selectedRowStart === null || selectedItemName === null || selectedUnit === null || selectedTotalQuantity === null || selectedPricePerUnit === null) {
             return;
         }
+
         const formData = new FormData();
         formData.append("file", fileUploaded);
         formData.append("totalABC", String(totalABC));
@@ -189,6 +208,7 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                 setSelectedTotalQuantity(null);
                 setSelectedPricePerUnit(null);
                 console.log(responseData);
+                onClose();
             }
         } catch (error) {
             console.error("Error importing data:", error);
@@ -417,21 +437,13 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                     </button>
                 )}
                 {mapColumnsStep === "current" && selectedItemName !== null && selectedUnit !== null && selectedTotalQuantity !== null && selectedPricePerUnit !== null && selectedRowStart !== null && totalABC !== null && totalABC > 0 && (
-                    <button className="btn-solid green" onClick={async () => {
-                        setMapColumnsStep("done");
-                        setPreviewImportStep("current");
-                        await PPMPPreview();
-                    }}>
+                    <button className="btn-solid green" onClick={async () => {await PPMPPreview();}}>
                         Preview Data
                         <IconArrowNarrowRightDashed size={18} color="white"/>
                     </button>
                 )}
                 {previewImportStep === "current" && previewData && (
-                    <button className="btn-solid green" onClick={async () => {
-                        setPreviewImportStep("done");
-                        onClose();
-                        await handleImport();
-                    }}>
+                    <button className="btn-solid green" onClick={async () => {await handleImport();}}>
                         Import
                         <IconArrowNarrowRightDashed size={18} color="white"/>
                     </button>

@@ -116,7 +116,7 @@ function PrivateLayout() {
                         <FourSquare color="var(--primary)" size="large" text="Loading page..." />
                     </div>
                 }>
-                    <Outlet context={{ userRole, selectedFiscalYear }} /> 
+                    <Outlet context={{ userRole, selectedFiscalYear, userFullName }} /> 
                 </Suspense>
             </main>
         </>

@@ -86,6 +86,7 @@ export default function TrackingItemCard({itemName, unitMeasurement, priceCatalo
                             priceCatalog={priceCatalog}
                             specifications={pr.specifications}
                             status={pr.status}
+                            requestedBy={pr.requestedBy ? pr.requestedBy : 'N/A'}
                             dateRequested={pr.dateRequested}
                             dateFulfilled={pr.dateFulfilled? pr.dateFulfilled : null}
                         />

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .print-pr{
-    @apply fixed flex-col w-2xl p-6 rounded-lg bg-white shadow-2xl left-0 right-0 top-1/2 -translate-y-1/2 mx-auto;
+    @apply fixed flex-col w-3xl p-6 rounded-lg bg-white shadow-2xl left-0 right-0 top-1/2 -translate-y-1/2 mx-auto;
     & > .header{
         @apply flex flex-row items-center justify-start gap-2 mb-4;
         & > h3{
@@ -13,69 +13,55 @@
     }
 }
 .print-purchase-request-info{
-    @apply flex flex-col items-center justify-start gap-2 mb-4 border border-gray-300 rounded-lg p-5 print:p-10 print:gap-6 print:border-none print:shadow-none;
-    & > h4{
-        @apply text-sm font-semibold print:text-base;
-    }
-    & > p{
-        @apply text-xs font-normal print:text-sm;
-        color: var(--text-gray);
-    }
+    @apply flex flex-col items-start justify-start gap-2 mb-4 border border-gray-300 rounded-lg p-5 print:p-0 print:gap-4 print:border-none print:shadow-none;
+    
     & > .pr-title{
-        @apply p-2 border border rounded-xs text-center text-sm font-bold print:text-base;
-    }
-    & > hr{
-        @apply border-t w-full my-4;
-    }
-    & > .pr-id-date, & > .pr-unit-date{
-        @apply flex flex-row items-center justify-between w-full gap-2;
-        & > p{
-            @apply text-xs font-semibold print:text-sm;
-            & > span{
-                @apply font-normal;
-                color: var(--text-gray);
-            }
+        @apply flex flex-row items-center justify-center gap-2 w-full mb-4 print:mb-6;
+        & > h3{
+            @apply text-sm font-semibold print:text-base text-center w-full;
         }
     }
+
+    & > p {
+        @apply text-xs font-light;
+    }
+
+    & > .entity-fundcluster{
+        @apply flex flex-row items-start justify-between w-full gap-2 print:gap-4;
+        & > p{
+            @apply text-xs;
+        }
+    }
+
     & > table{
-        @apply w-full border-2 border-black my-4;
+        @apply w-full border border-black;
         & > thead{
-            @apply bg-blue-100;
             & > tr{
                 & > th{
-                    @apply text-sm font-semibold p-3 text-start border-2 border-black;
+                    @apply text-xs text-center p-2 print:p-3 border border-black bg-blue-100;
+                }
+                & > td{
+                    @apply text-xs text-left p-2 print:p-3 border border-black;
                 }
             }
         }
         & > tbody{
             & > tr{
                 & > td{
-                    @apply text-xs font-medium p-3 text-start border-2 border-black;
-                    & > .item-description{
-                        & > h4{
-                            @apply text-xs font-semibold print:text-sm;
-                        }
-                        & > p{
-                            @apply text-xs font-normal print:text-sm;
-                            color: var(--text-gray);
+                    @apply text-xs text-center p-2 print:p-3 border border-black;
+                    &.sign-label, &.sign{
+                        @apply border-0 border-l py-1  text-left;
+                        &.signature{
+                            @apply border-b border-black;
                         }
                     }
+                    &.sign-label{
+                        @apply text-center;
+                    }
+                    &.purpose{
+                        @apply text-left;
+                    }
                 }
-                & > .total-label{
-                    @apply text-sm font-semibold p-2 text-end border-2 border-black print:text-base;
-                }
-            }
-        }
-    }
-    & > .signature-row{
-        @apply flex flex-row items-center justify-evenly w-full gap-2 mt-4 print:mt-14;
-        & > .signature{
-            @apply flex-1 flex flex-col items-center justify-center gap-2;
-            & > p{
-                @apply text-xs font-semibold print:text-sm;
-            }
-            & > hr{
-                @apply w-50 border-t-2 border-black;
             }
         }
     }

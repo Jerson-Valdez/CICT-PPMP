@@ -19,6 +19,7 @@ interface prHistory {
     quantity: number;
     specifications: string;
     status: string;
+    requestedBy?: string;
     dateRequested: string;
     dateFulfilled?: string | null;
 } 
