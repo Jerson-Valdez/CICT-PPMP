@@ -1,6 +1,7 @@
 import "./view-in-lieu.css";
 import { IconFileStack, IconX, IconChecklist, IconPrinter } from '@tabler/icons-react';
 import { useEffect, useRef } from "react";
+import { useOutletContext } from "react-router";
 import { useReactToPrint } from "react-to-print";
 
 interface Item {
@@ -22,18 +23,19 @@ interface BudgetImpact {
 interface ViewInLieuProps {
     inLieuId?: number;
     requestDate?: string;
-    requestedBy?: string;
     status?: string;
     originalItems?: Item[];
     proposedItems?: Item[];
-    budgetImpact?: BudgetImpact;
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default function ViewInLieu({inLieuId, requestDate, requestedBy, status, originalItems, proposedItems, budgetImpact, isOpen, onClose }: ViewInLieuProps) {
+export default function ViewInLieu({inLieuId, requestDate, status, originalItems, proposedItems, isOpen, onClose }: ViewInLieuProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const printRef = useRef<HTMLDivElement>(null);
+    const { selectedFiscalYear, deanName, revisedAsignatories } = useOutletContext<{ selectedFiscalYear: string, deanName: string, revisedAsignatories: any }>();
+    const parsedRequestDate = requestDate ? new Date(String(requestDate)) : null;
+    const requestMonthIndex = parsedRequestDate ? parsedRequestDate.getMonth() : null;
 
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -81,76 +83,127 @@ export default function ViewInLieu({inLieuId, requestDate, requestedBy, status, 
                 </div>
             </div>
             <div className="content" ref={printRef}>
-                <div className="top-content">
-                    <p><strong>Request Date: </strong> {new Date(requestDate ?? '').toLocaleString('en-PH')}</p>
-                    <p><strong>Requested By: </strong> {requestedBy}</p>
-                    <div><strong>Current Status: </strong> <div className={`status ${status?.toLowerCase()}`}>{status}</div></div>
+                <div className="title">
+                    <h3>REVISED PROJECT PROCUREMENT MANAGEMENT PLAN {selectedFiscalYear}</h3>
                 </div>
-                <div className="table-content original">
-                    <h3>Original Items (Surrendered)</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Original Items</th>
-                                <th>Reduced Qty</th>
-                                <th>Measurement Unit</th>
-                                <th>Available Quantity After Deduction</th>
-                                <th>Planned Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Total Value</th>
+                <p>END-USER/UNIT: <u>CICT</u></p>
+                <p>SOURCE OF FUND: ________________</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th rowSpan={2}>NO.</th>
+                            <th rowSpan={2}>GENERAL DESCRIPTION</th>
+                            <th rowSpan={2}>UNIT OF MEASUREMENT</th>
+                            <th colSpan={13}>SCHEDULE/MILESTONES OF ACTIVITIES</th>
+                            <th rowSpan={2}>PRICE CATALOGUE</th>
+                            <th rowSpan={2}>AMOUNT</th>
+                        </tr>
+                        <tr>
+                            <th>JAN</th>
+                            <th>FEB</th>
+                            <th>MAR</th>
+                            <th>APR</th>
+                            <th>MAY</th>
+                            <th>JUN</th>
+                            <th>JUL</th>
+                            <th>AUG</th>
+                            <th>SEP</th>
+                            <th>OCT</th>
+                            <th>NOV</th>
+                            <th>DEC</th>
+                            <th>TOTAL</th>
+                        </tr>
+                        <tr>
+                            <th colSpan={2} className="bg-gray-200">OTHER SUPPLIES AND MATERIALS</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {originalItems && originalItems.map((item, index) => (
+                            <tr key={item.itemId}>
+                                <td>{index + 1}</td>
+                                <td className="text-left">{item.itemName}</td>
+                                <td>{item.unitMeasurement}</td>
+                                
+                                {Array.from({ length: 12 }).map((_, monthIndex) => (
+                                    <td key={monthIndex}>
+                                        {requestMonthIndex === monthIndex ? item.quantity : ""}
+                                    </td>
+                                ))}
+
+                                <td>{item.quantity}</td>
+
+                                <td className="text-right">{item.priceCatalog.toFixed(2)}</td>
+                                <td className="text-right">{(item.priceCatalog * item.quantity).toFixed(2)}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {originalItems?.map((item) => (
-                                <tr key={item.itemId ?? '-'}>
-                                    <td>{item.itemName ?? '-'}</td>
-                                    <td>-{item.quantity ?? '-'}</td>
-                                    <td>{item.unitMeasurement  ?? '-'}</td>
-                                    <td>{item.availableQuantityAfter ?? '-'}</td>
-                                    <td>{item.plannedQuantity ?? '-'}</td>
-                                    <td>PHP {item.priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                    <td>PHP {(item.quantity * item.priceCatalog).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })  ?? '-'}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <div className="total">
-                        <p><strong>Total Value:</strong> PHP {budgetImpact?.originalItemsTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                    </div>
-                </div>
-                <div className="table-content substitute">
-                    <h3>Proposed Substitution (Requested)</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Proposed Items</th>
-                                <th>Increase Qty</th>
-                                <th>Measurement Unit</th>
-                                <th>Unit Price</th>
-                                <th>Total Value</th>
+                        ))}
+                        <tr>
+                            <td colSpan={2} className="text-right bg-gray-200"><strong>TOTAL AMOUNT</strong></td>
+                            <td colSpan={16} className="text-right bg-gray-200"><strong>{originalItems ? originalItems.reduce((total, item) => total + (item.priceCatalog * item.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>"in lieu of" </p>
+                <table className="in-lieu-table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Quantity</th>
+                            <th>Item</th>
+                            <th>Unit of Measurement</th>
+                            <th>Price as per Catalogue</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {proposedItems && proposedItems.map((item, index) => (
+                            <tr key={item.itemId}>
+                                <td>{index + 1}</td>
+                                <td>{item.quantity}</td>
+                                <td>{item.itemName}</td>
+                                <td>{item.unitMeasurement}</td>
+                                <td className="text-right">{item.priceCatalog.toFixed(2)}</td>
+                                <td className="text-right">{(item.priceCatalog * item.quantity).toFixed(2)}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {proposedItems?.map((item) => (
-                                <tr key={item.itemId}>
-                                    <td>{item.itemName}</td>
-                                    <td>+{item.quantity}</td>
-                                    <td>{item.unitMeasurement}</td>
-                                    <td>PHP {item.priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                    <td>PHP {(item.quantity * item.priceCatalog).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <div className="total">
-                        <p><strong>Total Value:</strong> PHP {budgetImpact?.proposedItemsTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        ))}
+                        <tr>
+                            <td colSpan={5} className="text-right"><strong>TOTAL AMOUNT:</strong></td>
+                            <td><strong>{proposedItems ? proposedItems.reduce((total, item) => total + (item.priceCatalog * item.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div className="signatory">
+                    <div className="submitted-by">
+                        <p>Submitted By:</p>
+                        <p className="signatory-name"><strong>{deanName}</strong></p>
+                        <p>Dean, CICT</p>
                     </div>
-                </div>
-                <div className="financial-summary">
-                    <h3>Financial Summary</h3>
-                    <p><strong>Total Value of Original Items:</strong> PHP {budgetImpact?.originalItemsTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                    <p><strong>Total Value of Proposed Items:</strong> PHP {budgetImpact?.proposedItemsTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                    <p><strong>Net Budget Impact (Final):</strong> PHP {budgetImpact?.difference.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    <div className="noted-by">
+                        <p>Noted By:</p>
+                        <div>
+                            {revisedAsignatories && revisedAsignatories.map((signatory: any, index: number) => (
+                                <div key={index}>
+                                    <p className="signatory-name"><strong>{signatory.fullName}</strong></p>
+                                    <p>{signatory.position}</p>
+                                </div>
+                            ))}
+                        </div>
+                        </div>
                 </div>
             </div>
             <div className="action-btns">

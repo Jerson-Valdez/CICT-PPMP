@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .view-in-lieu{
-    @apply fixed flex-col w-3xl p-6 rounded-lg bg-white shadow-lg left-0 right-0 top-1/2 -translate-y-1/2 mx-auto z-50;
+    @apply fixed flex-col w-6xl p-6 rounded-lg bg-white shadow-lg left-0 right-0 top-1/2 -translate-y-1/2 mx-auto z-50;
     & > .header{
         @apply flex flex-row justify-start items-center mb-4 gap-2;
         & > .title{
@@ -16,88 +16,63 @@
         }
     }
     & > .action-btns{
-        @apply flex flex-row items-center justify-between w-full gap-2;
+        @apply flex flex-row items-center justify-between w-full gap-2 mt-4;
         & > .cancel-btn-container{
             @apply flex-1;
         }
     }
 }
 .content{
-    @apply flex flex-col items-start justify-start w-full print:gap-5 print:mt-5;
-    & > .top-content{
-        @apply flex flex-row items-center justify-between w-full gap-2 px-4;
-        & > p{
-            @apply flex flex-row items-center text-xs;
+    @apply flex flex-col items-start justify-start gap-1 w-full border border-gray-300 rounded-lg p-2 print:p-0 print:border-none;
+    & > .title{
+        @apply flex flex-row items-center justify-center w-full text-base;
+    }
+    & > table{
+        @apply w-full border-collapse;
+        & > thead{
+            & > tr{
+                & > th{
+                    @apply text-center border text-xs font-semibold p-1 print:p-0 print:px-1;
+                }
+            }
         }
-        & > div{
-            @apply flex flex-row items-center gap-2;
+        & > tbody{
+            & > tr{
+                & > td{
+                    @apply border text-xs p-1 print:p-0 print:px-1;
+                }
+            }
         }
     }
-    & > .table-content{
-        @apply flex flex-col justify-center items-start w-full gap-1 p-4 rounded-lg -mt-3;
-        & > h3{
-            @apply text-xs font-bold bg-gray-100 w-full p-2 rounded-lg text-start;
-        }
-        & > .total{
-            @apply flex flex-row items-center justify-between w-full gap-2 p-2 rounded-lg border;
+    & > .in-lieu-table{
+        @apply w-2/3;
+    }
+    & > .signatory{
+        @apply flex flex-row items-center justify-between w-full my-6;
+        & > .submitted-by,
+        & > .noted-by{
+            @apply flex flex-col items-start justify-center;
+
+            & .signatory-name{
+                @apply mt-4 uppercase font-medium;
+            }
             & > p{
-                @apply flex flex-row w-full items-center justify-end text-xs font-semibold gap-2;
+                @apply text-xs font-normal;
             }
-        }
-        & > table{
-            @apply w-full border-2 border-black;
-            & > thead{
-                @apply bg-blue-100;
-                & > tr{
-                    & > th{
-                        @apply text-xs font-bold px-3 py-1 text-start border-2 border-black;
-                    }
-                }
-            }
-            & > tbody{
-                & > tr{
-                    & > td{
-                        @apply text-xs font-medium px-3 py-1 text-start border-2 border-black;
+            & > div{
+                @apply flex flex-row items-start justify-between gap-1 w-full;
+                & > div{
+                    & > p{
+                        @apply text-xs text-left font-normal;
                     }
                 }
             }
         }
-        &.original{
-            & > h3{
-                @apply bg-red-100;
-            }
-            & > table > thead > tr > th{
-                @apply bg-red-100;
-            }
-            & > .total{
-                @apply border-red-500 bg-red-100 text-red-500;
-            }
+        & > .submitted-by{
+            @apply w-4/12;
         }
-        &.substitute{
-            & > h3{
-                @apply bg-green-100;
-            }
-            & > table > thead > tr > th{
-                @apply bg-green-100;
-            }
-            & > .total{
-                @apply border-green-500 bg-green-100 text-green-500;
-            }
-        }
-    }
-    & > .financial-summary{
-        @apply flex flex-col items-start justify-start w-full gap-1 mb-2 px-4;
-        & > h3{
-            @apply text-sm font-bold bg-gray-100 w-full p-2 rounded-lg text-start;
-        }
-        & > p{
-            @apply flex flex-row items-center justify-between w-full text-xs font-semibold gap-2 border border-gray-300 rounded-lg p-2;
-        }
-        & :nth-child(2){
-            @apply border-red-500 bg-red-100 text-red-500;
-        }
-        & :nth-child(3){
-            @apply border-green-500 bg-green-100 text-green-500;
+        & > .noted-by{
+            @apply w-8/12;
         }
     }
 }

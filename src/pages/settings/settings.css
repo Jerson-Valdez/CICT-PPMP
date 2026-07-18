@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 .page-container.settings{
-    & > .profile-container, & > .security-container{
-        @apply flex flex-col w-full rounded-xl shadow-xl p-12 gap-2 max-md:p-5;
+    & > .profile-container, & > .security-container, & > .content-management-container{
+        @apply flex flex-col w-full rounded-xl shadow-xl p-8 gap-2 max-md:p-5;
 
-        & > .profile-title, & > .security-title{
+        & > .profile-title, & > .security-title, & > .content-management-title{
             @apply flex flex-row mb-2 gap-2 w-full;
             & > .title{
                 & h2{
@@ -16,7 +16,13 @@
                 }
             }
         }
-        & > .input-row{
+        & > .pr-asignatory, & > .approved-asignatory, & > .revised-asignatory{
+            @apply flex flex-col px-5 items-start justify-start gap-2 w-full mb-8;
+            & > h3{
+                @apply text-sm font-black w-full;
+            }
+        }
+        & .input-row{
             @apply flex flex-row gap-5 w-full max-md:flex-col;
         }
     }

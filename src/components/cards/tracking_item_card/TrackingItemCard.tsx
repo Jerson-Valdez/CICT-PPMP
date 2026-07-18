@@ -89,7 +89,6 @@ export default function TrackingItemCard({itemId, itemName, unitMeasurement, pri
                             priceCatalog={priceCatalog}
                             specifications={pr.specifications}
                             status={pr.status}
-                            requestedBy={pr.requestedBy ? pr.requestedBy : 'N/A'}
                             dateRequested={pr.dateRequested}
                             dateFulfilled={pr.dateFulfilled? pr.dateFulfilled : null}
                             handlePrHistoryStatusChange = {handlePrHistoryStatusChange}

@@ -33,6 +33,10 @@ function PrivateLayout() {
     const [userFullName, setUserFullName] = useState<string>('');
     const [userEmailAddress, setUserEmailAddress] = useState<string>('');
     const [userRole, setUserRole] = useState<string>('');
+    const [deanName, setDeanName] = useState<string>('');
+    const [prAsignatories, setPrAsignatories] = useState<{ [key: string]: string }>({});
+    const [approvedAsignatories, setApprovedAsignatories] = useState<{ [key: string]: string }>({});
+    const [revisedAsignatories, setRevisedAsignatories] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -45,19 +49,48 @@ function PrivateLayout() {
             }
 
             try {
-                const [fiscalResponse, headerResponse] = await Promise.all([
-                    fetch("https://test-ppmp.onrender.com/api/fiscal_years", {
-                        method: "POST",
-                        headers: { Authorization: `Bearer ${accessToken}` }
-                    }),
-                    fetch("https://test-ppmp.onrender.com/api/user/header_info", {
+                const formDataPr = new FormData();
+                const formDataApproved = new FormData();
+                const formDataRevised = new FormData();
+
+                formDataPr.append('documentType', "PURCHASE REQUEST");
+                formDataApproved.append('documentType', "APPROVED PPMP");
+                formDataRevised.append('documentType', "REVISED PPMP");
+
+                const [fiscalResponse, headerResponse, deanNameResponse, prAsignatoriesResponse, approvedAsignatoriesResponse, revisedAsignatoriesResponse] = await Promise.all([
+                    fetch("https://test-ppmp.onrender.com/api/fiscal_years/", {
                         method: "GET",
                         headers: { Authorization: `Bearer ${accessToken}` }
+                    }),
+                    fetch("https://test-ppmp.onrender.com/api/user/header_info/", {
+                        method: "GET",
+                        headers: { Authorization: `Bearer ${accessToken}` }
+                    }),
+                    fetch("https://test-ppmp.onrender.com/api/user/admin_name/", {
+                        method: "GET",
+                        headers: { Authorization: `Bearer ${accessToken}` }
+                    }),
+                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
+                        method: "POST",
+                        body: formDataPr,
+                        headers: { Authorization: `Bearer ${accessToken}` }
+                    }),
+                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
+                        method: "POST",
+                        body: formDataApproved,
+                        headers: { Authorization: `Bearer ${accessToken}` }
+                    }),
+                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
+                        method: "POST",
+                        body: formDataRevised,
+                        headers: { Authorization: `Bearer ${accessToken}` }
                     })
+
                 ]);
 
                 if (!fiscalResponse.ok) {
                     toast.error("Failed to retrieve fiscal years.");
+                    return;
                 } else {
                     const fiscalResult = await fiscalResponse.json();
                     console.log("Fiscal years retrieved: ", fiscalResult);
@@ -70,7 +103,6 @@ function PrivateLayout() {
 
                 if (!headerResponse.ok) {
                     toast.error("Failed to retrieve header info.");
-                    navigate('/login');
                     return; 
                 } else {
                     const headerResult = await headerResponse.json();
@@ -78,6 +110,42 @@ function PrivateLayout() {
                     setUserFullName(headerResult.UserFullName);
                     setUserEmailAddress(headerResult.UserEmailAddress);
                     setUserRole(headerResult.UserRole);
+                }
+
+                if (!deanNameResponse.ok) {
+                    toast.error("Failed to retrieve dean name.");
+                    return;
+                } else {
+                    const deanNameResult = await deanNameResponse.json();
+                    console.log("Dean name retrieved: ", deanNameResult);
+                    setDeanName(deanNameResult.fullname);
+                }
+
+                if (!prAsignatoriesResponse.ok) {
+                    toast.error("Failed to retrieve asignatories.");
+                    return;
+                } else {
+                    const asignatoriesResult = await prAsignatoriesResponse.json();
+                    console.log("Asignatories retrieved: ", asignatoriesResult.signatories[0]);
+                    setPrAsignatories(asignatoriesResult.signatories);
+                }
+
+                if (!approvedAsignatoriesResponse.ok) {
+                    toast.error("Failed to retrieve approved asignatories.");
+                    return;
+                }else {
+                    const approvedAsignatoriesResult = await approvedAsignatoriesResponse.json();
+                    console.log("Approved Asignatories retrieved: ", approvedAsignatoriesResult.signatories);
+                    setApprovedAsignatories(approvedAsignatoriesResult.signatories);
+                }
+
+                if (!revisedAsignatoriesResponse.ok) {
+                    toast.error("Failed to retrieve revised asignatories.");
+                    return;
+                }else {
+                    const revisedAsignatoriesResult = await revisedAsignatoriesResponse.json();
+                    console.log("Revised Asignatories retrieved: ", revisedAsignatoriesResult.signatories);
+                    setRevisedAsignatories(revisedAsignatoriesResult.signatories);
                 }
 
             } catch (error) {
@@ -117,7 +185,7 @@ function PrivateLayout() {
                         <FourSquare color="var(--primary)" size="large" text="Loading page..." />
                     </div>
                 }>
-                    <Outlet context={{ userRole, selectedFiscalYear, userFullName }} /> 
+                    <Outlet context={{ userRole, selectedFiscalYear, userFullName, userEmailAddress, deanName, prAsignatories, approvedAsignatories, revisedAsignatories }} /> 
                 </Suspense>
             </main>
         </>

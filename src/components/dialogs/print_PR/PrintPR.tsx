@@ -2,6 +2,7 @@ import "./print-pr.css";
 import { IconPrinter, IconX } from '@tabler/icons-react';
 import { useEffect, useRef } from "react";
 import { useReactToPrint } from "react-to-print"; 
+import { useOutletContext } from "react-router";
 
 interface PrintPRProps {
     prId?: number;
@@ -11,17 +12,18 @@ interface PrintPRProps {
     quantity: number;
     unitPrice: number;
     requestedDate: string;
-    requestedBy?: string;
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default function PrintPR({ prId, itemName, itemDescription, unitMeasurement, quantity, unitPrice, requestedDate, requestedBy, isOpen, onClose }: PrintPRProps) {
+export default function PrintPR({ prId, itemName, itemDescription, unitMeasurement, quantity, unitPrice, requestedDate, isOpen, onClose }: PrintPRProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const printRef = useRef<HTMLDivElement>(null);
     const printDate = new Date().toLocaleDateString();
     const stockPropertyNoCounter = 1;
     const totalPrice = quantity * unitPrice;
+    
+    const { selectedFiscalYear, deanName, prAsignatories } = useOutletContext<{ selectedFiscalYear: string, deanName: string, prAsignatories: any }>();
 
     useEffect(() => {
         const dialog = dialogRef.current;
@@ -145,17 +147,17 @@ export default function PrintPR({ prId, itemName, itemDescription, unitMeasureme
                         </tr>
                         <tr>
                             <td className="sign" colSpan={2}><strong>Printed Name:</strong></td>
-                            <td className="sign-label" colSpan={2}><strong>{requestedBy}</strong></td>
-                            <td className="sign-label" colSpan={2}><strong>DR. TEODY C. SAN ANDRES</strong></td>
+                            <td className="sign-label uppercase" colSpan={2}><strong>{deanName}</strong></td>
+                            <td className="sign-label uppercase" colSpan={2}><strong>{prAsignatories.map((signatory: any) => signatory.fullName).join(", ")}</strong></td>
                         </tr>
                         <tr><td className="sign" colSpan={2}><strong>Designation:</strong></td>
-                            <td className="sign-label" colSpan={2}><p className="text-xs italic font-light">, CICT</p></td>
-                            <td className="sign-label" colSpan={2}><p className="text-xs italic font-light">University President</p></td>
+                            <td className="sign-label" colSpan={2}><p className="text-xs italic font-light">Dean, CICT</p></td>
+                            <td className="sign-label" colSpan={2}><p className="text-xs italic font-light">{prAsignatories.map((signatory: any) => signatory.position).join(", ")}</p></td>
                         </tr>
                     </tbody>
                 </table>
                 <p>To be accomplished by the Procurement Office:</p>
-                <p>Included in the: 2025 Revised PPMP</p> 
+                <p>Included in the: {selectedFiscalYear} Revised PPMP</p> 
             </div>
             
             <div className="action-btns">

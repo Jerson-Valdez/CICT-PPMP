@@ -202,7 +202,6 @@ export default function CreatePR({itemId, itemName, unitMeasurement, availableQu
             <PrintPR
                 itemName={itemName}
                 unitMeasurement={unitMeasurement}
-                requestedBy={userFullName}
                 itemDescription={techSpecs}
                 quantity={requestQuantity ?? 0}
                 unitPrice={priceCatalog}
