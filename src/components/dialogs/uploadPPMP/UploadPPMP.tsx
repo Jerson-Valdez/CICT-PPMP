@@ -5,6 +5,7 @@ import InfoNote from "../../notes/info_note/InfoNote";
 import { toast } from "../../toast/ToastService";
 import { showCircleLoadingDialog } from "../circle_loading_dialog/CircleLoadingDialogService";
 import { notify, confirm} from "../../dialogs/global_dialog/DialogService";
+import { getAccessToken } from "../../../../supadb";
 
 interface UploadPPMPProps {
     fiscalYears: string[];
@@ -131,7 +132,10 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
         try {
             const response = await fetch("https://test-ppmp.onrender.com/api/preview/", {
                 method: "POST",
-                body: formData
+                body: formData,
+                headers: {
+                    "Authorization": `Bearer ${await getAccessToken() || ""}`
+                }
             });
             const responseData = await response.json();
             if (!response.ok) {
@@ -203,6 +207,9 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
             toast.info("Importing data. This may take a few moments...");
             const response = await fetch("https://test-ppmp.onrender.com/api/import/", {
                 method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${await getAccessToken() || ""}`
+                },
                 body: formData
             });
 
