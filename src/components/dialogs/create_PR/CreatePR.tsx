@@ -5,7 +5,6 @@ import PrintPR from "../print_PR/PrintPR";
 import { getAccessToken, getUserID } from "../../../../supadb"
 import { confirm } from "../../dialogs/global_dialog/DialogService";
 import { toast } from "../../toast/ToastService";
-import { useOutletContext } from "react-router";
 import { showCircleLoadingDialog } from "../circle_loading_dialog/CircleLoadingDialogService";
 
 interface CreatePRProps {
@@ -27,7 +26,6 @@ export default function CreatePR({itemId, itemName, unitMeasurement, availableQu
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
     const totalPrice = priceCatalog * (requestQuantity || 0);
-    const { userFullName } = useOutletContext<{ userFullName: string }>();
 
     useEffect(() => {
         const dialog = dialogRef.current;

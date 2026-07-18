@@ -318,7 +318,6 @@ export default function InLieuReallocation() {
                 )}
                 <ViewInLieu 
                     requestDate={new Date().toLocaleString('en-PH')}
-                    requestedBy="John Doe"
                     originalItems={selectedLieuItems.map(item => ({
                         itemId: item.itemId,
                         quantity: item.reduceQuantity,
@@ -335,11 +334,6 @@ export default function InLieuReallocation() {
                         unitMeasurement: item.measurementUnit,
                         priceCatalog: item.unitPrice
                     }))}
-                    budgetImpact={{
-                        originalItemsTotal: selectedItemsValue,
-                        proposedItemsTotal: requiredBudget,
-                        difference: remainingBudget
-                    }}
                     status="Pending"
                     isOpen={isPrintPROpen}
                     onClose={() => setPrintPROpen(false)}

@@ -143,10 +143,8 @@ export default function InLieuApprovalTable({ data }: { data: any[] }) {
                                             key={item.inLieuId || index}
                                             inLieuId={item.inLieuId}
                                             requestDate={item.requestDate}
-                                            requestedBy={item.requestedBy}
                                             originalItems={combinedOriginalItems}
                                             proposedItems={item.inLieuAdditionItems}
-                                            budgetImpact={item.budgetImpact}
                                             status={item.status}
                                             isOpen={openDialogIndex === index}
                                             onClose={() => setOpenDialogIndex(null)}

@@ -14,12 +14,6 @@ interface Item {
     plannedQuantity?: number;
 }
 
-interface BudgetImpact {
-    originalItemsTotal: number;
-    proposedItemsTotal: number;
-    difference: number;
-}
-
 interface ViewInLieuProps {
     inLieuId?: number;
     requestDate?: string;
