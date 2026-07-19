@@ -8,6 +8,11 @@ import WarningNote from "../../components/notes/warning_note/WarningNote";
 import ViewInLieu from "../../components/dialogs/view_in_lieu/ViewInLieu";
 import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWrapper";
 import InLieuReallocationSkeleton from "../../components/skeleton/skeleton_pages/InLieuReallocationSkeleton";
+import { confirm } from "../../components/dialogs/global_dialog/DialogService";
+import { useOutletContext } from "react-router";
+import { getAccessToken } from "../../../supadb";
+import { toast } from "../../components/toast/ToastService";
+import { showCircleLoadingDialog } from "../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService";
 
 interface NewItem {
     itemId: number;
@@ -15,6 +20,7 @@ interface NewItem {
     measurementUnit: string;
     quantity: number;
     unitPrice: number;
+    added: boolean;
 }
 interface SelectedLieuItem {
     itemId: number;
@@ -37,29 +43,52 @@ interface ppmpReallocationData {
 export default function InLieuReallocation() {
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-    const [isPrintPROpen, setPrintPROpen] = useState(false);
+    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: string }>();
+    const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
+    const [isPrintPROpen, setPrintPROpen] = useState(false);
     const [openFunds, setOpenFunds] = useState<number>(0);
 
     const [ppmpReallocationData, setPpmpReallocationData] = useState<ppmpReallocationData[]>([]);
 
-    useEffect(() => {
-        const loadPpmpReallocationData = async () => {
-            try {
-                setPpmpReallocationData([
-                    { itemId: 1, itemName: "Solid State Drive (1TB NVMe Gen4)", unitMeasurement: "piece", plannedQuantity: 10, availableQuantity: 9, pendingQuantity: 1, fulfilledQuantity: 0, priceCatalog: 4500.00 },
-                    { itemId: 2, itemName: "LED Monitor (24-inch IPS, 144Hz)", unitMeasurement: "unit", plannedQuantity: 5, availableQuantity: 5, pendingQuantity: 0, fulfilledQuantity: 0, priceCatalog: 8500.00 },
-                    { itemId: 3, itemName: "Mechanical Keyboard (Hot-swappable)", unitMeasurement: "piece", plannedQuantity: 15, availableQuantity: 5, pendingQuantity: 10, fulfilledQuantity: 0, priceCatalog: 2200.00 },
-                    { itemId: 4, itemName: "Mechanical Keyboard (Hot-swappable)", unitMeasurement: "piece", plannedQuantity: 15, availableQuantity: 0, pendingQuantity: 15, fulfilledQuantity: 0, priceCatalog: 2200.00 }])
-                setOpenFunds(10000);
-                await new Promise(resolve => setTimeout(resolve, 500));
-            } finally {
-                setIsInitialLoading(false);
-            }
-        };
-
-        loadPpmpReallocationData();
-    }, []);
+   useEffect(() => {
+           const LoadPpmpReallocationData = async () => {
+               handlePpmpReallocationFiscalYearChange(selectedFiscalYear);
+               try {
+                   const formData = new FormData();
+                   formData.append('year', String(selectedFiscalYear));
+   
+                   const [reallocationResponse] = await Promise.all([
+   
+                       fetch('https://test-ppmp.onrender.com/api/in_lieu_data/', {
+                           method: "POST",
+                           body: formData,
+                           headers: {
+                               "Authorization": `Bearer ${await getAccessToken() || ""}`
+                           }
+                       })
+                   ]);
+   
+                   if (!reallocationResponse.ok) {
+                       toast.error("Failed to fetch PPMP reallocation data. Please try again later.");
+                   } else {
+                       const reallocationResult = await reallocationResponse.json();
+                       
+                       setPpmpReallocationData(reallocationResult.ppmpReallocationData || []);
+                       setOpenFunds(reallocationResult.openFunds || 0);
+                       setFiscalYearHolder(selectedFiscalYear);
+                   }
+               } catch (error) {
+                   console.error("Error fetching PPMP reallocation data:", error);
+                   toast.error("Network error. Please try again later.");
+               }
+               finally {
+                   setIsInitialLoading(false);
+               }
+           };
+           LoadPpmpReallocationData();
+                   
+       }, [selectedFiscalYear]);
 
     const [inLieuSearchTerm, setInLieuSearchTerm] = useState<string>("");
     const [newItemsSearchTerm, setNewItemsSearchTerm] = useState<string>("");
@@ -79,27 +108,24 @@ export default function InLieuReallocation() {
 
     const handleSelectNewItem = (catalogItem: any) => {
         setNewItemsArray(prev => [...prev, {
-            itemId: Date.now(),
+            itemId: catalogItem.itemId,
             name: catalogItem.itemName,
             measurementUnit: catalogItem.unitMeasurement,
             quantity: 1,
-            unitPrice: catalogItem.priceCatalog
+            unitPrice: catalogItem.priceCatalog,
+            added: false
         }]);
         setNewItemsSearchTerm("");
     };
 
     const [newItemsArray, setNewItemsArray] = useState<NewItem[]>([
-        { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0 }
+        { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }
     ]);
 
     const requiredBudget = newItemsArray.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
-
     const [selectedLieuItems, setSelectedLieuItems] = useState<SelectedLieuItem[]>([]);
-
     const selectedItemsValue = selectedLieuItems.reduce((sum, item) => sum + (item.reduceQuantity * item.priceCatalog), 0);
-
     const remainingBudget = selectedItemsValue - requiredBudget;
-
     const isNewItemsValid = newItemsArray.every(item => 
         item.name.trim() !== "" && 
         item.measurementUnit.trim() !== "" && 
@@ -114,7 +140,7 @@ export default function InLieuReallocation() {
         item.priceCatalog > 0
     );
 
-    const handleAddItem = () => setNewItemsArray([...newItemsArray, { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0 }]);
+    const handleAddItem = () => setNewItemsArray([...newItemsArray, { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }]);
     const handleDeleteItem = (itemId: number) => setNewItemsArray(newItemsArray.filter(item => item.itemId !== itemId));
     const handleUpdateItem = (itemId: number, field: keyof NewItem, value: string | number) => {
         setNewItemsArray(prev => prev.map(item => item.itemId === itemId ? { ...item, [field]: value } : item));
@@ -149,13 +175,52 @@ export default function InLieuReallocation() {
             status: "Pending Approval",
             requiredBudget: requiredBudget,
             lieuFundedValue: selectedItemsValue,
-            openFundsUtilized: openFundsUsed, // iSave to sa new column sa IN_LIEU table openFundsUtilized
+            openFundsUtilized: openFundsUsed,
             itemsToProcure: newItemsArray,
-            itemsToReduce: actualItemsToReduce // eto naman ungg original items na galing sa PPMP na ire-reduce natin
+            itemsToReduce: actualItemsToReduce
         };
         
-        console.log("Full JSON Payload ready for database:", payload);
+        confirm("In Lieu Reallocation", "Are you sure you want to proceed this reallocation? \n Note: This action needs an approval of the relevant authorities before it reflects to the system.", "info", "Yes Proceed")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('payload', JSON.stringify(payload));
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/create_in_lieu/", {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            throw new Error("Failed to create in-lieu request.");
+                        }else {
+                            toast.success("In Lieu request created successfully!");
+                            setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }]);
+                            setSelectedLieuItems([]);
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while creating in-lieu request.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
     };
+
+    function handlePpmpReallocationFiscalYearChange(newFiscalYear: string) {
+        if (newFiscalYear !== fiscalYearHolder) {
+            setIsInitialLoading(true);
+            setFiscalYearHolder(newFiscalYear);
+        }
+    }
 
     return (
         <main className="page-container reallocation">
@@ -334,7 +399,7 @@ export default function InLieuReallocation() {
                         unitMeasurement: item.measurementUnit,
                         priceCatalog: item.unitPrice
                     }))}
-                    status="Pending"
+                    status="To be Submitted"
                     isOpen={isPrintPROpen}
                     onClose={() => setPrintPROpen(false)}
                 />

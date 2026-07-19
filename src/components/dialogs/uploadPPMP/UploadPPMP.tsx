@@ -16,9 +16,15 @@ interface UploadPPMPProps {
 export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const file2InputRef = useRef<HTMLInputElement>(null);
+    const [onDualXslToggle, setOnDualXslToggle] = useState(false);
+
     const [fileUploaded, setFileUploaded] = useState<File | null>(null);
+    const [file2Uploaded, setFile2Uploaded] = useState<File | null>(null);
+
     const [totalABC, setTotalABC] = useState<number | null>(null);
     const [previewData, setPreviewData] = useState<Array<Record<string, string | number>>>([]);
+    const [previewData2, setPreviewData2] = useState<Array<Record<string, string | number>>>([]);
     const [isPpmpExist, setIsPpmpExist] = useState(false);
 
     const rowStartOptions = Array.from({ length: 100 }, (_, i) => i + 1);
@@ -73,19 +79,40 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
         onClose();
     };
 
-    function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
-        const file = event.target.files?.[0];
-        if (file) {
-            console.log("Uploaded file:", file);
-            setFileUploaded(file);
+    function handleDualXslToggle() {
+        const newState = !onDualXslToggle;
+        setOnDualXslToggle(newState);
+        
+        if (!newState) {
+            setFile2Uploaded(null);
+            setPreviewData2([]);
+        }
+
+        toast.info(`Dual xsls is now ${!newState ? "disabled" : "enabled"}.`);
+        let htmlElement = document.getElementById("dual-xsl-toggle");
+        if (htmlElement) {
+            if (newState) {
+                htmlElement.classList.add("active");
+            } else {
+                htmlElement.classList.remove("active");
+            }
         }
     }
-    function handleFileDrop(event: React.DragEvent<HTMLDivElement>) {
+
+    function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>, fileIndex: 1 | 2) {
+        const file = event.target.files?.[0];
+        if (file) {
+            if (fileIndex === 1) setFileUploaded(file);
+            else setFile2Uploaded(file);
+        }
+    }
+
+    function handleFileDrop(event: React.DragEvent<HTMLDivElement>, fileIndex: 1 | 2) {
         event.preventDefault();
         const file = event.dataTransfer.files?.[0];
         if (file) {
-            console.log("Dropped file:", file);
-            setFileUploaded(file);
+            if (fileIndex === 1) setFileUploaded(file);
+            else setFile2Uploaded(file);
         }
     }
 
@@ -114,12 +141,20 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
     }
 
     async function PPMPPreview() {
-        if (!fileUploaded || selectedRowStart === null || selectedItemName === null || selectedUnit === null || selectedTotalQuantity === null || selectedPricePerUnit === null) {
+        if (!fileUploaded || (onDualXslToggle && !file2Uploaded) || selectedRowStart === null || selectedItemName === null || selectedUnit === null || selectedTotalQuantity === null || selectedPricePerUnit === null) {
             return;
         }
 
         const formData = new FormData();
         formData.append("file", fileUploaded);
+        
+        if (onDualXslToggle && file2Uploaded) {
+            formData.append("file2", file2Uploaded);
+            formData.append("isDualMode", "true");
+        } else {
+            formData.append("isDualMode", "false");
+        }
+
         formData.append("totalABC", String(totalABC));
         formData.append("startRow", String(selectedRowStart));
         formData.append("itemName", String(selectedItemName));
@@ -138,6 +173,7 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                 }
             });
             const responseData = await response.json();
+            
             if (!response.ok) {
                 if (responseData.errors) {
                     notify(
@@ -145,19 +181,20 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                         responseData.errors.message + " Please recheck your table mapping.",
                         "error"
                     );
-
                     console.table(responseData.errors.rows);
                 } else if (responseData.error) {
                     notify("Error", responseData.error, "error");
                 } else {
                     toast.error("Unknown server error.");
                 }
-
                 return;
             }
 
-            const rows = responseData.data ?? [];
-            setPreviewData(rows);
+            setPreviewData(responseData.data ?? []);
+            if (onDualXslToggle) {
+                setPreviewData2(responseData.data2 ?? []);
+            }
+            
             setMapColumnsStep("done");
             setPreviewImportStep("current");
         } catch (error) {
@@ -189,12 +226,19 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
     }
 
     const proceedImport = async () => {
-        if (!fileUploaded || selectedRowStart === null || selectedItemName === null || selectedUnit === null || selectedTotalQuantity === null || selectedPricePerUnit === null) {
+        if (!fileUploaded || (onDualXslToggle && !file2Uploaded) || selectedRowStart === null || selectedItemName === null || selectedUnit === null || selectedTotalQuantity === null || selectedPricePerUnit === null) {
             return;
         }
 
         const formData = new FormData();
         formData.append("file", fileUploaded);
+        if (onDualXslToggle && file2Uploaded) {
+            formData.append("file2", file2Uploaded);
+            formData.append("isDualMode", "true");
+        } else {
+            formData.append("isDualMode", "false");
+        }
+
         formData.append("totalABC", String(totalABC));
         formData.append("startRow", String(selectedRowStart));
         formData.append("itemName", String(selectedItemName));
@@ -202,6 +246,7 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
         formData.append("quantity", String(selectedTotalQuantity));
         formData.append("unitPrice", String(selectedPricePerUnit));
         formData.append("year", String(year));
+        
         const closeLoading = showCircleLoadingDialog();
         try {
             toast.info("Importing data. This may take a few moments...");
@@ -223,6 +268,7 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                 setMapColumnsStep("upcoming");
                 setPreviewImportStep("upcoming");
                 setFileUploaded(null);
+                setFile2Uploaded(null);
                 setTotalABC(null);
                 setSelectedRowStart(null);
                 setSelectedItemName(null);
@@ -239,6 +285,33 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
             closeLoading();
         }
     }
+
+    const renderPreviewTable = (data: Array<Record<string, string | number>>) => (
+        <div className="preview-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Unit</th>
+                        <th>Total Quantity</th>
+                        <th>Price/Unit (PHP)</th>
+                        <th>Total Amount (PHP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data && data.map((row, index) => (
+                        <tr key={index}>
+                            <td>{row.Description ?? ""}</td>
+                            <td>{row.Unit ?? ""}</td>
+                            <td>{row.Quantity ?? ""}</td>
+                            <td>{row.CatalogPrice ?? ""}</td>
+                            <td>{row.TotalAmount ?? ""}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
 
     return (
         <dialog ref={dialogRef} onCancel={handleCancel} className="upload-ppmp">
@@ -280,14 +353,21 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                     )}
                     <p>Preview & Import</p>
                 </div>
+                <div className="toggle-button-container">
+                    <button className="toggle-button" id="dual-xsl-toggle" disabled={uploadFileStep !== "current"} onClick={() => handleDualXslToggle()}>
+                        <div className="circle"></div>
+                        <p>Dual xsls</p>
+                    </button>
+                </div>
             </div>
             {uploadFileStep === "current" && (
-                <div className="file-upload-container" onClick={() => fileInputRef.current?.click()} onDrop={handleFileDrop} onDragOver={(e) => e.preventDefault()}>
+                <>
+                <div className="file-upload-container" onClick={() => fileInputRef.current?.click()} onDrop={(e) => handleFileDrop(e, 1)} onDragOver={(e) => e.preventDefault()}>
                     <input
                         type="file"
                         accept=".xlsx, .xls"
                         ref={fileInputRef}
-                        onChange={handleFileUpload}
+                        onChange={(e) => handleFileUpload(e, 1)}
                         style={{ display: 'none' }}
                     />
                     {fileUploaded ? (
@@ -303,7 +383,7 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                         <div className="icon green">
                             <IconCloudUpload size={24} />
                         </div>
-                        <h4>Drop your spreadsheet here</h4>
+                        <h4>{onDualXslToggle ? "Upload PPMP for Office Items here" : "Drop your spreadsheet here"}</h4>
                         <p>Supported formats: .xlsx, .xls</p>
                         <div className="status active">
                             <p>All imported rows will be tagged to FY {year}</p>
@@ -311,12 +391,41 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                     </>
                     )}
                 </div>
+                {onDualXslToggle && (
+                    <div className="file-upload-container mt-2" onClick={() => file2InputRef.current?.click()} onDrop={(e) => handleFileDrop(e, 2)} onDragOver={(e) => e.preventDefault()}>
+                        <input
+                            type="file"
+                            accept=".xlsx, .xls"
+                            ref={file2InputRef}
+                            onChange={(e) => handleFileUpload(e, 2)}
+                            style={{ display: 'none' }}
+                        />
+                        {file2Uploaded ? (
+                            <>
+                                <div className="icon green">
+                                    <IconCloudUpload size={24} />
+                                </div>
+                                <p>You uploaded:</p>
+                                <h3>{file2Uploaded.name}</h3>
+                            </>
+                        ) : (
+                        <>
+                            <div className="icon green">
+                                <IconCloudUpload size={24} />
+                            </div>
+                            <h4>Upload PPMP for Laboratory here</h4>
+                            <p>Supported formats: .xlsx, .xls</p>
+                        </>
+                        )}
+                    </div>
+                )}
+                </>
             )}
             {mapColumnsStep === "current" && (
                 <div className="map-columns-container">
                     <InfoNote message="Please map the row and columns from your spreadsheet to the corresponding fields in the system."/>
                     <br />
-                    <p>File: <strong>{fileUploaded?.name}</strong></p>
+                    <p>File: <strong>{fileUploaded?.name}</strong> {onDualXslToggle && <span> & <strong>{file2Uploaded?.name}</strong></span>}</p>
                     <div className="selection-container">
                         <div className="totalABC">
                             <div className="title">
@@ -409,31 +518,26 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                 <div className="preview-import-container">
                     <InfoNote message="Please review the first 5 rows of data before importing it into the system."/>
                     <br />
-                    <p>File: <strong>{fileUploaded?.name}</strong></p>
-                    <div className="preview-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Item Name</th>
-                                    <th>Unit</th>
-                                    <th>Total Quantity</th>
-                                    <th>Price/Unit (PHP)</th>
-                                    <th>Total Amount (PHP)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {previewData && previewData.map((row, index) => (
-                                    <tr key={index}>
-                                        <td>{row.Description ?? row.Description ?? ""}</td>
-                                        <td>{row.Unit ?? row.Unit}</td>
-                                        <td>{row.Quantity ?? row.Quantity ?? ""}</td>
-                                        <td>{row.CatalogPrice ?? row.CatalogPrice ?? ""}</td>
-                                        <td>{row.TotalAmount ?? row.TotalAmount ?? ""}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    
+                    {onDualXslToggle ? (
+                        <>
+                            <div className="preview-section mb-4">
+                                <p>Office Items: <strong>{fileUploaded?.name}</strong></p>
+                                {renderPreviewTable(previewData)}
+                            </div>
+                            <div className="preview-section">
+                                <p>Laboratory Items: <strong>{file2Uploaded?.name}</strong></p>
+                                {renderPreviewTable(previewData2)}
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="preview-section">
+                                <p>File: <strong>{file2Uploaded?.name}</strong></p>
+                                {renderPreviewTable(previewData2)}
+                            </div>
+                        </>
+                    )}
                 </div>
             )}
             <div className="action-btns">
@@ -449,7 +553,8 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                         Back
                     </button>
                 )}
-                {uploadFileStep === "current" && fileUploaded && (
+                
+                {uploadFileStep === "current" && (onDualXslToggle ? (fileUploaded && file2Uploaded) : fileUploaded) && (
                     <button className="btn-solid green" onClick={() => {
                         setUploadFileStep("done");
                         setMapColumnsStep("current");
@@ -458,6 +563,7 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                         <IconArrowNarrowRightDashed size={18} color="white"/>
                     </button>
                 )}
+                
                 {mapColumnsStep === "current" && selectedItemName !== null && selectedUnit !== null && selectedTotalQuantity !== null && selectedPricePerUnit !== null && selectedRowStart !== null && totalABC !== null && totalABC > 0 && (
                     <button className="btn-solid green" onClick={async () => {await PPMPPreview();}}>
                         Preview Data

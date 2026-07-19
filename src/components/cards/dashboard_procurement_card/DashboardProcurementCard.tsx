@@ -68,9 +68,9 @@ export default function DashboardProcurementCard({
                 <p>{description}</p>
                 <div className="date-value-container">
                     <span>Made by: <strong>{userFullName}</strong> • {new Date(date).toLocaleString('en-PH')}</span>
-                    {value !== undefined && (
+                    {value && (
                         <p className="value">
-                            PHP {value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            PHP {value?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </p>
                     )}
                 </div>

@@ -27,7 +27,7 @@ interface ViewInLieuProps {
 export default function ViewInLieu({inLieuId, requestDate, status, originalItems, proposedItems, isOpen, onClose }: ViewInLieuProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const printRef = useRef<HTMLDivElement>(null);
-    const { selectedFiscalYear, deanName, revisedAsignatories } = useOutletContext<{ selectedFiscalYear: string, deanName: string, revisedAsignatories: any }>();
+    const { selectedFiscalYear, userRole, deanName, revisedAsignatories } = useOutletContext<{ selectedFiscalYear: string, userRole: string, deanName: string, revisedAsignatories: any }>();
     const parsedRequestDate = requestDate ? new Date(String(requestDate)) : null;
     const requestMonthIndex = parsedRequestDate ? parsedRequestDate.getMonth() : null;
 
@@ -209,7 +209,7 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                 <button className="btn-solid blue" onClick={handlePrint}>
                     <IconPrinter size={18} /> Print
                 </button>
-                {status === "Pending" && (
+                {status === "Pending" && userRole === "Admin" && (
                     <>
                         <button className="btn-solid green">
                             <IconChecklist size={18} /> Approve

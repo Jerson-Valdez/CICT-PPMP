@@ -36,13 +36,13 @@ export default function Dashboard(){
     const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: string }>();
     const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
-    const [totalAnnualBudget, setTotalAnnualBudget] = useState(5000000);
-    const [committedFunds, setCommittedFunds] = useState(1250000);
-    const [availableLieuPoolFunds, setAvailableLieuPoolFunds] = useState(3050000);
-    const [openFunds, setOpenFunds] = useState(700000);
-    const [requestedFunds, setRequestedFunds] = useState(625000);
-    const [arrivedFunds, setArrivedFunds] = useState(625000);
-    const [pendingInLieuCount, setPendingInLieuCount] = useState(5);
+    const [totalAnnualBudget, setTotalAnnualBudget] = useState(0);
+    const [committedFunds, setCommittedFunds] = useState(0);
+    const [availableLieuPoolFunds, setAvailableLieuPoolFunds] = useState(0);
+    const [openFunds, setOpenFunds] = useState(0);
+    const [requestedFunds, setRequestedFunds] = useState(0);
+    const [arrivedFunds, setArrivedFunds] = useState(0);
+    const [pendingInLieuCount, setPendingInLieuCount] = useState(0);
     const [committedFundsPercentage, setCommittedFundsPercentage] = useState(0);
     const [openFundsPercentage, setOpenFundsPercentage] = useState(0);
     const [logs, setLogs] = useState<Log[]>([]);

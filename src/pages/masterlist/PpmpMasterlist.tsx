@@ -98,10 +98,13 @@ export default function PpmpMasterlist() {
     ];
 
     const exportLatestPPMP = async () => {
+        const formData = new FormData();
+        formData.append('year', String(selectedFiscalYear));
         try {
             toast.info("Exporting the latest PPMP. Please wait...");
-            const response = await fetch(`https://test-ppmp.onrender.com/api/export/?year=${selectedFiscalYear}`, {
-                method: "GET",
+            const response = await fetch("https://test-ppmp.onrender.com/api/export/", {
+                method: "POST",
+                body: formData,
                 headers: { Authorization: `Bearer ${await getAccessToken() || ""}` }
             });
             if (!response.ok) {

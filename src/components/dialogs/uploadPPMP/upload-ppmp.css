@@ -27,6 +27,32 @@
                 @apply text-[10px] font-semibold;
             }
         }
+        & > .toggle-button-container{
+            @apply flex-1 flex flex-row items-center justify-end;
+            & > .toggle-button{
+                @apply relative flex flex-row items-center justify-start bg-gray-200 p-2 px-2 rounded-full gap-1 transition-all duration-300 ease-in-out cursor-pointer;
+
+                & > .circle{
+                    @apply w-5 h-5 rounded-full bg-gray-500 absolute left-2 transition-all duration-300 ease-in-out;
+                }
+                & > p{
+                    @apply text-[10px] font-semibold text-gray-500 ml-6 transition-all duration-300 ease-in-out;
+                }
+
+                &.active{
+                    @apply bg-green-500;
+                    & > .circle{
+                        @apply left-14 bg-white;
+                    }
+                    & > p{
+                        @apply text-white ml-0 mr-6;
+                    }
+                }
+                &:disabled{
+                    @apply cursor-not-allowed opacity-50;
+                }
+            }
+        }
     }
     & > .file-upload-container{
         @apply flex flex-col items-center justify-center w-full p-10 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer gap-2 transform transition-all duration-300 ease-in-out;
@@ -83,25 +109,27 @@
     }
     & > .preview-import-container{
         @apply flex flex-col gap-2 mt-2;
-        & > .preview-table{
-            @apply overflow-x-auto rounded-lg border border-gray-300;
-            & > table{
-                @apply w-full border-collapse;
-                & > thead{
-                    @apply bg-green-50;
-                    & > tr{
-                        & > th{
-                            @apply text-xs font-semibold text-start px-2 py-2 border border-gray-300;
+        & > .preview-section{
+            & > .preview-table{
+                @apply overflow-x-auto rounded-lg border border-gray-300;
+                & > table{
+                    @apply w-full border-collapse;
+                    & > thead{
+                        @apply bg-green-50;
+                        & > tr{
+                            & > th{
+                                @apply text-xs font-semibold text-start px-2 py-2 border border-gray-300;
+                            }
                         }
                     }
-                }
-                & > tbody{
-                    & > tr{
-                        &:nth-child(even){
-                            @apply bg-gray-50;
-                        }
-                        & > td{
-                            @apply text-xs font-normal text-start px-2 py-2 border border-gray-300;
+                    & > tbody{
+                        & > tr{
+                            &:nth-child(even){
+                                @apply bg-gray-50;
+                            }
+                            & > td{
+                                @apply text-xs font-normal text-start px-2 py-2 border border-gray-300;
+                            }
                         }
                     }
                 }
