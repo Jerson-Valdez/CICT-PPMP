@@ -323,16 +323,16 @@ export default function Settings() {
                 <div className="pr-asignatory">
                     <h3>Purchase Request Asignatories</h3>
                     {localPrAsignatories.map((signatory: any, index: number) => (
-                        <div key={index} className="input-row">
+                        <div key={signatory.signatoryId} className="input-row">
                             <div className="field-group">
-                                <label htmlFor={`fullName-${index}-pr`}>Full Name</label>
-                                <input type="text" id={`fullName-${index}-pr`} value={signatory.fullName} onChange={(e) => handleAsignatoryChange("pr", index, 'fullName', e.target.value)}/>
-                                <p className="error-message" id={`fullnameError-${index}-pr`}></p>
+                                <label htmlFor={`fullName-${signatory.signatoryId}-pr`}>Full Name</label>
+                                <input type="text" id={`fullName-${signatory.signatoryId}-pr`} value={signatory.fullName} onChange={(e) => handleAsignatoryChange("pr", index, 'fullName', e.target.value)}/>
+                                <p className="error-message" id={`fullnameError-${signatory.signatoryId}-pr`}></p>
                             </div>
                             <div className="field-group">
-                                <label htmlFor={`position-${index}-pr`}>Position Title</label>
-                                <input type="text" id={`position-${index}-pr`} value={signatory.position} onChange={(e) => handleAsignatoryChange("pr", index, 'position', e.target.value)}/>
-                                <p className="error-message" id={`positionError-${index}-pr`}></p>
+                                <label htmlFor={`position-${signatory.signatoryId}-pr`}>Position Title</label>
+                                <input type="text" id={`position-${signatory.signatoryId}-pr`} value={signatory.position} onChange={(e) => handleAsignatoryChange("pr", index, 'position', e.target.value)}/>
+                                <p className="error-message" id={`positionError-${signatory.signatoryId}-pr`}></p>
                             </div>
                         </div>
                     ))}
@@ -343,16 +343,16 @@ export default function Settings() {
                 <div className="pr-asignatory">
                     <h3>Approved PPMP Asignatories</h3>
                     {localApprovedAsignatories.map((signatory: any, index: number) => (
-                        <div key={index} className="input-row">
+                        <div key={signatory.signatoryId} className="input-row">
                             <div className="field-group">
-                                <label htmlFor={`fullName-${index}-approved`}>Full Name</label>
-                                <input type="text" id={`fullName-${index}-approved`} value={signatory.fullName} onChange={(e) => handleAsignatoryChange("approved", index, 'fullName', e.target.value)} />
-                                <p className="error-message" id={`fullnameError-${index}-approved`}></p>
+                                <label htmlFor={`fullName-${signatory.signatoryId}-approved`}>Full Name</label>
+                                <input type="text" id={`fullName-${signatory.signatoryId}-approved`} value={signatory.fullName} onChange={(e) => handleAsignatoryChange("approved", index, 'fullName', e.target.value)} />
+                                <p className="error-message" id={`fullnameError-${signatory.signatoryId}-approved`}></p>
                             </div>
                             <div className="field-group">
-                                <label htmlFor={`position-${index}-approved`}>Position Title</label>
-                                <input type="text" id={`position-${index}-approved`} value={signatory.position} onChange={(e) => handleAsignatoryChange("approved", index, 'position', e.target.value)} />
-                                <p className="error-message" id={`positionError-${index}-approved`}></p>
+                                <label htmlFor={`position-${signatory.signatoryId}-approved`}>Position Title</label>
+                                <input type="text" id={`position-${signatory.signatoryId}-approved`} value={signatory.position} onChange={(e) => handleAsignatoryChange("approved", index, 'position', e.target.value)} />
+                                <p className="error-message" id={`positionError-${signatory.signatoryId}-approved`}></p>
                             </div>
                         </div>
                     ))}
@@ -363,16 +363,16 @@ export default function Settings() {
                 <div className="pr-asignatory">
                     <h3>Revised PPMP Asignatories</h3>
                     {localRevisedAsignatories.map((signatory: any, index: number) => (
-                        <div key={index} className="input-row">
+                        <div key={signatory.signatoryId} className="input-row">
                             <div className="field-group">
-                                <label htmlFor={`fullName-${index}-revised`}>Full Name</label>
-                                <input type="text" id={`fullName-${index}-revised`} value={signatory.fullName} onChange={(e) => handleAsignatoryChange("revised", index, 'fullName', e.target.value)} />
-                                <p className="error-message" id={`fullnameError-${index}-revised`}></p>
+                                <label htmlFor={`fullName-${signatory.signatoryId}-revised`}>Full Name</label>
+                                <input type="text" id={`fullName-${signatory.signatoryId}-revised`} value={signatory.fullName} onChange={(e) => handleAsignatoryChange("revised", index, 'fullName', e.target.value)} />
+                                <p className="error-message" id={`fullnameError-${signatory.signatoryId}-revised`}></p>
                             </div>
                             <div className="field-group">
-                                <label htmlFor={`position-${index}-revised`}>Position Title</label>
-                                <input type="text" id={`position-${index}-revised`} value={signatory.position} onChange={(e) => handleAsignatoryChange("revised", index, 'position', e.target.value)} />
-                                <p className="error-message" id={`positionError-${index}-revised`}></p>
+                                <label htmlFor={`position-${signatory.signatoryId}-revised`}>Position Title</label>
+                                <input type="text" id={`position-${signatory.signatoryId}-revised`} value={signatory.position} onChange={(e) => handleAsignatoryChange("revised", index, 'position', e.target.value)} />
+                                <p className="error-message" id={`positionError-${signatory.signatoryId}-revised`}></p>
                             </div>
                         </div>
                     ))}

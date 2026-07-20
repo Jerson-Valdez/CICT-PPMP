@@ -70,17 +70,17 @@ function PrivateLayout() {
                         method: "GET",
                         headers: { Authorization: `Bearer ${accessToken}` }
                     }),
-                    fetch("https://test-ppmp.onrender.com/api/user/signatories/", {
+                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
                         method: "POST",
                         body: formDataPr,
                         headers: { Authorization: `Bearer ${accessToken}` }
                     }),
-                    fetch("https://test-ppmp.onrender.com/api/user/signatories/", {
+                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
                         method: "POST",
                         body: formDataApproved,
                         headers: { Authorization: `Bearer ${accessToken}` }
                     }),
-                    fetch("https://test-ppmp.onrender.com/api/user/signatories/", {
+                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
                         method: "POST",
                         body: formDataRevised,
                         headers: { Authorization: `Bearer ${accessToken}` }
@@ -126,7 +126,7 @@ function PrivateLayout() {
                     return;
                 } else {
                     const asignatoriesResult = await prAsignatoriesResponse.json();
-                    console.log("Asignatories retrieved: ", asignatoriesResult.signatories[0]);
+                    console.log("Asignatories retrieved: ", asignatoriesResult.signatories);
                     setPrAsignatories(asignatoriesResult.signatories);
                 }
 
