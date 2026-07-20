@@ -70,17 +70,17 @@ function PrivateLayout() {
                         method: "GET",
                         headers: { Authorization: `Bearer ${accessToken}` }
                     }),
-                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
+                    fetch("https://test-ppmp.onrender.com/api/user/signatories/", {
                         method: "POST",
                         body: formDataPr,
                         headers: { Authorization: `Bearer ${accessToken}` }
                     }),
-                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
+                    fetch("https://test-ppmp.onrender.com/api/user/signatories/", {
                         method: "POST",
                         body: formDataApproved,
                         headers: { Authorization: `Bearer ${accessToken}` }
                     }),
-                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
+                    fetch("https://test-ppmp.onrender.com/api/user/signatories/", {
                         method: "POST",
                         body: formDataRevised,
                         headers: { Authorization: `Bearer ${accessToken}` }
@@ -185,7 +185,7 @@ function PrivateLayout() {
                         <FourSquare color="var(--primary)" size="large" text="Loading page..." />
                     </div>
                 }>
-                    <Outlet context={{ userRole, selectedFiscalYear, userFullName, userEmailAddress, deanName, prAsignatories, approvedAsignatories, revisedAsignatories }} /> 
+                    <Outlet context={{ userRole, selectedFiscalYear, userFullName, userEmailAddress, deanName, prAsignatories, approvedAsignatories, revisedAsignatories, setUserFullName }} /> 
                 </Suspense>
             </main>
         </>

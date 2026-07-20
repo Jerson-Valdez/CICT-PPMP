@@ -1,10 +1,18 @@
 import { useState } from "react";
 import "./settings.css";
 import { IconUser, IconEye, IconEyeOff, IconShield, IconCheck, IconX, IconStackBack } from '@tabler/icons-react';
+import { confirm } from "../../components/dialogs/global_dialog/DialogService";
+import { showCircleLoadingDialog } from "../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService";
+import { toast } from "../../components/toast/ToastService";
 import { useOutletContext } from "react-router";
+import { getAccessToken, logoutUser } from "../../../supadb";
+import { useNavigate } from "react-router";
+import InfoNote from "../../components/notes/info_note/InfoNote";
+import WarningNote from "../../components/notes/warning_note/WarningNote";
 
 export default function Settings() {
-    const { userFullName, userEmailAddress, prAsignatories, revisedAsignatories, approvedAsignatories } = useOutletContext<{ userFullName: string; userEmailAddress: string; prAsignatories: any[]; revisedAsignatories: any[]; approvedAsignatories: any[] }>();
+    const navigate = useNavigate();
+    const { userFullName, userEmailAddress, prAsignatories, revisedAsignatories, approvedAsignatories, setUserFullName } = useOutletContext<{ userFullName: string; userEmailAddress: string; prAsignatories: any[]; revisedAsignatories: any[]; approvedAsignatories: any[]; setUserFullName: (name: string) => void }>();
 
     const [localPrAsignatories, setLocalPrAsignatories] = useState(prAsignatories || []);
     const [localApprovedAsignatories, setLocalApprovedAsignatories] = useState(approvedAsignatories || []);
@@ -122,6 +130,90 @@ export default function Settings() {
     const isApprovedDirty = JSON.stringify(localApprovedAsignatories) !== JSON.stringify(approvedAsignatories);
     const isRevisedDirty = JSON.stringify(localRevisedAsignatories) !== JSON.stringify(revisedAsignatories);
 
+    function handleUpdateProfile() {
+        confirm("Full Name Change", "Are you sure you want to update your full name?", "success", "Yes Update Name")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('fullName', String(fullName));
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/user/update_fullname/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            toast.error("Failed to update full name. Please try again later."); 
+                            throw new Error("Failed to update full name.");
+                        }else {
+                            toast.success("Full name updated successfully!");
+                            setUserFullName(fullName);
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while updating full name.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
+    }
+
+    function handleUpdatePassword() {
+        confirm("Password Update", "Are you sure you want to update your password? \n Note: Your session will be terminated after the update. You will need to log in again.", "info", "Yes Update Password")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('currentPassword', String(currentPassword));
+                    formData.append('newPassword', String(newPassword));
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/auth/update_password/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            toast.error("Failed to update password. Please check your current password and try again.");
+                            throw new Error("Failed to update password.");
+                        }else {
+                            toast.success("Password updated successfully!");
+                            setCurrentPassword('');
+                            setNewPassword('');
+                            setConfirmNewPassword('');
+
+                            try {
+                                await logoutUser();
+                                navigate('/login');
+                                toast.success("Logged out successfully.");
+                            } catch (error) {
+                                console.error("Logout error:", error);
+                                toast.error("Network error. Cannot perform logout. Please logout manually.");
+                            }
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while updating password.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
+    }
+
     return (
         <main className="page-container settings">
             <div className="profile-container">
@@ -146,7 +238,9 @@ export default function Settings() {
                     </div>
                 </div>
                 {(fullName !== '' && fullName !== initialFullName) && (
-                    <button className="btn-primary-rd-shadow">Update Profile</button>
+                    <button className="btn-primary-rd-shadow" onClick={handleUpdateProfile}>
+                        Update Profile
+                    </button>
                 )}
             </div>
             <div className="security-container">
@@ -159,6 +253,8 @@ export default function Settings() {
                         <p>Your Account Security Settings</p>
                     </div>
                 </div>
+                <InfoNote message="For security reasons, you will be logged out after updating your password. Please log in again with your new password." />
+                <WarningNote message="Your password must not be the same as your current password." />
                 <div className="field-group">
                     <label htmlFor="password">Current Password</label>
                     <div className="input-field">
@@ -205,9 +301,13 @@ export default function Settings() {
                     </li>
                 </ul>
                 {currentPassword && newPassword && confirmNewPassword && isPasswordMatched ? (
-                    <button className="btn-primary-rd-shadow">Update Password</button>
+                    <button className="btn-primary-rd-shadow" onClick={handleUpdatePassword}>
+                        Update Password
+                    </button>
                 ) : (
-                    <button className="btn-primary-rd-shadow" disabled>Update Password</button>
+                    <button className="btn-primary-rd-shadow" disabled>
+                        Update Password
+                    </button>
                 )}
             </div>
             <div className="content-management-container">

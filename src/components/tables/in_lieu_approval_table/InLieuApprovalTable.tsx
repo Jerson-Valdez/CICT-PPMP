@@ -2,9 +2,13 @@ import "../table-design.css";
 import { useState } from "react";
 import { IconSearch, IconFilter, IconFileStack, IconChecklist, IconX } from '@tabler/icons-react';
 import ViewInLieu from "../../dialogs/view_in_lieu/ViewInLieu";
+import { confirm } from "../../dialogs/global_dialog/DialogService";
 import { useOutletContext } from 'react-router';
+import { showCircleLoadingDialog } from "../../dialogs/circle_loading_dialog/CircleLoadingDialogService";
+import { getAccessToken } from "../../../../supadb";
+import { toast } from "../../toast/ToastService";
 
-export default function InLieuApprovalTable({ data }: { data: any[] }) {
+export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: { data: any[]; handleInLieuStatusChange: (inLieuId: number, newStatus: string) => void }) {
     const [openDialogIndex, setOpenDialogIndex] = useState<number | null>(null);
 
     const { userRole } = useOutletContext<{ userRole: string }>();
@@ -28,6 +32,78 @@ export default function InLieuApprovalTable({ data }: { data: any[] }) {
         processedData.sort((a, b) => a.requestDate.localeCompare(b.requestDate));
     } else if (filterOption === "descending") {
         processedData.sort((a, b) => b.requestDate.localeCompare(a.requestDate));
+    }
+
+    function handleOnApproveInLieu(inLieuId: number) {
+        confirm("In Lieu Approval", "Are you sure you want to approve this Reallocation \n Note: Once you approve this, it will cause changes to the PPMP master list.", "success", "Yes Approve Reallocation")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('prId', String(inLieuId));
+                    formData.append('status', "Approved");
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/procurement_status/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            throw new Error("Failed to mark PR as cancelled.");
+                        }else {
+                            handleInLieuStatusChange(inLieuId, "Approved");
+                            toast.success("PR marked as Approved successfully!");
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while marking PR as approved.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
+    }
+
+    function handleOnRejectInLieu(inLieuId: number) {
+        confirm("In Lieu Approval", "Are you sure you want to reject this Reallocation \n Note: Once you reject this, it will cause changes to the PPMP master list.", "warning", "Yes Reject Reallocation")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('prId', String(inLieuId));
+                    formData.append('status', "Rejected");
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/procurement_status/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            throw new Error("Failed to mark PR as cancelled.");
+                        }else {
+                            handleInLieuStatusChange(inLieuId, "Rejected");
+                            toast.success("PR marked as Rejected successfully!");
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while marking PR as rejected.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
     }
 
     return (
@@ -112,9 +188,7 @@ export default function InLieuApprovalTable({ data }: { data: any[] }) {
                                     </td>
                                     <td>
                                         <div className="budget-impact">
-                                            <span>- {item.budgetImpact.originalItemsTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                                            <span>+ {item.budgetImpact.proposedItemsTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                                            <span>{item.budgetImpact.difference.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                            <span>{item.budgetImpact.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                         </div>
                                     </td>
                                     <td>
@@ -130,10 +204,10 @@ export default function InLieuApprovalTable({ data }: { data: any[] }) {
                                             {item.status.toLowerCase() === "pending" && userRole === "Admin" &&(
                                                 <>
                                                     <button className="btn-solid green">
-                                                        <IconChecklist size={18} /> Approve
+                                                        <IconChecklist size={18} onClick={() => handleOnApproveInLieu(item.inLieuId)} /> Approve
                                                     </button>
                                                     <button className="btn-solid red">
-                                                        <IconX size={18} /> Reject
+                                                        <IconX size={18} onClick={() => handleOnRejectInLieu(item.inLieuId)} /> Reject
                                                     </button>
                                                 </>
                                             )}

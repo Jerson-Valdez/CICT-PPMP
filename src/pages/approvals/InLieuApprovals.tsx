@@ -3,6 +3,9 @@ import InLieuApprovalTable from "../../components/tables/in_lieu_approval_table/
 import "./in-lieu-approvals.css";
 import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWrapper";
 import TableSkeleton from "../../components/skeleton/TableSkeleton";
+import { toast } from "../../components/toast/ToastService";
+import { useOutletContext } from "react-router";
+import { getAccessToken } from "../../../supadb";
 
 interface Item{
     itemId: number;
@@ -13,11 +16,6 @@ interface Item{
     availableQuantityAfter?: number;
     plannedQuantity?: number;
 }
-interface BudgetImpact {
-    originalItemsTotal: number;
-    proposedItemsTotal: number;
-    difference: number;
-}
 interface InLieuApprovalData {
     inLieuId: number;
     requestDate: string;
@@ -25,122 +23,76 @@ interface InLieuApprovalData {
     openFundsUtilized?: number;
     inLieuReducedItems: Item[];
     inLieuAdditionItems: Item[];
-    budgetImpact: BudgetImpact;
+    budgetImpact: number;
     status: string;
 }
 
 export default function InLieuApprovals() {
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-    const inLieuApprovalData: InLieuApprovalData[] = [
-        {
-            inLieuId: 1,
-            requestDate: "2024-06-01",
-            requestedBy: "John Doe",
-            openFundsUtilized: 1030,
-            inLieuReducedItems: [
-                {
-                    itemId: 1,
-                    quantity: 10,
-                    itemName: "ddr 4 ram",
-                    unitMeasurement: "pieces",
-                    priceCatalog: 100.00,
-                    availableQuantityAfter: -25,
-                    plannedQuantity: 5
-                },
-                {
-                    itemId: 2,
-                    quantity: 10,
-                    itemName: "sd card",
-                    unitMeasurement: "pieces",
-                    priceCatalog: 200.00,
-                    availableQuantityAfter: 5,
-                    plannedQuantity: 5
-                },
-                {
-                    itemId: 3,
-                    quantity: 10,
-                    itemName: "Solid State Drive (1TB NVMe Gen4)",
-                    unitMeasurement: "pieces",
-                    priceCatalog: 300.00,
-                    availableQuantityAfter: 5,
-                    plannedQuantity: 5
-                },
-                {
-                    itemId: 4,
-                    quantity: 10,
-                    itemName: "sd card",
-                    unitMeasurement: "pieces",
-                    priceCatalog: 200.00,
-                    availableQuantityAfter: 5,
-                    plannedQuantity: 5
-                },
-            ],
-            inLieuAdditionItems: [
-                {
-                    itemId: 2,
-                    quantity: 5,
-                    itemName: "Item 2",
-                    unitMeasurement: "pieces",
-                    priceCatalog: 150.00,
-                }
-            ],
-            budgetImpact: {
-                originalItemsTotal: 1000.00,
-                proposedItemsTotal: 750.00,
-                difference: 250.00
-            },
-            status: "Pending"
-        },
-        {
-            inLieuId: 2,
-            requestDate: "2023-06-01",
-            requestedBy: "John jerson",
-            inLieuReducedItems: [
-                {
-                    itemId: 1,
-                    quantity: 10,
-                    itemName: "Item 1",
-                    unitMeasurement: "pieces",
-                    priceCatalog: 100.00,
-                    availableQuantityAfter: 5,
-                    plannedQuantity: 5
-                }
-            ],
-            inLieuAdditionItems: [
-                {
-                    itemId: 2,
-                    quantity: 5,
-                    itemName: "Item 2",
-                    unitMeasurement: "pieces",
-                    priceCatalog: 150.00,
-                }
-            ],
-            budgetImpact: {
-                originalItemsTotal: 1000.00,
-                proposedItemsTotal: 750.00,
-                difference: 250.00
-            },
-            status: "Rejected"
-        }
-    ];
+    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: string }>();
+    const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
+
+    const [inLieuApprovalData, setInLieuApprovalData] = useState<InLieuApprovalData[]>([]);
 
     useEffect(() => {
-        const loadInLieuApprovalData = async () => {
-            try {
-                await new Promise(resolve => setTimeout(resolve, 500));
-            } finally {
-                setIsInitialLoading(false);
-            }
-        };
+            const loadPpmpApprovalData = async () => {
+                handlePpmpMonitoringFiscalYearChange(selectedFiscalYear);
+                try {
+                    const formData = new FormData();
+                    formData.append('year', String(selectedFiscalYear));
 
-        loadInLieuApprovalData();
-    }, []);
+                    const [approvalResponse] = await Promise.all([
+                        fetch('https://test-ppmp.onrender.com/api/in_lieu_approvals/', {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        })
+                    ]);
+    
+                    if (!approvalResponse.ok) {
+                        toast.error("Failed to fetch In-Lieu approval data. Please try again later.");
+                    } else {
+                        const approvalResult = await approvalResponse.json();
+    
+                        console.log("In-Lieu approval data retrieved: ", approvalResult.inLieuApprovalData);
+    
+                        setInLieuApprovalData(approvalResult.inLieuApprovalData || []);
+                        
+                        setFiscalYearHolder(selectedFiscalYear);
+                    }
+                } catch (error) {
+                    console.error("Error fetching In-Lieu approval data:", error);
+                    toast.error("Network error. Please try again later.");
+                }
+                finally {
+                    setIsInitialLoading(false);
+                }
+            };
+            loadPpmpApprovalData();
+                    
+        }, [selectedFiscalYear]);
 
+    function handlePpmpMonitoringFiscalYearChange(newFiscalYear: string) {
+        if (newFiscalYear !== fiscalYearHolder) {
+            setIsInitialLoading(true);
+            setFiscalYearHolder(newFiscalYear);
+        }
+    }
+
+    function handleInLieuStatusChange(inLieuId: number, newStatus: string) {
+        setInLieuApprovalData((prevData) =>
+            prevData.map((item) =>
+                item.inLieuId === inLieuId ? { ...item, status: newStatus } : item
+            )
+        );
+    }
     return (
         <main className="page-container approvals">
             <LoadingWrapper isLoading={isInitialLoading} skeleton={<TableSkeleton />}>
-                <InLieuApprovalTable data={inLieuApprovalData} />
+                <InLieuApprovalTable data={inLieuApprovalData} handleInLieuStatusChange={handleInLieuStatusChange} />
             </LoadingWrapper>
         </main>
     )
