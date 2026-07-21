@@ -44,6 +44,7 @@ export default function PRHistoryCard({prId, quantity, itemId, itemName, unitMea
                             }
                         });
                         if (!response.ok) {
+                            toast.error("Failed to mark PR as fulfilled. Please try again later.");
                             throw new Error("Failed to mark PR as fulfilled.");
                         }else {
                             handlePrHistoryStatusChange(itemId, prId, "Fulfilled", quantity);
@@ -80,6 +81,7 @@ export default function PRHistoryCard({prId, quantity, itemId, itemName, unitMea
                             }
                         });
                         if (!response.ok) {
+                            toast.error("Failed to mark PR as cancelled. Please try again later.");
                             throw new Error("Failed to mark PR as cancelled.");
                         }else {
                             handlePrHistoryStatusChange(itemId, prId, "Cancelled", quantity);

@@ -158,7 +158,8 @@ function PrivateLayout() {
         };
 
         fetchInitialData();
-    }, [navigate]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     function handleFiscalYearChange(event: React.ChangeEvent<HTMLSelectElement>) {
         const newFiscalYear = event.target.value;

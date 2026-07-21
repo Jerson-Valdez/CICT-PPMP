@@ -198,6 +198,7 @@ export default function InLieuReallocation() {
                             }
                         });
                         if (!response.ok) {
+                            toast.error("Failed to create in-lieu request. Please try again later.");
                             throw new Error("Failed to create in-lieu request.");
                         }else {
                             toast.success("In Lieu request created successfully!");
