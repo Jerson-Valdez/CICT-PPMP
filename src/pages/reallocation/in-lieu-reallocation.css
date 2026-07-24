@@ -95,7 +95,21 @@
         }
 
         & > .button-container{
-            @apply flex flex-row items-center justify-end gap-2 w-full;
+            @apply flex flex-row items-center justify-between gap-2 w-full;
+            & > .right-btn-container{
+                @apply flex flex-row items-center justify-end gap-2 w-full;
+            }
+            & > .left-btn-container{
+                @apply flex flex-row items-center justify-start gap-2 w-full;
+                & > .btn-secondary{
+                    &.green{
+                        @apply border-green-500 text-green-500;
+                    }
+                    &.red{
+                        @apply border-red-500 text-red-500;
+                    }
+                }
+            }
         }
     }
 }
