@@ -12,7 +12,17 @@ import WarningNote from "../../components/notes/warning_note/WarningNote";
 
 export default function Settings() {
     const navigate = useNavigate();
-    const { userFullName, userEmailAddress, prAsignatories, revisedAsignatories, approvedAsignatories, setUserFullName } = useOutletContext<{ userFullName: string; userEmailAddress: string; prAsignatories: any[]; revisedAsignatories: any[]; approvedAsignatories: any[]; setUserFullName: (name: string) => void }>();
+    const { userFullName, userEmailAddress, prAsignatories, revisedAsignatories, approvedAsignatories, setUserFullName, setPrAsignatories, setApprovedAsignatories, setRevisedAsignatories } = useOutletContext<{
+        userFullName: string;
+        userEmailAddress: string;
+        prAsignatories: any[];
+        revisedAsignatories: any[];
+        approvedAsignatories: any[];
+        setUserFullName: (name: string) => void;
+        setPrAsignatories: (asignatories: any[]) => void;
+        setApprovedAsignatories: (asignatories: any[]) => void;
+        setRevisedAsignatories: (asignatories: any[]) => void;
+    }>();
 
     const [localPrAsignatories, setLocalPrAsignatories] = useState(prAsignatories || []);
     const [localApprovedAsignatories, setLocalApprovedAsignatories] = useState(approvedAsignatories || []);
@@ -214,6 +224,75 @@ export default function Settings() {
             });
     }
 
+    function onAsignatoriesUpdate(asignatoriesType: 'pr' | 'approved' | 'revised') {
+        confirm("Asignatories Update", "Note: Updating asignatories will affect the printing process of the documents.", "info", "Yes Update Asignatories")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formatAsignatoriesForBackend = (asignatoriesArray: any[]) => {
+                        const formattedArray = asignatoriesArray.map(person => ({
+                            signatoryId: person.signatoryId,
+                            fullName: person.fullName,
+                            positionTitle: person.position
+                        }));
+                        return {
+                            signatories: formattedArray
+                        };
+                    };
+
+                    const formData = new FormData();
+
+                    if (asignatoriesType === 'pr') {
+                        const payload = formatAsignatoriesForBackend(localPrAsignatories);
+                        formData.append('signatories', JSON.stringify(payload));
+                        console.log("PR Payload: ", payload);
+                    } else if (asignatoriesType === 'approved') {
+                        const payload = formatAsignatoriesForBackend(localApprovedAsignatories);
+                        formData.append('signatories', JSON.stringify(payload));
+                        console.log("Approved Payload: ", payload);
+                    } else if (asignatoriesType === 'revised') {
+                        const payload = formatAsignatoriesForBackend(localRevisedAsignatories);
+                        formData.append('signatories', JSON.stringify(payload));
+                        console.log("Revised Payload: ", payload);
+                    }
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/update_signatories/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            console.log(response);
+                            toast.error("Failed to update asignatories. Please try again.");
+                            throw new Error("Failed to update asignatories.");
+                        }else {
+                            toast.success("Asignatories updated successfully!");
+                            if (asignatoriesType === 'pr') {
+                                setPrAsignatories(localPrAsignatories);
+                            } else if (asignatoriesType === 'approved') {
+                                setApprovedAsignatories(localApprovedAsignatories);
+                            } else if (asignatoriesType === 'revised') {
+                                setRevisedAsignatories(localRevisedAsignatories);
+                            }else {
+                                toast.error("Invalid asignatories type.");
+                            }
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while updating asignatories.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
+    }
+
     return (
         <main className="page-container settings">
             <div className="profile-container">
@@ -337,7 +416,9 @@ export default function Settings() {
                         </div>
                     ))}
                     {isPrDirty && (
-                        <button className="btn-primary-rd-shadow">Update Purchase Request Asignatories</button>
+                        <button className="btn-primary-rd-shadow" onClick={() => onAsignatoriesUpdate('pr')}>
+                            Update Purchase Request Asignatories
+                        </button>
                     )}
                 </div>
                 <div className="pr-asignatory">
@@ -357,7 +438,9 @@ export default function Settings() {
                         </div>
                     ))}
                     {isApprovedDirty && (
-                        <button className="btn-primary-rd-shadow">Update Approved PPMP Asignatories</button>
+                        <button className="btn-primary-rd-shadow" onClick={() => onAsignatoriesUpdate('approved')}>
+                            Update Approved PPMP Asignatories
+                        </button>
                     )}
                 </div>
                 <div className="pr-asignatory">
@@ -377,7 +460,9 @@ export default function Settings() {
                         </div>
                     ))}
                     {isRevisedDirty && (
-                        <button className="btn-primary-rd-shadow">Update Revised PPMP Asignatories</button>
+                        <button className="btn-primary-rd-shadow" onClick={() => onAsignatoriesUpdate('revised')}>
+                            Update Revised PPMP Asignatories
+                        </button>
                     )}
                 </div>
             </div>

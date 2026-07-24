@@ -166,7 +166,7 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                     </thead>
                     <tbody>
                         {proposedItems && proposedItems.map((item, index) => (
-                            <tr key={item.itemId}>
+                            <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>{item.quantity}</td>
                                 <td>{item.itemName}</td>

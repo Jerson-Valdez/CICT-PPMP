@@ -4,71 +4,70 @@ import "./user-management.css";
 import { IconUser, IconEye, IconEyeOff } from '@tabler/icons-react';
 import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWrapper";
 import TableSkeleton from "../../components/skeleton/TableSkeleton";
+import { toast } from "../../components/toast/ToastService";
+import { getAccessToken } from "../../../supadb";
+import { confirm } from "../../components/dialogs/global_dialog/DialogService";
+import { showCircleLoadingDialog } from "../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService";
+import { useNavigate } from "react-router";
+import { useOutletContext } from "react-router";
 
 interface User {
     userId: number;
-    fullName: string;
+    fullname: string;
     email: string;
     role: string;
-    dateCreated: string;
+    dateCreated?: string;
     status: string;
 }
 
 export default function UserManagement() {
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const { userRole, setUserRole } = useOutletContext<{ userRole: string, setUserRole: (role: string) => void }>(); 
+    const navigate = useNavigate();
 
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
-    const [departmentRole, setDepartmentRole] = useState('Staff');
+    const [departmentRole, setDepartmentRole] = useState('User');
     const [temporaryPassword, setTemporaryPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
-        const loadPpmpReallocationData = async () => {
+        if(userRole !== "Admin") {
+            toast.error("You do not have permission to access this page.");
+            navigate("/dashboard");
+            return;
+        }
+        const loadUserManagementData = async () => {
             try {
-                setUsers([
-                    {
-                        userId: 1,
-                        fullName: "Jerson Doe",
-                        email: "Doe@gmail.com",
-                        role: "Staff",
-                        dateCreated: "2023-01-01",
-                        status: "Active"
-                    },
-                    {
-                        userId: 2,
-                        fullName: "Jane Smith",
-                        email: "Smith@gmail.com",
-                        role: "Dean",
-                        dateCreated: "2023-02-15",
-                        status: "Inactive"
-                    },
-                    {
-                        userId: 3,
-                        fullName: "Michael Johnson",
-                        email: "Johnson@gmail.com",
-                        role: "Staff",
-                        dateCreated: "2023-03-10",
-                        status: "Active"
-                    },
-                    {
-                        userId: 4,
-                        fullName: "Emily Davis",
-                        email: "Davis@gmail.com",
-                        role: "Staff",
-                        dateCreated: "2023-04-05",
-                        status: "Active"
-                    },
-                ])
-                await new Promise(resolve => setTimeout(resolve, 500));
-            } finally {
+                const [userManagemenResponse] = await Promise.all([
+
+                    fetch('https://test-ppmp.onrender.com/api/auth/users/', {
+                        method: "GET",
+                        headers: {
+                            "Authorization": `Bearer ${await getAccessToken() || ""}`
+                        }
+                    })
+                ]);
+
+                if (!userManagemenResponse.ok) {
+                    toast.error("Failed to fetch User Management data. Please try again later.");
+                } else {
+                    const userManagemenResult = await userManagemenResponse.json();
+                    console.log(userManagemenResult)    
+                    setUsers(userManagemenResult.user);
+                }
+
+            } catch (error) {
+                console.error("Error fetching User Management data:", error);
+                toast.error("Network error. Please try again later.");
+            }
+            finally {
                 setIsInitialLoading(false);
             }
         };
-
-        loadPpmpReallocationData();
+        loadUserManagementData();
     }, []);
 
     function togglePasswordVisibility() {
@@ -115,6 +114,194 @@ export default function UserManagement() {
         }
     }
 
+    function handleUserStatusChange(userId: number, newStatus: string) {
+        setUsers(prevTableData => 
+            prevTableData.map(user => {
+                if (user.userId === userId) {
+                    if (newStatus === "Active") {
+                        return {
+                            ...user,
+                            status: newStatus
+                        }
+                    } else if (newStatus === "Inactive") {
+                        return {
+                            ...user,
+                            status: newStatus
+                        }
+                    }
+                }
+                return user;
+            })
+        );
+    }
+
+    function handleUserCreation(userId: number, fullName: string, email: string, role: string){
+        setUsers(prev => [...prev, {
+            userId: userId,
+            fullname: fullName,
+            email: email,
+            role: role,
+            status: "Active",
+            dateCreated: new Date().toLocaleString("en-PH")
+        }]);
+    };
+
+    function onPromote(userId: number) {
+        confirm("User Promotion", "Are you sure you want to promote this user? \n Note: Once the user is promoted, you will be domoted to user level access", "warning", "Continue Promotion")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('userId', String(userId));
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/user/promote_user/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            toast.error("Failed to Promote user. Please try again later."); 
+                            throw new Error("Failed to Promote User.");
+                        }else {
+                            toast.success("Promotion successful!");
+                            toast.info("Redirecting to dashboard, you dont have access to user management.")
+                            setUserRole("User")
+                            navigate('/dashboard')
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while promoting user.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
+    }
+
+    function onDeactivate(userId: number) {
+        confirm("User Deactivation", "Are you sure you want to Deactivate this user? \n Note: Once the user is deactivated, he/she will be prevented to login in this system", "warning", "Continue Deactivation")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('userId', String(userId));
+                    formData.append('status', String("Inactive"))
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/user/update_user_status/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            toast.error("Failed to Update user status. Please try again later."); 
+                            throw new Error("Failed to Update User status.");
+                        }else {
+                            toast.success("User status updated successfully!");
+                            handleUserStatusChange(userId, "Inactive")
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while updating User Status.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
+    }
+
+    function onActivate(userId: number) {
+        confirm("User Activation", "Are you sure you want to Activate this user? \n Note: Once the user is activated, he/she will be allowed to login and perform in the system", "info", "Continue Activation")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('userId', String(userId));
+                    formData.append('status', String("Active"))
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/user/update_user_status/", {
+                            method: "PUT",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            toast.error("Failed to Update user status. Please try again later."); 
+                            throw new Error("Failed to Update User status.");
+                        }else {
+                            toast.success("User status updated successfully!");
+                            handleUserStatusChange(userId, "Active")
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while updating User Status.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
+    }
+
+    function onCreateUser(fullName: string, email: string, role: string, temporaryPassword: string) {
+        confirm("Create User", "Note: Once user is created, he/she will be allowed to perform in the system.", "info", "Continue Creation")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('fullName', String(fullName));
+                    formData.append('email', String(email))
+                    formData.append('password', String(temporaryPassword))
+                    formData.append('role', String(role))
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/user/create_user/", {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            toast.error("Failed to Create user. Please try again later. or Check if the email is already registered."); 
+                            throw new Error("Failed to Create User.");
+                        }else {
+                            toast.success("User created successfully!");
+                            const result = await response.json();
+                            handleUserCreation(result.userId, fullName, email, role)
+                            setFullName('');
+                            setEmail('');
+                            setDepartmentRole('User');
+                            setTemporaryPassword('');
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while Creating User.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
+    }
+
   return (
     <main className="page-container usermanagement">
       <div className="create-user-container">
@@ -142,10 +329,7 @@ export default function UserManagement() {
         <div className="input-row">
             <div className="field-group">
                 <label htmlFor="departmentRole">Department Role</label>
-                <select id="departmentRole" onChange={(e) => setDepartmentRole(e.target.value)}>
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
+                <input type="text" id="departmentRole" value={departmentRole} disabled className="cursor-not-allowed"/>
                 <p className="error-message" id="departmentRoleError"></p>
             </div>
             <div className="field-group">
@@ -165,14 +349,14 @@ export default function UserManagement() {
         </div>
         {fullName && email && departmentRole && temporaryPassword ? (
             <div className="create-user-button">
-                <button className="btn-primary-rd-shadow">Create Account</button>
+                <button className="btn-primary-rd-shadow" onClick={() => onCreateUser(fullName, email, departmentRole, temporaryPassword)}>Create Account</button>
             </div>
         ) : <div className="create-user-button">
                 <button className="btn-primary-rd-shadow" disabled>Create Account</button>
             </div>}
       </div>
       <LoadingWrapper isLoading={isInitialLoading} skeleton={<TableSkeleton />}>
-        <UserManagementTable data={users} />
+        <UserManagementTable data={users} onPromote={onPromote} onDeactivate={onDeactivate} onActivate={onActivate} />
       </LoadingWrapper>
     </main>
   );
