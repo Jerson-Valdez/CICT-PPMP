@@ -108,7 +108,7 @@ export default function Nav({ userRole, selectedFiscalYear, fiscalYears, handleF
                 ))}
             </div>
             <hr />
-            <button className="logout-button" onClick={handleLogout}>
+            <button className="btn-solid red" onClick={handleLogout}>
                 <IconLogout2 size={24} />
                 Logout
             </button>

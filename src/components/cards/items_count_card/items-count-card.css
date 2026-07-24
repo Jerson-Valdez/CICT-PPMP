@@ -23,7 +23,7 @@
         @apply bg-gradient-to-br from-red-800/40 to-white text-red-800 border-red-800;
     }
 
-    & > .content{
+    & > .item-count-content{
         @apply flex flex-col items-start justify-center;
 
         & > h3{
