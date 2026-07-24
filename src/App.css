@@ -95,7 +95,7 @@
         animation: none;
     }
     &:active {
-        @apply translate-y-0 scale-[0.98];
+        @apply translate-y-0 scale-95;
     }
 }
 
@@ -118,6 +118,9 @@
     &:disabled:hover {
         @apply -translate-y-0 shadow-none;
     }
+    &:active {
+        @apply translate-y-0 scale-95;
+    }
 }
 
 .btn-secondary {
@@ -134,6 +137,9 @@
     &:disabled:hover {
         @apply -translate-y-0 shadow-none;
     }
+    &:active {
+        @apply translate-y-0 scale-95;
+    }
 }
 
 .btn-solid {
@@ -146,6 +152,9 @@
     }
     &:disabled:hover {
         @apply -translate-y-0 shadow-none;
+    }
+    &:active {
+        @apply translate-y-0 scale-95;
     }
 
     &.green {

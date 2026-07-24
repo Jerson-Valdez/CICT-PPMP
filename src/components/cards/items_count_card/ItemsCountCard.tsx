@@ -11,7 +11,7 @@ export default function ItemsCountCard({icon, title, count, color}: {icon: strin
                 {icon === 'check' && <IconCircleDashedCheck />}
                 {icon === 'businessplan' && <IconBusinessplan />}
             </div>
-            <div className="content">
+            <div className="item-count-content">
                 <h3>{title}</h3>
                 <p>{count.toLocaleString()}</p>
             </div>
