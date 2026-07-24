@@ -1,5 +1,5 @@
 import "./in-lieu-reallocation.css";
-import { IconPrinter, IconTransfer, IconX, IconCheck, IconSearch, IconShoppingCart, IconTransform } from '@tabler/icons-react';
+import { IconPrinter, IconTransfer, IconX, IconCheck, IconSearch, IconShoppingCart, IconTransform, IconTrash } from '@tabler/icons-react';
 import alabIcon from "../../assets/icons/alab.svg";
 import NewItemCard from "../../components/cards/new_item_card/NewItemCard";
 import LieuItemCard from "../../components/cards/lieu_item_card/LieuItemCard";
@@ -240,6 +240,7 @@ export default function InLieuReallocation() {
             const formData = new FormData();
             formData.append("Sum", JSON.stringify(requiredBudget))
             formData.append("NewItems", JSON.stringify(newItemsArray))
+            formData.append("FiscalYear", selectedFiscalYear)
 
             const suggestionResponse = await fetch("https://test-ppmp.onrender.com/api/smart-suggest/", {
                 method: "POST",
@@ -400,32 +401,59 @@ export default function InLieuReallocation() {
                         </LoadingWrapper>
                     </div>
                 </div>
-                {remainingBudget >= 0 && newItemsArray.length > 0 && requiredBudget > 0 && isNewItemsValid && isOldItemsValid ? (
                     <div className="button-container">
-                        <button
-                            className="btn-secondary"
-                            onClick={() => setPrintPROpen(true)}
-                        >
-                            <IconPrinter size={24} />Print Preview
-                        </button>
+                        <div className="left-btn-container">
+                            {newItemsArray.length > 0 && (
+                                <button className="btn-secondary green"
+                                    onClick={() => {
+                                        setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }]);
+                                    }}>
+                                    <IconTrash size={24} /> Clear Needs Cart
+                                </button>
+                            )}
+                            {selectedLieuItems.length > 0? (
+                                <button className="btn-secondary red"
+                                    onClick={() => {
+                                        setSelectedLieuItems([]);
+                                    }}>
+                                    <IconTrash size={24} /> Clear Lieu Pool
+                                </button>
+                            ):(
+                                <button className="btn-secondary red" disabled>
+                                    <IconTrash size={24} /> Clear Lieu Pool
+                                </button>
+                            )}
+                        </div>
+                    {remainingBudget >= 0 && newItemsArray.length > 0 && requiredBudget > 0 && isNewItemsValid && isOldItemsValid ? (
+                        <div className="right-btn-container">
+                            <button
+                                className="btn-secondary"
+                                onClick={() => setPrintPROpen(true)}
+                            >
+                                <IconPrinter size={24} />Print Preview
+                            </button>
 
-                        <button
-                            className="btn-primary-rd-shadow"
-                            onClick={handleSaveToDatabase}
-                        >
-                            <IconTransfer size={24} />Apply for Approval
-                        </button>
-                    </div>
-                ) : (
-                    <div className="button-container">
-                        <button className="btn-secondary" disabled>
-                            <IconPrinter size={24} />Print Preview
-                        </button>
-                        <button className="btn-primary-rd-shadow" disabled>
-                            <IconTransfer size={24} />Apply for Approval
-                        </button>
-                    </div>
-                )}
+                            <button
+                                className="btn-primary-rd-shadow"
+                                onClick={handleSaveToDatabase}
+                            >
+                                <IconTransfer size={24} />Apply for Approval
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="right-btn-container">
+                            <button
+                                className="btn-secondary" disabled>
+                                <IconPrinter size={24} />Print Preview
+                            </button>
+
+                            <button
+                                className="btn-primary-rd-shadow" disabled>
+                                <IconTransfer size={24} />Apply for Approval
+                            </button>
+                        </div>
+                    )}
+                </div>
                 <ViewInLieu
                     requestDate={new Date().toLocaleString('en-PH')}
                     originalItems={selectedLieuItems.map(item => ({
