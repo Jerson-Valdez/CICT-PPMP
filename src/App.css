@@ -198,7 +198,7 @@
 }
 
 .page-container{
-    @apply flex flex-col items-center justify-start w-[calc(100%-288px)] ml-72 mt-20 h-[calc(100%-5rem)] gap-5 p-5
+    @apply flex flex-col items-center justify-start w-[calc(100%-288px)] ml-72 mt-18 h-[calc(100%-5rem)] gap-5 p-5
         max-md:ml-0 max-md:w-full;
 }
 
