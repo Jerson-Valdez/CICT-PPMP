@@ -100,7 +100,7 @@
     }
 
     & > .btn-solid.red {
-        @apply flex flex-row items-center justify-center gap-1 text-xs font-semibold w-full p-3 rounded-xl bg-red-500 text-white;
+        @apply flex flex-row items-center justify-center gap-1 text-xs font-semibold w-full p-2 rounded-xl bg-red-500 text-white;
         
         &:hover {
             @apply bg-red-600 cursor-pointer transition-all duration-300 ease-in-out;
