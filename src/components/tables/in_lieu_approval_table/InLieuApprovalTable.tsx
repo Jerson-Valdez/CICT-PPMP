@@ -40,13 +40,13 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: 
                 if (confirmed) {
 
                     const formData = new FormData();
-                    formData.append('prId', String(inLieuId));
+                    formData.append('inLieuId', String(inLieuId));
                     formData.append('status', "Approved");
 
                     const loading = showCircleLoadingDialog();
 
                     try {
-                        const response = await fetch("https://test-ppmp.onrender.com/api/procurement_status/", {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/in_lieu_approval_status/", {
                             method: "PUT",
                             body: formData,
                             headers: {
@@ -54,14 +54,15 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: 
                             }
                         });
                         if (!response.ok) {
-                            throw new Error("Failed to mark PR as cancelled.");
+                            toast.error("Failed to mark Reallocation as Approved.")
+                            throw new Error("Failed to mark Reallocation as Approved.");
                         }else {
                             handleInLieuStatusChange(inLieuId, "Approved");
-                            toast.success("PR marked as Approved successfully!");
+                            toast.success("Reallocation marked as Approved successfully!");
                         }
                     }
                     catch (error) {
-                        toast.error("Error occurred while marking PR as approved.");
+                        toast.error("Error occurred while marking Reallocation as approved.");
                     }
                     finally {
                         loading();
@@ -76,13 +77,13 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: 
                 if (confirmed) {
 
                     const formData = new FormData();
-                    formData.append('prId', String(inLieuId));
+                    formData.append('inLieuId', String(inLieuId));
                     formData.append('status', "Rejected");
 
                     const loading = showCircleLoadingDialog();
 
                     try {
-                        const response = await fetch("https://test-ppmp.onrender.com/api/procurement_status/", {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/in_lieu_approval_status/", {
                             method: "PUT",
                             body: formData,
                             headers: {
@@ -90,14 +91,14 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: 
                             }
                         });
                         if (!response.ok) {
-                            throw new Error("Failed to mark PR as cancelled.");
+                            throw new Error("Failed to mark Reallocation as cancelled.");
                         }else {
                             handleInLieuStatusChange(inLieuId, "Rejected");
-                            toast.success("PR marked as Rejected successfully!");
+                            toast.success("Reallocation marked as Rejected successfully!");
                         }
                     }
                     catch (error) {
-                        toast.error("Error occurred while marking PR as rejected.");
+                        toast.error("Error occurred while marking Reallocation as rejected.");
                     }
                     finally {
                         loading();
@@ -178,8 +179,8 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: 
                                     </td>
                                     <td>
                                         <div className="proposed-items">
-                                            {item.inLieuAdditionItems.map((i: any) => (
-                                                <div key={i.itemId} className="proposed-item">
+                                            {item.inLieuAdditionItems.map((i: any, index: number) => (
+                                                <div key={index} className="proposed-item">
                                                     <span>+{i.quantity} {i.unitMeasurement} • </span>
                                                     <span>{i.itemName}</span>
                                                 </div>
@@ -203,11 +204,11 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: 
                                             </button>
                                             {item.status.toLowerCase() === "pending" && userRole === "Admin" &&(
                                                 <>
-                                                    <button className="btn-solid green">
-                                                        <IconChecklist size={18} onClick={() => handleOnApproveInLieu(item.inLieuId)} /> Approve
+                                                    <button className="btn-solid green" onClick={() => handleOnApproveInLieu(item.inLieuId)}>
+                                                        <IconChecklist size={18} /> Approve
                                                     </button>
-                                                    <button className="btn-solid red">
-                                                        <IconX size={18} onClick={() => handleOnRejectInLieu(item.inLieuId)} /> Reject
+                                                    <button className="btn-solid red" onClick={() => handleOnRejectInLieu(item.inLieuId)}>
+                                                        <IconX size={18} /> Reject
                                                     </button>
                                                 </>
                                             )}

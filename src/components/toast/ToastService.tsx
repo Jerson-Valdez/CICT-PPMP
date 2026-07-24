@@ -14,7 +14,7 @@ const getToastContainer = () => {
 
 type ToastOptions = Omit<ToastProps, 'onClose'>;
 
-export const showToast = ({ message, type = "info", duration = 3000 }: ToastOptions) => {
+export const showToast = ({ message, type = "info", duration = 5000 }: ToastOptions) => {
     const container = getToastContainer();
 
     const toastWrapper = document.createElement('div');
