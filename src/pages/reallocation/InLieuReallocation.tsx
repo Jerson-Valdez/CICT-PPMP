@@ -51,44 +51,44 @@ export default function InLieuReallocation() {
 
     const [ppmpReallocationData, setPpmpReallocationData] = useState<ppmpReallocationData[]>([]);
 
-   useEffect(() => {
-           const LoadPpmpReallocationData = async () => {
-               handlePpmpReallocationFiscalYearChange(selectedFiscalYear);
-               try {
-                   const formData = new FormData();
-                   formData.append('year', String(selectedFiscalYear));
-   
-                   const [reallocationResponse] = await Promise.all([
-   
-                       fetch('https://test-ppmp.onrender.com/api/in_lieu_data/', {
-                           method: "POST",
-                           body: formData,
-                           headers: {
-                               "Authorization": `Bearer ${await getAccessToken() || ""}`
-                           }
-                       })
-                   ]);
-   
-                   if (!reallocationResponse.ok) {
-                       toast.error("Failed to fetch PPMP reallocation data. Please try again later.");
-                   } else {
-                       const reallocationResult = await reallocationResponse.json();
-                       
-                       setPpmpReallocationData(reallocationResult.ppmpReallocationData || []);
-                       setOpenFunds(reallocationResult.openFunds || 0);
-                       setFiscalYearHolder(selectedFiscalYear);
-                   }
-               } catch (error) {
-                   console.error("Error fetching PPMP reallocation data:", error);
-                   toast.error("Network error. Please try again later.");
-               }
-               finally {
-                   setIsInitialLoading(false);
-               }
-           };
-           LoadPpmpReallocationData();
-                   
-       }, [selectedFiscalYear]);
+    useEffect(() => {
+        const LoadPpmpReallocationData = async () => {
+            handlePpmpReallocationFiscalYearChange(selectedFiscalYear);
+            try {
+                const formData = new FormData();
+                formData.append('year', String(selectedFiscalYear));
+
+                const [reallocationResponse] = await Promise.all([
+
+                    fetch('https://test-ppmp.onrender.com/api/in_lieu_data/', {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            "Authorization": `Bearer ${await getAccessToken() || ""}`
+                        }
+                    })
+                ]);
+
+                if (!reallocationResponse.ok) {
+                    toast.error("Failed to fetch PPMP reallocation data. Please try again later.");
+                } else {
+                    const reallocationResult = await reallocationResponse.json();
+
+                    setPpmpReallocationData(reallocationResult.ppmpReallocationData || []);
+                    setOpenFunds(reallocationResult.openFunds || 0);
+                    setFiscalYearHolder(selectedFiscalYear);
+                }
+            } catch (error) {
+                console.error("Error fetching PPMP reallocation data:", error);
+                toast.error("Network error. Please try again later.");
+            }
+            finally {
+                setIsInitialLoading(false);
+            }
+        };
+        LoadPpmpReallocationData();
+
+    }, [selectedFiscalYear]);
 
     const [inLieuSearchTerm, setInLieuSearchTerm] = useState<string>("");
     const [newItemsSearchTerm, setNewItemsSearchTerm] = useState<string>("");
@@ -100,21 +100,31 @@ export default function InLieuReallocation() {
         return matchesSearch;
     });
 
-    const filteredCatalogItems = newItemsSearchTerm.trim() === "" 
+    const filteredCatalogItems = newItemsSearchTerm.trim() === ""
         ? []
-        : ppmpReallocationData.filter(item => 
+        : ppmpReallocationData.filter(item =>
             item.itemName.toLowerCase().includes(newItemsSearchTerm.toLowerCase())
         );
 
     const handleSelectNewItem = (catalogItem: any) => {
-        setNewItemsArray(prev => [...prev, {
-            itemId: catalogItem.itemId,
-            name: catalogItem.itemName,
-            measurementUnit: catalogItem.unitMeasurement,
-            quantity: 1,
-            unitPrice: catalogItem.priceCatalog,
-            added: false
-        }]);
+        if (newItemsArray.length == 1 && newItemsArray[0].name.trim().length == 0) {
+            newItemsArray[0].itemId = catalogItem.itemId
+            newItemsArray[0].name = catalogItem.itemName
+            newItemsArray[0].measurementUnit = catalogItem.unitMeasurement
+            newItemsArray[0].quantity - 1
+            newItemsArray[0].unitPrice = catalogItem.priceCatalog
+            newItemsArray[0].added = false
+        } else {
+            setNewItemsArray(prev => [...prev, {
+                itemId: catalogItem.itemId,
+                name: catalogItem.itemName,
+                measurementUnit: catalogItem.unitMeasurement,
+                quantity: 1,
+                unitPrice: catalogItem.priceCatalog,
+                added: false
+            }]);
+        }
+
         setNewItemsSearchTerm("");
     };
 
@@ -126,17 +136,17 @@ export default function InLieuReallocation() {
     const [selectedLieuItems, setSelectedLieuItems] = useState<SelectedLieuItem[]>([]);
     const selectedItemsValue = selectedLieuItems.reduce((sum, item) => sum + (item.reduceQuantity * item.priceCatalog), 0);
     const remainingBudget = selectedItemsValue - requiredBudget;
-    const isNewItemsValid = newItemsArray.every(item => 
-        item.name.trim() !== "" && 
-        item.measurementUnit.trim() !== "" && 
-        item.quantity > 0 && 
+    const isNewItemsValid = newItemsArray.every(item =>
+        item.name.trim() !== "" &&
+        item.measurementUnit.trim() !== "" &&
+        item.quantity > 0 &&
         item.unitPrice > 0
     );
 
-    const isOldItemsValid = selectedLieuItems.every(item => 
-        item.itemName.trim() !== "" && 
-        item.unitMeasurement.trim() !== "" && 
-        item.reduceQuantity > 0 && 
+    const isOldItemsValid = selectedLieuItems.every(item =>
+        item.itemName.trim() !== "" &&
+        item.unitMeasurement.trim() !== "" &&
+        item.reduceQuantity > 0 &&
         item.priceCatalog > 0
     );
 
@@ -155,14 +165,14 @@ export default function InLieuReallocation() {
                 itemId: item.itemId,
                 itemName: item.itemName,
                 unitMeasurement: item.unitMeasurement,
-                reduceQuantity: 0,
+                reduceQuantity: item.reduceAmount > 0 ? item.reduceAmount : 1,
                 priceCatalog: item.priceCatalog
             }]);
         }
     };
 
     const handleUpdateLieuQuantity = (itemId: number, quantity: number) => {
-        setSelectedLieuItems(prev => prev.map(item => 
+        setSelectedLieuItems(prev => prev.map(item =>
             item.itemId === itemId ? { ...item, reduceQuantity: quantity } : item
         ));
     };
@@ -179,7 +189,7 @@ export default function InLieuReallocation() {
             itemsToProcure: newItemsArray,
             itemsToReduce: actualItemsToReduce
         };
-        
+
         confirm("In Lieu Reallocation", "Are you sure you want to proceed this reallocation? \n Note: This action needs an approval of the relevant authorities before it reflects to the system.", "info", "Yes Proceed")
             .then(async (confirmed) => {
                 if (confirmed) {
@@ -200,7 +210,7 @@ export default function InLieuReallocation() {
                         if (!response.ok) {
                             toast.error("Failed to create in-lieu request. Please try again later.");
                             throw new Error("Failed to create in-lieu request.");
-                        }else {
+                        } else {
                             toast.success("In Lieu request created successfully!");
                             setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }]);
                             setSelectedLieuItems([]);
@@ -220,6 +230,40 @@ export default function InLieuReallocation() {
         if (newFiscalYear !== fiscalYearHolder) {
             setIsInitialLoading(true);
             setFiscalYearHolder(newFiscalYear);
+        }
+    }
+
+    const getSmartSuggestions = async () => {
+        const loading = showCircleLoadingDialog();
+
+        try {
+            const formData = new FormData();
+            formData.append("Sum", JSON.stringify(requiredBudget))
+            formData.append("NewItems", JSON.stringify(newItemsArray))
+
+            const suggestionResponse = await fetch("https://test-ppmp.onrender.com/api/smart-suggest/", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Authorization": `Bearer ${await getAccessToken() || ""}`
+                }
+            });
+
+            if (!suggestionResponse.ok) {
+                toast.error("Failed to generate suggestions. Please try again later.")
+                throw new Error("Failed to generate suggestions.")
+            } else {
+                const suggestions = await suggestionResponse.json()
+                suggestions.data.map((item: any) => {
+                    handleToggleLieuItem(item)
+                })
+            }
+        }
+        catch (error) {
+            toast.error("Error occurred while retrieving smart suggestions.")
+        }
+        finally {
+            loading()
         }
     }
 
@@ -255,18 +299,18 @@ export default function InLieuReallocation() {
                     <div className="new-items-container">
                         <div className="search-container relative">
                             <IconSearch size={24} />
-                            <input 
-                                type="text" 
-                                placeholder="Search Catalog to add new item..." 
-                                className="search-input w-full" 
+                            <input
+                                type="text"
+                                placeholder="Search Catalog to add new item..."
+                                className="search-input w-full"
                                 value={newItemsSearchTerm}
                                 onChange={(e) => setNewItemsSearchTerm(e.target.value)} />
-                            
+
                             {filteredCatalogItems.length > 0 && (
                                 <div className="option-container">
                                     <ul>
                                         {filteredCatalogItems.map((item) => (
-                                            <li 
+                                            <li
                                                 key={item.itemId}
                                                 onClick={() => handleSelectNewItem(item)}>
 
@@ -281,7 +325,7 @@ export default function InLieuReallocation() {
                             )}
                         </div>
                         <div className="title-button-container">
-                            <h3><IconShoppingCart size={24} color="green"/> New Needs Cart</h3>
+                            <h3><IconShoppingCart size={24} color="green" /> New Needs Cart</h3>
                             <button className="btn-secondary cursor-pointer" onClick={handleAddItem}>+ Add Item</button>
                         </div>
                         <div className="new-items-card-container">
@@ -290,17 +334,17 @@ export default function InLieuReallocation() {
                             ))}
                         </div>
                     </div>
-                    
+
                     <div className="lieu-items-container">
                         <div className="search-container">
                             <IconSearch size={24} />
                             <input type="text" placeholder="Search Item to be “In Lieu of” new Items..." className="search-input" value={inLieuSearchTerm} onChange={(e) => setInLieuSearchTerm(e.target.value)} />
                         </div>
                         <div className="title-button-container">
-                            <h3><IconTransform size={24} color="red"/> Available Lieu Pool</h3>
+                            <h3><IconTransform size={24} color="red" /> Available Lieu Pool</h3>
                             {newItemsArray.length > 0 && requiredBudget > 0 && isNewItemsValid ?
-                                (<button className="btn-alab"><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />Suggest Optimization</button>) : (
-                                <button className="btn-alab" disabled><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />Suggest Optimization</button>
+                                (<button className="btn-alab" onClick={getSmartSuggestions}><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />Suggest Optimization</button>) : (
+                                    <button className="btn-alab" disabled><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />Suggest Optimization</button>
                                 )}
                         </div>
                         <LoadingWrapper isLoading={isInitialLoading} skeleton={<InLieuReallocationSkeleton />}>
@@ -316,7 +360,7 @@ export default function InLieuReallocation() {
                                             itemId={0}
                                             itemName="Unallocated Open Funds"
                                             unitMeasurement="PHP"
-                                            priceCatalog={1}     
+                                            priceCatalog={1}
                                             plannedQuantity={openFunds}
                                             availableQuantity={openFunds}
                                             isSelected={isSelected}
@@ -337,7 +381,7 @@ export default function InLieuReallocation() {
                                     const currentReduceQty = selectedItemInfo ? selectedItemInfo.reduceQuantity : 0;
 
                                     return item.availableQuantity > 0 && (
-                                        <LieuItemCard 
+                                        <LieuItemCard
                                             key={item.itemId}
                                             itemId={item.itemId}
                                             itemName={item.itemName}
@@ -356,23 +400,23 @@ export default function InLieuReallocation() {
                         </LoadingWrapper>
                     </div>
                 </div>
-                {remainingBudget >= 0 && newItemsArray.length > 0 && requiredBudget > 0 && isNewItemsValid && isOldItemsValid ?(
+                {remainingBudget >= 0 && newItemsArray.length > 0 && requiredBudget > 0 && isNewItemsValid && isOldItemsValid ? (
                     <div className="button-container">
-                        <button 
-                            className="btn-secondary" 
+                        <button
+                            className="btn-secondary"
                             onClick={() => setPrintPROpen(true)}
                         >
                             <IconPrinter size={24} />Print Preview
                         </button>
-                        
-                        <button 
-                            className="btn-primary-rd-shadow" 
+
+                        <button
+                            className="btn-primary-rd-shadow"
                             onClick={handleSaveToDatabase}
                         >
                             <IconTransfer size={24} />Apply for Approval
                         </button>
                     </div>
-                ):(
+                ) : (
                     <div className="button-container">
                         <button className="btn-secondary" disabled>
                             <IconPrinter size={24} />Print Preview
@@ -382,7 +426,7 @@ export default function InLieuReallocation() {
                         </button>
                     </div>
                 )}
-                <ViewInLieu 
+                <ViewInLieu
                     requestDate={new Date().toLocaleString('en-PH')}
                     originalItems={selectedLieuItems.map(item => ({
                         itemId: item.itemId,
