@@ -13,7 +13,11 @@ export default function ItemsCountCard({icon, title, count, color}: {icon: strin
             </div>
             <div className="item-count-content">
                 <h3>{title}</h3>
-                <p>{count.toLocaleString()}</p>
+                {title === 'Total Planned Price' ? (
+                    <p>₱{count.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                ) : (
+                    <p>{count.toLocaleString()}</p>
+                )}
             </div>
         </div>
     )

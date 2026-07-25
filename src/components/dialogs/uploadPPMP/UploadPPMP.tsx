@@ -416,8 +416,8 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                             <h4>Upload PPMP for Laboratory here</h4>
                             <p>Supported formats: .xlsx, .xls</p>
                             <div className="status active">
-                            <p>All imported rows will be tagged to FY {year}</p>
-                        </div>
+                                <p>All imported rows will be tagged to FY {year}</p>
+                            </div>
                         </>
                         )}
                     </div>
