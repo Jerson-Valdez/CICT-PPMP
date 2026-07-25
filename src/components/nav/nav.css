@@ -2,7 +2,7 @@
 
 .nav-container{
     @apply flex flex-col items-center justify-start w-2xs h-screen p-3 gap-2 fixed top-0 left-0 transition-all duration-300 ease-in-out
-        rounded-br-lg rounded-tr-lg z-50;
+        rounded-br-lg rounded-tr-lg z-50 max-md:top-18 max-md:h-[calc(100%-72px)];
         background-color: var(--primary);
 
     &.collapsed {
@@ -95,6 +95,30 @@
             
             &:hover::after {
                 @apply w-full;
+            }
+        }
+    }
+
+    & .user-profile {
+        @apply flex flex-row items-center gap-2 px-2 mb-2 min-sm:hidden;
+
+        & .user-icon{
+            @apply p-1 px-3 rounded-full bg-white;
+            color: var(--primary);
+            & > p{
+                @apply text-lg font-bold;
+            }
+        }
+
+        & .user-info {
+            @apply flex flex-col items-start justify-center;
+
+            & .name {
+                @apply text-sm font-semibold text-white;
+            }
+            & .email{
+                @apply text-xs;
+                color: var(--text-gray);
             }
         }
     }

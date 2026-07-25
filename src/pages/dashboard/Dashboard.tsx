@@ -104,7 +104,7 @@ export default function Dashboard(){
         {icon: <IconStatusChange size={24} />, iconColor: "yellow", title: "Available Lieu Pool", description: "Planned but not requested", value: availableLieuPoolFunds, color: "yellow-red",},
         {icon: <IconCurrencyDollarOff size={24} />, iconColor: "purple", title: "Open Funds", description: "Not planned funds", value: openFunds, color: "purple-black", additionalInfo: `${openFundsPercentage?.toFixed(1)}% Unutilized`},
         {icon: <IconGitPullRequestDraft size={24} />, iconColor: "blue", title: "Purchase Request", description: "Funds currently in PR", value: requestedFunds, color: "cyan-blue",},
-        {icon: <IconChecklist size={24} />, iconColor: "green", title: "Arrived Items", description: "Allocated funds of arrived items", value: arrivedFunds,  color: "green-yellow",},
+        {icon: <IconChecklist size={24} />, iconColor: "green", title: "Fulfilled Items", description: "Allocated funds of fulfilled items", value: arrivedFunds,  color: "green-yellow",},
     ];
 
     function handleDashboardFiscalYearChange(newFiscalYear: string) {
@@ -136,7 +136,7 @@ export default function Dashboard(){
                             <div className="icon yellow">
                                 <IconAlertCircle size={24} />
                             </div>
-                            <div className="content">
+                            <div className="alert-card-content">
                                 <h3>In Lieu Approval</h3>
                                 <span>{pendingInLieuCount}</span>
                                 <p>In-Lieu requests that require approval.</p>

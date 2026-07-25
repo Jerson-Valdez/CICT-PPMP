@@ -10,7 +10,7 @@
                     bg-gradient-to-bl from-yellow-500/50 to-white border-yellow-500 text-yellow-500 border-r-4;
                 box-shadow: var(--yellow-shadow);
 
-                & > .content{
+                & > .alert-card-content{
                     & > h3{
                         @apply text-xs font-semibold;
                     }
@@ -37,7 +37,9 @@
             @apply flex flex-row flex-wrap items-start justify-center gap-5 w-full max-md:flex-col;
 
             & > .procurement-timeline-container{
-                @apply flex-6 flex flex-col items-start justify-start p-5 rounded-xl shadow-2xl w-full h-[420px];
+                @apply flex-6 flex flex-col items-start justify-start p-5 rounded-xl shadow-2xl w-full;
+                height: 28rem;
+                max-height: 40rem;
 
                 & > .procurement-timeline-header {
                     @apply flex flex-row items-center justify-start gap-3 w-full pb-3;
@@ -61,8 +63,9 @@
                 }
             }
             & > .ai-features-container{
-                @apply flex-5 flex flex-col items-center justify-start rounded-xl w-full min-w-80 h-[420px];
+                @apply flex-5 flex flex-col items-center justify-start rounded-xl w-full min-w-80;
                 box-shadow: var(--red-shadow);
+                height: 28rem;
                 
                 & > .ai-features-header{
                     @apply flex flex-row items-center justify-start gap-2 w-full pb-3 rounded-t-xl p-5;
