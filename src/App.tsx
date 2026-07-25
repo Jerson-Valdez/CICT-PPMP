@@ -177,7 +177,7 @@ function PrivateLayout() {
 
     return (
         <>
-            <Nav userRole={userRole} fiscalYears={fiscalYears} selectedFiscalYear={selectedFiscalYear} handleFiscalYearChange={handleFiscalYearChange} />
+            <Nav userRole={userRole} fiscalYears={fiscalYears} selectedFiscalYear={selectedFiscalYear} handleFiscalYearChange={handleFiscalYearChange} userFullName={userFullName} userEmailAddress={userEmailAddress} />
             <Header userFullName={userFullName} userEmailAddress={userEmailAddress} fiscalYears={fiscalYears} />
 
             <main className="main-content-wrapper">

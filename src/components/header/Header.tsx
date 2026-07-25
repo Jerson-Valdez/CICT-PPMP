@@ -71,7 +71,7 @@ export default function Header({ userFullName, userEmailAddress, fiscalYears }: 
           </div>
         ) : (
           <div className="icon royal-red">
-            <IconLayoutSidebarLeftCollapse size={30} onClick={toggleSidebar} color="white" />
+            <IconLayoutSidebarLeftCollapse size={30} onClick={toggleSidebar} />
           </div>
         )}
       </div>

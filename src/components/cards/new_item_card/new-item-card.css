@@ -16,7 +16,7 @@
     }
 
     & > .bottom-field-container {
-        @apply flex flex-row items-start justify-between w-full gap-3;
+        @apply flex flex-row items-start justify-between w-full gap-2 max-sm:flex-col;
 
         & .input-group:nth-child(1) {
             @apply flex-[2];

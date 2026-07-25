@@ -4,7 +4,7 @@
     @apply w-[calc(100%-288px)] h-18 flex flex-row fixed top-0 items-center justify-start ml-72 px-5 py-4 gap-5 max-md:w-full max-md:ml-0 max-md:gap-3 max-md:px-3 max-md:py-3 max-md:justify-between shadow-lg rounded-lg backdrop-blur-sm transition-all duration-300 ease-in-out z-50 max-md:bg-white/50;
 
     & .menu-toggle {
-        @apply hidden max-md:flex flex-row items-center justify-center text-2xl cursor-pointer;
+        @apply hidden max-md:flex flex-row items-center justify-center text-2xl;
     }
 
     & .title {
@@ -39,7 +39,7 @@
     }
 
     & .user-profile {
-        @apply flex flex-row items-center gap-2 px-2;
+        @apply flex flex-row items-center gap-2 px-2 max-sm:hidden;
 
         & .user-icon{
             @apply text-white p-1 px-3 rounded-full;
@@ -50,7 +50,7 @@
         }
 
         & .user-info {
-            @apply flex flex-col items-start justify-center max-sm:hidden;
+            @apply flex flex-col items-start justify-center;
 
             & .name {
                 @apply text-sm font-semibold;

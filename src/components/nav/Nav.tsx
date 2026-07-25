@@ -17,13 +17,15 @@ interface NavItem {
 }
 
 interface NavProps {
+    userFullName: string;
+    userEmailAddress: string;
     userRole: string;
     selectedFiscalYear: string;
     fiscalYears: string[];
     handleFiscalYearChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-export default function Nav({ userRole, selectedFiscalYear, fiscalYears, handleFiscalYearChange }: NavProps) {
+export default function Nav({userFullName, userEmailAddress, userRole, selectedFiscalYear, fiscalYears, handleFiscalYearChange }: NavProps) {
 
     const navLink: NavItem[] = [       
         {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={20} />},
@@ -108,6 +110,15 @@ export default function Nav({ userRole, selectedFiscalYear, fiscalYears, handleF
                 ))}
             </div>
             <hr />
+            <div className="user-profile">
+                <div className="user-icon">
+                    <p>{userFullName.charAt(0)}</p>
+                </div>
+                <div className="user-info">
+                    <span className="name">{userFullName}</span>
+                    <span className="email">{userEmailAddress}</span>
+                </div>
+            </div>
             <button className="btn-solid red" onClick={handleLogout}>
                 <IconLogout2 size={24} />
                 Logout
