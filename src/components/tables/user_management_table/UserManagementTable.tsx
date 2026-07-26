@@ -43,26 +43,44 @@ export default function UserManagementTable({data, onPromote, onDeactivate, onAc
                                     </div></div>
                             </td>
                             <td>
+                                {user.role === "Admin" ? (
                                 <div className="button-container">
-                                    <button className="btn-solid gray" disabled={user.role === "Admin"}>
+                                    <button className="btn-solid gray" disabled>
                                             <IconRestore size={18} /> Reset Password
                                     </button>
-                                    <button className="btn-solid blue" onClick={() => onPromote(user.userId)} disabled={user.role === "Admin"}>
+                                    <button className="btn-solid blue" disabled >
                                             <IconUserUp size={18} /> Promote
                                     </button>
-                                    {user.status === "Active" ? (
-                                        <button className="btn-solid red" onClick={() => onDeactivate(user.userId)} disabled={user.role === "Admin"}>
-                                            <IconUserCancel size={18} /> Deactivate
-                                        </button>
-                                    ) : (
-                                        <button className="btn-solid green" onClick={() => onActivate(user.userId)} disabled={user.role === "Admin"}>
-                                            <IconUserCheck size={18} /> Activate
-                                        </button>
-                                    )}
-                                    <button className="btn-secondary" disabled={user.role === "Admin"}>
+                                
+                                    <button className="btn-solid red" disabled >
+                                        <IconUserCancel size={18} /> Deactivate
+                                    </button>
+                                    <button className="btn-secondary" disabled >
                                         <IconTrash size={18} /> Delete
                                     </button>
                                 </div>
+                                ):(
+                                <div className="button-container">
+                                    <button className="btn-solid gray" >
+                                            <IconRestore size={18} /> Reset Password
+                                    </button>
+                                    <button className="btn-solid blue" onClick={() => onPromote(user.userId)}>
+                                            <IconUserUp size={18} /> Promote
+                                    </button>
+                                {user.status === "Active" ? (
+                                    <button className="btn-solid red" onClick={() => onDeactivate(user.userId)}>
+                                        <IconUserCancel size={18} /> Deactivate
+                                    </button>
+                                ) : (
+                                    <button className="btn-solid green" onClick={() => onActivate(user.userId)} >
+                                        <IconUserCheck size={18} /> Activate
+                                    </button>
+                                )}
+                                    <button className="btn-secondary" >
+                                        <IconTrash size={18} /> Delete
+                                    </button>
+                                </div>
+                                )}
                             </td>
                         </tr>
                     ))}

@@ -107,8 +107,6 @@
         
         &.expanded {
             @apply h-auto mt-5 border-t pt-5;
-
-
         }
 
         & > .header-pr-history {
