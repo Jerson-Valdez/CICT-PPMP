@@ -48,7 +48,7 @@ export default function ResetPassword(){
         setAccessToken(accessToken);
         setRefreshToken(refreshToken);
 
-    }, [accessToken, refreshToken]);
+    }, []);
 
     function handlePasswordChange(e : React.ChangeEvent<HTMLInputElement>){
         const temp: string = e.target.value;
