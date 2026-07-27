@@ -5,7 +5,7 @@ import { confirm } from "../../components/dialogs/global_dialog/DialogService";
 import { showCircleLoadingDialog } from "../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService";
 import { toast } from "../../components/toast/ToastService";
 import { useOutletContext } from "react-router";
-import { getAccessToken, logoutUser } from "../../../supadb";
+import { getAccessToken, getRefreshToken, logoutUser } from "../../../supadb";
 import { useNavigate } from "react-router";
 import InfoNote from "../../components/notes/info_note/InfoNote";
 import WarningNote from "../../components/notes/warning_note/WarningNote";
@@ -184,11 +184,12 @@ export default function Settings() {
                     const formData = new FormData();
                     formData.append('currentPassword', String(currentPassword));
                     formData.append('newPassword', String(newPassword));
-
+                    formData.append('accessToken', String(await getAccessToken()));
+                    formData.append('refreshToken', String(await getRefreshToken()));
                     const loading = showCircleLoadingDialog();
 
                     try {
-                        const response = await fetch("https://test-ppmp.onrender.com/api/auth/update_password/", {
+                        const response = await fetch("http://127.0.0.1:8000/api/auth/update_password/", {
                             method: "PUT",
                             body: formData,
                             headers: {

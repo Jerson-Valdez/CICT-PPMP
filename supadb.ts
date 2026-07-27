@@ -17,6 +17,14 @@ export async function getAccessToken(): Promise<string | undefined> {
   return session?.access_token;
 }
 
+export async function getRefreshToken(): Promise<string | undefined> {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  return session?.refresh_token;
+}
+
 export async function logoutUser(): Promise<void> {
   await supabase.auth.signOut();
 }
