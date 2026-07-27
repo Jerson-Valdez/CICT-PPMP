@@ -146,6 +146,10 @@ export default function UserManagement() {
         }]);
     };
 
+    function handleUserDeletion(userId: number) {
+        setUsers(prevTableData => prevTableData.filter(user => user.userId !== userId));
+    }
+
     function onPromote(userId: number) {
         confirm("User Promotion", "Are you sure you want to promote this user? \n Note: Once the user is promoted, you will be domoted to user level access", "warning", "Continue Promotion")
             .then(async (confirmed) => {
@@ -302,6 +306,70 @@ export default function UserManagement() {
             });
     }
 
+    function onDelete(userId: number) {
+        confirm("Delete User", "Are you sure you want to delete this user? \n Note: This action cannot be undone and the user will lose all access to the system.", "warning", "Continue Deletion")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const formData = new FormData();
+                    formData.append('userId', String(userId));
+
+                    const loading = showCircleLoadingDialog();
+
+                    try {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/user/delete_user/", {
+                            method: "DELETE",
+                            body: formData,
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            }
+                        });
+                        if (!response.ok) {
+                            toast.error("Failed to delete user. Please try again later.");
+                            throw new Error("Failed to delete User.");
+                        }else {
+                            toast.success("User deleted successfully!");
+                            handleUserDeletion(userId)
+                        }
+                    }
+                    catch (error) {
+                        toast.error("Error occurred while deleting User.");
+                    }
+                    finally {
+                        loading();
+                    }
+                }
+            });
+    }
+
+    async function onSendResetLink(email: string){
+
+        const closeLoading = showCircleLoadingDialog();
+
+        try {
+            const formData = new FormData();
+            formData.append("email", email);
+
+            const response = await fetch("https://test-ppmp.onrender.com/api/auth/forgot_password/", {
+                method: "POST",
+                body: formData
+            });
+
+            const responseData = await response.json();
+            
+            if(responseData.status === "success"){
+                toast.success("Password reset link sent successfully to " + email + "!");
+            } else {
+                toast.error(responseData.message || "Failed to send password reset link.");
+            }
+        } catch (error) {
+            console.error("Error sending password reset link:", error);
+            toast.error("Network error. Please try again later.");
+        } finally {
+            closeLoading();
+        }
+    }
+
   return (
     <main className="page-container usermanagement">
       <div className="create-user-container">
@@ -356,7 +424,14 @@ export default function UserManagement() {
             </div>}
       </div>
       <LoadingWrapper isLoading={isInitialLoading} skeleton={<TableSkeleton />}>
-        <UserManagementTable data={users} onPromote={onPromote} onDeactivate={onDeactivate} onActivate={onActivate} />
+        <UserManagementTable 
+            data={users} 
+            onPromote={onPromote} 
+            onDeactivate={onDeactivate} 
+            onActivate={onActivate} 
+            onDelete={onDelete}
+            onSendResetLink={onSendResetLink}
+            />
       </LoadingWrapper>
     </main>
   );

@@ -1,10 +1,16 @@
 import LeftLoginContainer from '../../components/containers/left_login_container/LeftLoginContainer';
 import './login.css';
 import { IconLock, IconEye, IconEyeOff, IconX, IconCheck } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import cict from '../../assets/univlogo/cict_logo.svg';
+import { useNavigate, useParams } from 'react-router';
+import { showCircleLoadingDialog } from '../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService';
+import { toast } from '../../components/toast/ToastService';
 
 export default function ResetPassword(){
+    const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [refreshToken, setRefreshToken] = useState<string | null>(null);
+
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
 
@@ -24,9 +30,25 @@ export default function ResetPassword(){
         setShowNewPassword(!showNewPassword);
     }
 
+    const { access_token, refresh_token } = useParams();
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+
+        if (!access_token || !refresh_token) {
+            navigate("/login");
+            return;
+        }
+
+        setAccessToken(access_token);
+        setRefreshToken(refresh_token);
+
+    }, [access_token, refresh_token]);
+
     function handlePasswordChange(e : React.ChangeEvent<HTMLInputElement>){
         const temp: string = e.target.value;
-        setPassword(temp);
+        setPassword("");
 
         setEightCharacter(temp.length >= 8);
         setUpperLowerCase(/(?=.*[a-z])(?=.*[A-Z])/.test(temp));
@@ -42,7 +64,7 @@ export default function ResetPassword(){
 
     function handleConfirmPasswordChange(e : React.ChangeEvent<HTMLInputElement>){
         const temp: string = e.target.value;
-        setConfirmPassword(temp);
+        setConfirmPassword("");
 
         if(!temp.trim()){
             setConfirmPasswordError("Confirm password is required.");
@@ -50,6 +72,37 @@ export default function ResetPassword(){
             setConfirmPasswordError("Passwords do not match.");
         }else{
             setConfirmPasswordError("");
+            setConfirmPassword(temp);
+        }
+    }
+
+    async function resetPassword(){
+        const closeLoading = showCircleLoadingDialog();
+
+        const formData = new FormData();
+        formData.append("password", password);
+        formData.append("accessToken", accessToken || '');
+        formData.append("refreshToken", refreshToken || '');
+
+        try {
+            const response = await fetch("https://test-ppmp.onrender.com/api/auth/reset_password/", {
+                method: "PUT",
+                body: formData
+            });
+
+            const responseData = await response.json();
+
+            if(responseData.status === "success"){
+                toast.success("Password reset successfully! Please log in with your new password.");
+                navigate("/login");
+            } else {
+                toast.error(responseData.message || "Failed to reset password. Please try again.");
+            }
+        } catch (error) {
+            toast.error("Network error. Please try again later.");
+            console.error("Error resetting password:", error);
+        } finally {
+            closeLoading();
         }
     }
 
@@ -95,8 +148,8 @@ export default function ResetPassword(){
                         {specialCharacter ? <IconCheck size={20} /> : <IconX size={20} />} Include at least one special character
                     </li>
                 </ul>
-                {confirmPassword && !confirmPasswordError && eightCharacter && upperLowerCase && number && specialCharacter ? (
-                    <button type="submit" className='btn-primary-rd-shadow'>Reset Password</button>
+                {confirmPassword && !confirmPasswordError && eightCharacter && upperLowerCase && number && specialCharacter && password === confirmPassword ? (
+                    <button type="submit" className='btn-primary-rd-shadow' onClick={resetPassword}>Reset Password</button>
                 ) : (
                     <button type="submit" className='btn-primary-rd-shadow' disabled>Reset Password</button>
                 )}
