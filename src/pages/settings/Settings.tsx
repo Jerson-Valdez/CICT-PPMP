@@ -189,7 +189,7 @@ export default function Settings() {
                     const loading = showCircleLoadingDialog();
 
                     try {
-                        const response = await fetch("http://127.0.0.1:8000/api/auth/update_password/", {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/auth/update_password/", {
                             method: "PUT",
                             body: formData,
                             headers: {
