@@ -104,11 +104,10 @@ export default function ResetPassword(){
                 toast.success("Password reset successfully! Please log in with your new password.");
                 try {
                     await logoutUser();
+                    navigate("/login");
                 } catch (logoutErr) {
                     console.log("Cleanup normal:", logoutErr);
                 }
-
-                navigate("/login");
             } else {
                 toast.error(responseData.message || "Failed to reset password. Please try again.");
             }
