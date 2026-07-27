@@ -6,6 +6,7 @@ import cict from '../../assets/univlogo/cict_logo.svg';
 import { useNavigate } from 'react-router';
 import { showCircleLoadingDialog } from '../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService';
 import { toast } from '../../components/toast/ToastService';
+import { logoutUser } from '../../../supadb';
 
 export default function ResetPassword(){
     const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -32,23 +33,22 @@ export default function ResetPassword(){
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-
-        const hash = window.location.hash.substring(1);
+   useEffect(() => {
+        const hash = window.location.hash.substring(1); 
         const params = new URLSearchParams(hash);
 
-        const accessToken = params.get("access_token");
-        const refreshToken = params.get("refresh_token");
+        const extractedAccessToken = params.get('access_token');
+        const extractedRefreshToken = params.get('refresh_token');
+        const type = params.get('type');
 
-        if (!accessToken || !refreshToken) {
-            navigate("/login");
-            return;
+        if (type === 'recovery' && extractedAccessToken && extractedRefreshToken) {
+            setAccessToken(extractedAccessToken);
+            setRefreshToken(extractedRefreshToken);
+        } else {
+            toast.error("Invalid or expired password reset link.");
+            navigate('/login');
         }
-
-        setAccessToken(accessToken);
-        setRefreshToken(refreshToken);
-
-    }, []);
+    }, [navigate]);
 
     function handlePasswordChange(e : React.ChangeEvent<HTMLInputElement>){
         const temp: string = e.target.value;
@@ -80,7 +80,9 @@ export default function ResetPassword(){
         }
     }
 
-    async function resetPassword(){
+    async function resetPassword(e: React.FormEvent) {
+        e.preventDefault();
+
         const closeLoading = showCircleLoadingDialog();
 
         const formData = new FormData();
@@ -96,8 +98,14 @@ export default function ResetPassword(){
 
             const responseData = await response.json();
 
-            if(responseData.status === "success"){
+            if (response.ok || responseData.status === "success") {
                 toast.success("Password reset successfully! Please log in with your new password.");
+                try {
+                    await logoutUser();
+                } catch (logoutErr) {
+                    console.log("Cleanup normal:", logoutErr);
+                }
+
                 navigate("/login");
             } else {
                 toast.error(responseData.message || "Failed to reset password. Please try again.");
