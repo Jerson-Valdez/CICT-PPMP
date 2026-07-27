@@ -205,7 +205,7 @@ export default function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password/" element={<ResetPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 {/* PRIVATE ROUTES (Protected by PrivateLayout) kailangan naka logged in ang user */}
                 <Route element={<PrivateLayout />}>
