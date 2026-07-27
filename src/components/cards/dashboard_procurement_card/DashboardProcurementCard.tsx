@@ -6,7 +6,8 @@ import {
     IconTransform, 
     IconCloudUpload, 
     IconClock, 
-    IconClockCancel 
+    IconClockCancel,
+    IconTableExport 
 } from '@tabler/icons-react';
 
 interface ProcurementCardProps {
@@ -31,11 +32,11 @@ export default function DashboardProcurementCard({
         rejected: 'red',
         approved: 'green',
         fulfilled: 'green',
+        export: 'green',
         requested: 'blue',
         reallocate: 'orange',
         upload: 'purple',
         cancelled: 'gray',
-        export: 'purple',
         default: 'yellow'
     };
 
@@ -43,11 +44,11 @@ export default function DashboardProcurementCard({
         rejected: <IconClockX size={18} />,
         approved: <IconClockCheck size={18} />,
         fulfilled: <IconClockCheck size={18} />,
+        export: <IconTableExport size={18} />,
         requested: <IconFileStack size={18} />,
         reallocate: <IconTransform size={18} />,
         upload: <IconCloudUpload size={18} />,
         cancelled: <IconClockCancel size={18} />,
-        export: <IconCloudUpload size={18} />,
         default: <IconClock size={18} />
     };
 
