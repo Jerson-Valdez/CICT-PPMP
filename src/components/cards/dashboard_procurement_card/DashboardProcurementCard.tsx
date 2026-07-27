@@ -35,17 +35,19 @@ export default function DashboardProcurementCard({
         reallocate: 'orange',
         upload: 'purple',
         cancelled: 'gray',
+        export: 'purple',
         default: 'yellow'
     };
 
     const iconMap: Record<string, React.ReactNode> = {
         rejected: <IconClockX size={18} />,
         approved: <IconClockCheck size={18} />,
-        arrived: <IconClockCheck size={18} />,
+        fulfilled: <IconClockCheck size={18} />,
         requested: <IconFileStack size={18} />,
         reallocate: <IconTransform size={18} />,
         upload: <IconCloudUpload size={18} />,
         cancelled: <IconClockCancel size={18} />,
+        export: <IconCloudUpload size={18} />,
         default: <IconClock size={18} />
     };
 
