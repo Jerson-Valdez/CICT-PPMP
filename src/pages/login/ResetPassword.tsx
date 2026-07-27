@@ -44,8 +44,6 @@ export default function ResetPassword(){
         if (type === 'recovery' && extractedAccessToken && extractedRefreshToken) {
             setAccessToken(extractedAccessToken);
             setRefreshToken(extractedRefreshToken);
-            console.log("Access Token:", extractedAccessToken);
-            console.log("Refresh Token:", extractedRefreshToken);
         } else {
             toast.error("Invalid or expired password reset link.");
             navigate('/login');
