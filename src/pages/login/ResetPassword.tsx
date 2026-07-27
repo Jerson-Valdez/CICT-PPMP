@@ -3,7 +3,7 @@ import './login.css';
 import { IconLock, IconEye, IconEyeOff, IconX, IconCheck } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import cict from '../../assets/univlogo/cict_logo.svg';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { showCircleLoadingDialog } from '../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService';
 import { toast } from '../../components/toast/ToastService';
 
@@ -30,21 +30,25 @@ export default function ResetPassword(){
         setShowNewPassword(!showNewPassword);
     }
 
-    const { access_token, refresh_token } = useParams();
-
     const navigate = useNavigate();
 
     useEffect(() => {
 
-        if (!access_token || !refresh_token) {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+
+        const accessToken = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
+
+        if (!accessToken || !refreshToken) {
             navigate("/login");
             return;
         }
 
-        setAccessToken(access_token);
-        setRefreshToken(refresh_token);
+        setAccessToken(accessToken);
+        setRefreshToken(refreshToken);
 
-    }, [access_token, refresh_token]);
+    }, [accessToken, refreshToken]);
 
     function handlePasswordChange(e : React.ChangeEvent<HTMLInputElement>){
         const temp: string = e.target.value;
