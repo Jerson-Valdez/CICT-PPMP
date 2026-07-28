@@ -49,15 +49,8 @@ function PrivateLayout() {
             }
 
             try {
-                const formDataPr = new FormData();
-                const formDataApproved = new FormData();
-                const formDataRevised = new FormData();
 
-                formDataPr.append('documentType', "PURCHASE REQUEST");
-                formDataApproved.append('documentType', "APPROVED PPMP");
-                formDataRevised.append('documentType', "REVISED PPMP");
-
-                const [fiscalResponse, headerResponse, deanNameResponse, prAsignatoriesResponse, approvedAsignatoriesResponse, revisedAsignatoriesResponse] = await Promise.all([
+                const [fiscalResponse, headerResponse, deanNameResponse, asignatoriesResponse] = await Promise.all([
                     fetch("https://test-ppmp.onrender.com/api/fiscal_years/", {
                         method: "GET",
                         headers: { Authorization: `Bearer ${accessToken}` }
@@ -71,21 +64,9 @@ function PrivateLayout() {
                         headers: { Authorization: `Bearer ${accessToken}` }
                     }),
                     fetch("https://test-ppmp.onrender.com/api/signatories/", {
-                        method: "POST",
-                        body: formDataPr,
-                        headers: { Authorization: `Bearer ${accessToken}` }
-                    }),
-                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
-                        method: "POST",
-                        body: formDataApproved,
-                        headers: { Authorization: `Bearer ${accessToken}` }
-                    }),
-                    fetch("https://test-ppmp.onrender.com/api/signatories/", {
-                        method: "POST",
-                        body: formDataRevised,
+                        method: "GET",
                         headers: { Authorization: `Bearer ${accessToken}` }
                     })
-
                 ]);
 
                 if (!fiscalResponse.ok) {
@@ -93,12 +74,13 @@ function PrivateLayout() {
                     return;
                 } else {
                     const fiscalResult = await fiscalResponse.json();
-                    console.log("Fiscal years retrieved: ", fiscalResult);
                     
-                    const extractedYears = fiscalResult.map((item: any) => item.Year);
-                    const sortedYears = extractedYears.sort((a: string, b: string) => b.localeCompare(a));
-                    setSelectedFiscalYear(sortedYears[0]);
-                    setFiscalYears(sortedYears);
+                    if (Array.isArray(fiscalResult) && fiscalResult.length > 0) {
+                        const extractedYears = fiscalResult.map((item: any) => item.Year);
+                        const sortedYears = extractedYears.sort((a: string, b: string) => b.localeCompare(a));
+                        setSelectedFiscalYear(sortedYears[0]);
+                        setFiscalYears(sortedYears);
+                    }
                 }
 
                 if (!headerResponse.ok) {
@@ -121,31 +103,17 @@ function PrivateLayout() {
                     setDeanName(deanNameResult.fullname);
                 }
 
-                if (!prAsignatoriesResponse.ok) {
+                if (!asignatoriesResponse.ok) {
                     toast.error("Failed to retrieve asignatories.");
                     return;
                 } else {
-                    const asignatoriesResult = await prAsignatoriesResponse.json();
-                    console.log("Asignatories retrieved: ", asignatoriesResult.signatories);
-                    setPrAsignatories(asignatoriesResult.signatories);
-                }
+                    const asignatoriesResult = await asignatoriesResponse.json();
 
-                if (!approvedAsignatoriesResponse.ok) {
-                    toast.error("Failed to retrieve approved asignatories.");
-                    return;
-                }else {
-                    const approvedAsignatoriesResult = await approvedAsignatoriesResponse.json();
-                    console.log("Approved Asignatories retrieved: ", approvedAsignatoriesResult.signatories);
-                    setApprovedAsignatories(approvedAsignatoriesResult.signatories);
-                }
-
-                if (!revisedAsignatoriesResponse.ok) {
-                    toast.error("Failed to retrieve revised asignatories.");
-                    return;
-                }else {
-                    const revisedAsignatoriesResult = await revisedAsignatoriesResponse.json();
-                    console.log("Revised Asignatories retrieved: ", revisedAsignatoriesResult.signatories);
-                    setRevisedAsignatories(revisedAsignatoriesResult.signatories);
+                    if (asignatoriesResult && asignatoriesResult.signatories) {
+                        setPrAsignatories(asignatoriesResult.signatories.prSignatories);
+                        setApprovedAsignatories(asignatoriesResult.signatories.approvedSignatories);
+                        setRevisedAsignatories(asignatoriesResult.signatories.revisedSignatories);
+                    }
                 }
 
             } catch (error) {

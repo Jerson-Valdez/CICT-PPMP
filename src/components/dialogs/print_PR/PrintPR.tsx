@@ -148,11 +148,11 @@ export default function PrintPR({ prId, itemName, itemDescription, unitMeasureme
                         <tr>
                             <td className="sign" colSpan={2}><strong>Printed Name:</strong></td>
                             <td className="sign-label uppercase" colSpan={2}><strong>{deanName}</strong></td>
-                            <td className="sign-label uppercase" colSpan={2}><strong>{prAsignatories.map((signatory: any) => signatory.fullName).join(", ")}</strong></td>
+                            <td className="sign-label uppercase" colSpan={2}><strong>{prAsignatories?.map((signatory: any) => signatory.fullName).join(", ")}</strong></td>
                         </tr>
                         <tr><td className="sign" colSpan={2}><strong>Designation:</strong></td>
                             <td className="sign-label" colSpan={2}><p className="text-xs italic font-light">Dean, CICT</p></td>
-                            <td className="sign-label" colSpan={2}><p className="text-xs italic font-light">{prAsignatories.map((signatory: any) => signatory.position).join(", ")}</p></td>
+                            <td className="sign-label" colSpan={2}><p className="text-xs italic font-light">{prAsignatories?.map((signatory: any) => signatory.position).join(", ")}</p></td>
                         </tr>
                     </tbody>
                 </table>

@@ -18,12 +18,26 @@
         }
         & > .pr-asignatory, & > .approved-asignatory, & > .revised-asignatory{
             @apply flex flex-col px-5 items-start justify-start gap-2 w-full mb-8;
-            & > h3{
-                @apply text-sm font-black w-full;
+            & > .title-addbtn{
+                @apply flex flex-row items-center justify-between gap-2 w-full;
+                & > h3{
+                    @apply text-sm font-black;
+                }
+                & > button{
+                    @apply text-xs p-2;
+                }
             }
         }
         & .input-row{
-            @apply flex flex-row gap-5 w-full max-md:flex-col;
+            @apply flex flex-row items-center gap-5 w-full max-md:flex-col;
+            & > .btn-secondary{
+                &.green{
+                    @apply border-green-500 text-green-500;
+                }
+                &.red{
+                    @apply border-red-500 text-red-500;
+                }
+            }
         }
     }
     & > .security-container{

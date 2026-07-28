@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./settings.css";
-import { IconUser, IconEye, IconEyeOff, IconShield, IconCheck, IconX, IconStackBack } from '@tabler/icons-react';
-import { confirm } from "../../components/dialogs/global_dialog/DialogService";
+import { IconUser, IconEye, IconEyeOff, IconShield, IconCheck, IconX, IconStackBack, IconPlus, IconTrash } from '@tabler/icons-react';
+import { confirm, notify } from "../../components/dialogs/global_dialog/DialogService";
 import { showCircleLoadingDialog } from "../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService";
 import { toast } from "../../components/toast/ToastService";
 import { useOutletContext } from "react-router";
@@ -225,6 +225,51 @@ export default function Settings() {
             });
     }
 
+    function handleDeleteAsignatory(category: 'pr' | 'approved' | 'revised', index: number) {
+        if (category === 'pr') {
+            if(localPrAsignatories.length <= 1){
+                notify("Action Prohibited", "At least one PR signatory is required.", "error", "I Understand");
+                return;
+            }
+            const updated = [...localPrAsignatories];
+            updated.splice(index, 1);
+            setLocalPrAsignatories(updated);
+        }
+        else if (category === 'approved') {
+            if(localApprovedAsignatories.length <= 1){
+                notify("Action Prohibited", "At least one Approved signatory is required.", "error", "I Understand");
+                return;
+            }
+            const updated = [...localApprovedAsignatories];
+            updated.splice(index, 1);
+            setLocalApprovedAsignatories(updated);
+        }
+        else if (category === 'revised') {
+            if(localRevisedAsignatories.length <= 1){
+                notify("Action Prohibited", "At least one Revised signatory is required.", "error", "I Understand");
+                return;
+            }
+            const updated = [...localRevisedAsignatories];
+            updated.splice(index, 1);
+            setLocalRevisedAsignatories(updated);
+        }
+    }
+
+    function handleAddAsignatory(category: 'pr' | 'approved' | 'revised') {
+        const newSignatory = {
+            signatoryId: Date.now(),
+            fullName: '',
+            position: ''
+        };
+        if (category === 'pr') {
+            setLocalPrAsignatories([...localPrAsignatories, newSignatory]);
+        } else if (category === 'approved') {
+            setLocalApprovedAsignatories([...localApprovedAsignatories, newSignatory]);
+        } else if (category === 'revised') {
+            setLocalRevisedAsignatories([...localRevisedAsignatories, newSignatory]);
+        }
+    }
+
     function onAsignatoriesUpdate(asignatoriesType: 'pr' | 'approved' | 'revised') {
         confirm("Signatories Update", "Note: Updating signatories will affect the printing process of the documents.", "info", "Yes Update Signatories")
             .then(async (confirmed) => {
@@ -246,22 +291,22 @@ export default function Settings() {
                     if (asignatoriesType === 'pr') {
                         const payload = formatAsignatoriesForBackend(localPrAsignatories);
                         formData.append('signatories', JSON.stringify(payload));
-                        console.log("PR Payload: ", payload);
+                        formData.append('documentType', 'PURCHASE REQUEST');
                     } else if (asignatoriesType === 'approved') {
                         const payload = formatAsignatoriesForBackend(localApprovedAsignatories);
                         formData.append('signatories', JSON.stringify(payload));
-                        console.log("Approved Payload: ", payload);
+                        formData.append('documentType', 'APPROVED PPMP');
                     } else if (asignatoriesType === 'revised') {
                         const payload = formatAsignatoriesForBackend(localRevisedAsignatories);
                         formData.append('signatories', JSON.stringify(payload));
-                        console.log("Revised Payload: ", payload);
+                        formData.append('documentType', 'REVISED PPMP');
                     }
 
                     const loading = showCircleLoadingDialog();
 
                     try {
                         const response = await fetch("https://test-ppmp.onrender.com/api/update_signatories/", {
-                            method: "PUT",
+                            method: "POST",
                             body: formData,
                             headers: {
                                 "Authorization": `Bearer ${await getAccessToken() || ""}`
@@ -401,7 +446,13 @@ export default function Settings() {
                     </div>
                 </div>
                 <div className="pr-asignatory">
-                    <h3>Purchase Request Signatories</h3>
+                    <div className="title-addbtn">
+                        <h3>Purchase Request Signatories</h3>
+                        <button className="btn-secondary" onClick={handleAddAsignatory.bind(null, 'pr')}>
+                            <IconPlus size={18} />
+                            Add PR Signatory
+                        </button>
+                    </div>
                     {localPrAsignatories.map((signatory: any, index: number) => (
                         <div key={signatory.signatoryId} className="input-row">
                             <div className="field-group">
@@ -414,6 +465,9 @@ export default function Settings() {
                                 <input type="text" id={`position-${signatory.signatoryId}-pr`} value={signatory.position} onChange={(e) => handleAsignatoryChange("pr", index, 'position', e.target.value)}/>
                                 <p className="error-message" id={`positionError-${signatory.signatoryId}-pr`}></p>
                             </div>
+                            <button className="btn-secondary red" onClick={() => handleDeleteAsignatory("pr", index)}>
+                                <IconTrash size={18} />
+                            </button>
                         </div>
                     ))}
                     {isPrDirty && (
@@ -423,7 +477,13 @@ export default function Settings() {
                     )}
                 </div>
                 <div className="pr-asignatory">
-                    <h3>Approved PPMP Signatories</h3>
+                    <div className="title-addbtn">
+                        <h3>Approved PPMP Signatories</h3>
+                        <button className="btn-secondary" onClick={handleAddAsignatory.bind(null, 'approved')}>
+                            <IconPlus size={18} />
+                            Add Approved Signatory
+                        </button>
+                    </div>
                     {localApprovedAsignatories.map((signatory: any, index: number) => (
                         <div key={signatory.signatoryId} className="input-row">
                             <div className="field-group">
@@ -436,6 +496,9 @@ export default function Settings() {
                                 <input type="text" id={`position-${signatory.signatoryId}-approved`} value={signatory.position} onChange={(e) => handleAsignatoryChange("approved", index, 'position', e.target.value)} />
                                 <p className="error-message" id={`positionError-${signatory.signatoryId}-approved`}></p>
                             </div>
+                            <button className="btn-secondary red" onClick={() => handleDeleteAsignatory("approved", index)}>
+                                <IconTrash size={18} />
+                            </button>
                         </div>
                     ))}
                     {isApprovedDirty && (
@@ -445,7 +508,13 @@ export default function Settings() {
                     )}
                 </div>
                 <div className="pr-asignatory">
-                    <h3>Revised PPMP Signatories</h3>
+                    <div className="title-addbtn">
+                        <h3>Revised PPMP Signatories</h3>
+                        <button className="btn-secondary" onClick={handleAddAsignatory.bind(null, 'revised')}>
+                            <IconPlus size={18} />
+                            Add Revised Signatory
+                        </button>
+                    </div>
                     {localRevisedAsignatories.map((signatory: any, index: number) => (
                         <div key={signatory.signatoryId} className="input-row">
                             <div className="field-group">
@@ -458,6 +527,9 @@ export default function Settings() {
                                 <input type="text" id={`position-${signatory.signatoryId}-revised`} value={signatory.position} onChange={(e) => handleAsignatoryChange("revised", index, 'position', e.target.value)} />
                                 <p className="error-message" id={`positionError-${signatory.signatoryId}-revised`}></p>
                             </div>
+                            <button className="btn-secondary red" onClick={() => handleDeleteAsignatory("revised", index)}>
+                                <IconTrash size={18} />
+                            </button>
                         </div>
                     ))}
                     {isRevisedDirty && (
