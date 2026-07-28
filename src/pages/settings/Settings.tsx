@@ -226,7 +226,7 @@ export default function Settings() {
     }
 
     function onAsignatoriesUpdate(asignatoriesType: 'pr' | 'approved' | 'revised') {
-        confirm("Asignatories Update", "Note: Updating asignatories will affect the printing process of the documents.", "info", "Yes Update Asignatories")
+        confirm("Signatories Update", "Note: Updating signatories will affect the printing process of the documents.", "info", "Yes Update Signatories")
             .then(async (confirmed) => {
                 if (confirmed) {
 
@@ -269,10 +269,10 @@ export default function Settings() {
                         });
                         if (!response.ok) {
                             console.log(response);
-                            toast.error("Failed to update asignatories. Please try again.");
-                            throw new Error("Failed to update asignatories.");
+                            toast.error("Failed to update signatories. Please try again.");
+                            throw new Error("Failed to update signatories.");
                         }else {
-                            toast.success("Asignatories updated successfully!");
+                            toast.success("Signatories updated successfully!");
                             if (asignatoriesType === 'pr') {
                                 setPrAsignatories(localPrAsignatories);
                             } else if (asignatoriesType === 'approved') {
@@ -280,12 +280,12 @@ export default function Settings() {
                             } else if (asignatoriesType === 'revised') {
                                 setRevisedAsignatories(localRevisedAsignatories);
                             }else {
-                                toast.error("Invalid asignatories type.");
+                                toast.error("Invalid signatories type.");
                             }
                         }
                     }
                     catch (error) {
-                        toast.error("Error occurred while updating asignatories.");
+                        toast.error("Error occurred while updating signatories.");
                     }
                     finally {
                         loading();
@@ -397,11 +397,11 @@ export default function Settings() {
                     </div>
                     <div className="title">
                         <h2>Content Management</h2>
-                        <p>Manage asignatories for the contents</p>
+                        <p>Manage Signatories for the contents</p>
                     </div>
                 </div>
                 <div className="pr-asignatory">
-                    <h3>Purchase Request Asignatories</h3>
+                    <h3>Purchase Request Signatories</h3>
                     {localPrAsignatories.map((signatory: any, index: number) => (
                         <div key={signatory.signatoryId} className="input-row">
                             <div className="field-group">
@@ -418,12 +418,12 @@ export default function Settings() {
                     ))}
                     {isPrDirty && (
                         <button className="btn-primary-rd-shadow" onClick={() => onAsignatoriesUpdate('pr')}>
-                            Update Purchase Request Asignatories
+                            Update Purchase Request Signatories
                         </button>
                     )}
                 </div>
                 <div className="pr-asignatory">
-                    <h3>Approved PPMP Asignatories</h3>
+                    <h3>Approved PPMP Signatories</h3>
                     {localApprovedAsignatories.map((signatory: any, index: number) => (
                         <div key={signatory.signatoryId} className="input-row">
                             <div className="field-group">
@@ -440,12 +440,12 @@ export default function Settings() {
                     ))}
                     {isApprovedDirty && (
                         <button className="btn-primary-rd-shadow" onClick={() => onAsignatoriesUpdate('approved')}>
-                            Update Approved PPMP Asignatories
+                            Update Approved PPMP Signatories
                         </button>
                     )}
                 </div>
                 <div className="pr-asignatory">
-                    <h3>Revised PPMP Asignatories</h3>
+                    <h3>Revised PPMP Signatories</h3>
                     {localRevisedAsignatories.map((signatory: any, index: number) => (
                         <div key={signatory.signatoryId} className="input-row">
                             <div className="field-group">
@@ -462,7 +462,7 @@ export default function Settings() {
                     ))}
                     {isRevisedDirty && (
                         <button className="btn-primary-rd-shadow" onClick={() => onAsignatoriesUpdate('revised')}>
-                            Update Revised PPMP Asignatories
+                            Update Revised PPMP Signatories
                         </button>
                     )}
                 </div>
