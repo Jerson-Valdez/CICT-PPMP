@@ -4,7 +4,7 @@
     @apply flex flex-row flex-wrap items-start justify-start gap-2 p-2 rounded-xl border border-gray-200 bg-gray-100 w-full;
 
     & > .info{
-        @apply flex-1 flex-col items-start justify-start gap-1 w-full;
+        @apply flex-1 flex-col items-start justify-start gap-1 w-full max-w-2xl;
 
         & > .pr-number-status-container{
             @apply flex flex-row items-center justify-start gap-5 w-full;
@@ -13,12 +13,15 @@
             }
         }
         & > p {
-            @apply text-xs font-light;
+            @apply text-xs font-light wrap-break-word;
             color: var(--text-gray);
+        }
+        & > #quantity-unitmeasurement{
+            @apply text-xs font-semibold text-gray-500;
         }
     }
     & > .date-button-container{
-        @apply flex flex-col items-end justify-start gap-2 max-md:w-full;
+        @apply flex-1 flex flex-col items-end justify-start gap-2 max-md:w-full;
 
         & > .pr-date {
             @apply text-xs;

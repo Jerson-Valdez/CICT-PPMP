@@ -25,14 +25,14 @@
 .content{
     @apply flex flex-col items-start justify-start gap-1 w-full border border-gray-300 rounded-lg p-2 print:p-0 print:border-none;
     & > .title{
-        @apply flex flex-row items-center justify-center w-full text-base;
+        @apply flex flex-row items-center justify-center w-full text-base font-bold;
     }
     & > table{
         @apply w-full border-collapse;
         & > thead{
             & > tr{
                 & > th{
-                    @apply text-center border text-xs font-semibold p-1 print:p-0 print:px-1;
+                    @apply text-center border text-xs font-black p-1 print:p-0 print:px-1;
                 }
             }
         }
@@ -72,7 +72,7 @@
             @apply w-4/12;
         }
         & > .noted-by{
-            @apply w-8/12;
+            @apply w-8/12 items-center;
         }
     }
 }

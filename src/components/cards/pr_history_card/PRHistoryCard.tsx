@@ -109,8 +109,9 @@ export default function PRHistoryCard({prId, quantity, itemId, itemName, unitMea
                     <p className="pr-number">PR-{prId}</p>
                     <p className={`status ${status.toLowerCase()}`}>{status}</p>
                 </div>
-                <p className="specifications">{itemName} • {specifications}</p>
-                <p className="pr-quantity">Quantity: {quantity} {unitMeasurement}</p>
+                <p>{itemName}</p>
+                <p>{specifications}</p>
+                <p id="quantity-unitmeasurement">Quantity: {quantity} {unitMeasurement}</p>
             </div>
             <div className="date-button-container">
                 <p className="pr-date">{new Date(dateRequested).toLocaleString('en-PH')}</p>

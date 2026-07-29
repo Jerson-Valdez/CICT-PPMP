@@ -1,5 +1,5 @@
 import "./print-pr.css";
-import { IconPrinter, IconX } from '@tabler/icons-react';
+import { IconPrinter, IconX, IconSquare } from '@tabler/icons-react';
 import { useEffect, useRef } from "react";
 import { useReactToPrint } from "react-to-print"; 
 import { useOutletContext } from "react-router";
@@ -19,7 +19,6 @@ interface PrintPRProps {
 export default function PrintPR({ prId, itemName, itemDescription, unitMeasurement, quantity, unitPrice, requestedDate, isOpen, onClose }: PrintPRProps) {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const printRef = useRef<HTMLDivElement>(null);
-    const printDate = new Date().toLocaleDateString();
     const stockPropertyNoCounter = 1;
     const totalPrice = quantity * unitPrice;
     
@@ -94,8 +93,7 @@ export default function PrintPR({ prId, itemName, itemDescription, unitMeasureme
                             </td>
                             <td colSpan={2}>
                                 <div>
-                                    <p>Date: {printDate}</p>
-                                    <p>Requested Date: {new Date(requestedDate).toLocaleString('en-PH')}</p>
+                                    <p>Date: {new Date(requestedDate).toLocaleDateString()}</p>
                                 </div>
                             </td>
                         </tr>
@@ -112,8 +110,8 @@ export default function PrintPR({ prId, itemName, itemDescription, unitMeasureme
                         <tr>
                             <td>{stockPropertyNoCounter}</td>
                             <td>{unitMeasurement}</td>
-                            <td>
-                                <div>
+                            <td className="max-w-3xs align-top"> 
+                                <div className="w-full wrap-break-word whitespace-normal">
                                     <p className="font-semibold">{itemName}</p>
                                     <p className="font-light">{itemDescription}</p>
                                 </div>
@@ -156,8 +154,21 @@ export default function PrintPR({ prId, itemName, itemDescription, unitMeasureme
                         </tr>
                     </tbody>
                 </table>
-                <p>To be accomplished by the Procurement Office:</p>
-                <p>Included in the: {selectedFiscalYear} Revised PPMP</p> 
+                <p><i>To be accomplished by the Procurement Office:</i></p>
+                <div className="included-ppmp-container">
+                    <p>Included in the:</p>
+                    <div className="document-type-container">
+                        <p><IconSquare size={16} /> {selectedFiscalYear} Annual Procurement Plan</p>
+                        <p><IconSquare size={16} /> {selectedFiscalYear} Supplemental PPMP</p>
+                        <p><IconSquare size={16} /> {selectedFiscalYear} Revised PPMP</p>
+                    </div>
+                    <div className="item-page-container">
+                        <p>Item No.: ________ Page No.________</p>
+                        <p>Item No.: ________ Page No.________</p>
+                        <p>Item No.: ________ Page No.________</p>
+                    </div>
+                    <p>PROCUREMENT OFFICER</p>
+                </div>
             </div>
             
             <div className="action-btns">

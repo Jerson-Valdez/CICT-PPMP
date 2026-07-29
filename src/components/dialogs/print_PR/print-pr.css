@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .print-pr{
-    @apply fixed flex-col w-3xl p-6 rounded-lg bg-white shadow-2xl left-0 right-0 top-1/2 -translate-y-1/2 mx-auto;
+    @apply fixed flex-col w-4xl p-6 rounded-lg bg-white shadow-2xl left-0 right-0 top-1/2 -translate-y-1/2 mx-auto;
     & > .header{
         @apply flex flex-row items-center justify-start gap-2 mb-4;
         & > h3{
@@ -13,7 +13,7 @@
     }
 }
 .print-purchase-request-info{
-    @apply flex flex-col items-start justify-start gap-2 mb-4 border border-gray-300 rounded-lg p-5 print:p-0 print:gap-4 print:border-none print:shadow-none;
+    @apply flex flex-col items-start justify-start gap-2 mb-4 border border-gray-300 rounded-lg p-5 print:p-0 print:gap-2 print:border-none print:shadow-none;
     
     & > .pr-title{
         @apply flex flex-row items-center justify-center gap-2 w-full mb-4 print:mb-6;
@@ -63,6 +63,17 @@
                     }
                 }
             }
+        }
+    }
+    & > .included-ppmp-container{
+        @apply flex flex-row items-start justify-between w-full;
+        & > .document-type-container, & > .item-page-container {
+            & > p{
+                @apply flex flex-row text-xs font-normal;
+            }
+        }
+        & > p{
+            @apply text-xs font-normal;
         }
     }
 }

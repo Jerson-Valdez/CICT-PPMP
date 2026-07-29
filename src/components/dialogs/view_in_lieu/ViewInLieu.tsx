@@ -80,8 +80,8 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                 <div className="title">
                     <h3>REVISED PROJECT PROCUREMENT MANAGEMENT PLAN {selectedFiscalYear}</h3>
                 </div>
-                <p>END-USER/UNIT: <u>CICT</u></p>
-                <p>SOURCE OF FUND: ________________</p>
+                <p className="font-bold">END-USER/UNIT: <u>CICT</u></p>
+                <p className="font-bold">SOURCE OF FUND: ________________</p>
                 <table>
                     <thead>
                         <tr>
@@ -130,25 +130,40 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                     <tbody>
                         {originalItems && originalItems.map((item, index) => (
                             <tr key={item.itemId}>
-                                <td>{index + 1}</td>
+                                <td className="text-center">{index + 1}</td>
                                 <td className="text-left">{item.itemName}</td>
-                                <td>{item.unitMeasurement}</td>
+                                <td className="text-center">{item.unitMeasurement}</td>
                                 
                                 {Array.from({ length: 12 }).map((_, monthIndex) => (
-                                    <td key={monthIndex}>
+                                    <td key={monthIndex} className="text-center">
                                         {requestMonthIndex === monthIndex ? item.quantity : ""}
                                     </td>
                                 ))}
 
-                                <td>{item.quantity}</td>
+                                <td className="text-center">{item.quantity}</td>
 
                                 <td className="text-right">{item.priceCatalog.toFixed(2)}</td>
                                 <td className="text-right">{(item.priceCatalog * item.quantity).toFixed(2)}</td>
                             </tr>
                         ))}
-                        <tr>
-                            <td colSpan={2} className="text-right bg-gray-200"><strong>TOTAL AMOUNT</strong></td>
-                            <td colSpan={16} className="text-right bg-gray-200"><strong>{originalItems ? originalItems.reduce((total, item) => total + (item.priceCatalog * item.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
+                        <tr className="bg-gray-200">
+                            <td colSpan={2} className="text-right"><strong>TOTAL AMOUNT</strong></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td className="text-right"><strong>{originalItems ? originalItems.reduce((total, item) => total + (item.priceCatalog * item.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -184,8 +199,8 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                 <div className="signatory">
                     <div className="submitted-by">
                         <p>Submitted By:</p>
-                        <p className="signatory-name"><strong>{deanName}</strong></p>
-                        <p>Dean, CICT</p>
+                        <p className="signatory-name ml-5"><strong>{deanName}</strong></p>
+                        <p className="ml-5">Dean, CICT</p>
                     </div>
                     <div className="noted-by">
                         <p>Noted By:</p>
