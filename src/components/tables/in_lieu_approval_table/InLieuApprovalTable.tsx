@@ -2,7 +2,7 @@ import "../table-design.css";
 import { useState } from "react";
 import { IconSearch, IconFilter, IconFileStack, IconChecklist, IconX } from '@tabler/icons-react';
 import ViewInLieu from "../../dialogs/view_in_lieu/ViewInLieu";
-import { confirm } from "../../dialogs/global_dialog/DialogService";
+import { notify, confirm } from "../../dialogs/global_dialog/DialogService";
 import { useOutletContext } from 'react-router';
 import { showCircleLoadingDialog } from "../../dialogs/circle_loading_dialog/CircleLoadingDialogService";
 import { getAccessToken } from "../../../../supadb";
@@ -54,10 +54,11 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: 
                             }
                         });
                         if (!response.ok) {
-                            toast.error("Failed to mark Reallocation as Approved.")
+                            const responseData = await response.json();
+                            notify("Action Failed", responseData.error, "error", "I Understand");
+                            toast.error(responseData.error || "Failed to mark Reallocation as Approved.");
                             throw new Error("Failed to mark Reallocation as Approved.");
                         }else {
-                            console.log(response);
                             handleInLieuStatusChange(inLieuId, "Approved");
                             toast.success("Reallocation marked as Approved successfully!");
                         }

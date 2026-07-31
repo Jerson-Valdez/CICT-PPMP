@@ -30,6 +30,13 @@ interface Log {
     fiscalYear: number;
 }
 
+interface aiFeaturesData {
+    icon: JSX.Element;
+    title: string;
+    description: string;
+    percentage: number;
+}
+
 export default function Dashboard(){
     const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -107,6 +114,13 @@ export default function Dashboard(){
         {icon: <IconChecklist size={24} />, iconColor: "green", title: "Fulfilled Items", description: "Allocated funds of fulfilled items", value: arrivedFunds,  color: "green-yellow",},
     ];
 
+    const aiFeaturesData: aiFeaturesData[] = [
+        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized Items", description: "Based on the historical low-utilization items", percentage: 35},
+        {icon: <IconTransform size={18}/>, title: "Frequent In Lieu Items", description: "Based on the historical frequency of in-lieu items", percentage: 35},
+        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized in Current Year", description: "Based on Items not utilized for the current fiscal year", percentage: 20},
+        {icon: <IconClockDollar size={18}/>, title: "Lowest Price", description: "Based on the items price to fit the budget", percentage: 10},
+    ];
+
     function handleDashboardFiscalYearChange(newFiscalYear: string) {
         if (newFiscalYear !== fiscalYearHolder) {
             setIsInitialLoading(true);
@@ -174,7 +188,7 @@ export default function Dashboard(){
                     <div className="ai-features-container">
                         <div className="ai-features-header">
                             <div className="title-container">
-                                <h2>Bulk Balancing Optimization</h2>
+                                <h2>Bulk Budget Balancing (AI Decision Weights)</h2>
                                 <p>In Lieu Assistant</p>
                             </div>
                         </div>
@@ -184,38 +198,17 @@ export default function Dashboard(){
                                 <span>Optimize Your Budget with ALAB</span>
                             </Link>
 
-                            <div className="ai-features-content">
-                                <div className="icon red"><IconChartBarOff size={18}/></div>
-                                <div className="description">
-                                    <h3>Not Utilized Items</h3>
-                                    <p>Based on the historical low-utilization items</p>
+                            {aiFeaturesData.map((data, index) => (
+                                <div className="ai-features-content" key={index}>
+                                    <div className="icon red">{data.icon}</div>
+                                    <div className="description">
+                                        <h3>{data.title}</h3>
+                                        <p>{data.description}</p>
+                                    </div>
+                                    <span>{data.percentage}%</span>
                                 </div>
-                                <span>35%</span>
-                            </div>
-                            <div className="ai-features-content">
-                                <div className="icon red"><IconTransform size={18}/></div>
-                                <div className="description">
-                                    <h3>Frequent In Lieu Items</h3>
-                                    <p>Based on the historical frequency of in-lieu items</p>
-                                </div>
-                                <span>35%</span>
-                            </div>
-                            <div className="ai-features-content">
-                                <div className="icon red"><IconChartBarOff size={18}/></div>
-                                <div className="description">
-                                    <h3>Not Utilized in Current Year</h3>
-                                    <p>Based on Items not utilized for the current fiscal year</p>
-                                </div>
-                                <span>20%</span>
-                            </div>
-                            <div className="ai-features-content">
-                                <div className="icon red"><IconClockDollar size={18}/></div>
-                                <div className="description">
-                                    <h3>Lowest Price</h3>
-                                    <p>Based on the items price to fit the budget</p>
-                                </div>
-                                <span>10%</span>
-                            </div>
+                            ))}
+
                         </div>
                     </div>
                 </div>
