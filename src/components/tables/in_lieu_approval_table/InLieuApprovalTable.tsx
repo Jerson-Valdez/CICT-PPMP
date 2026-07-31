@@ -57,6 +57,7 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: 
                             toast.error("Failed to mark Reallocation as Approved.")
                             throw new Error("Failed to mark Reallocation as Approved.");
                         }else {
+                            console.log(response);
                             handleInLieuStatusChange(inLieuId, "Approved");
                             toast.success("Reallocation marked as Approved successfully!");
                         }

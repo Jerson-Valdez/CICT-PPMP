@@ -128,7 +128,7 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                         </tr>
                     </thead>
                     <tbody>
-                        {originalItems && originalItems.map((item, index) => (
+                        {proposedItems && proposedItems.map((item, index) => (
                             <tr key={item.itemId}>
                                 <td className="text-center">{index + 1}</td>
                                 <td className="text-left">{item.itemName}</td>
@@ -163,7 +163,7 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td className="text-right"><strong>{originalItems ? originalItems.reduce((total, item) => total + (item.priceCatalog * item.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
+                            <td className="text-right"><strong>{proposedItems ? proposedItems.reduce((total, item) => total + (item.priceCatalog * item.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
                         </tr>
                     </tbody>
                 </table>
@@ -180,7 +180,7 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                         </tr>
                     </thead>
                     <tbody>
-                        {proposedItems && proposedItems.map((item, index) => (
+                        {originalItems && originalItems.map((item, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
                                 <td>{item.quantity}</td>
@@ -192,7 +192,7 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                         ))}
                         <tr>
                             <td colSpan={5} className="text-right"><strong>TOTAL AMOUNT:</strong></td>
-                            <td><strong>{proposedItems ? proposedItems.reduce((total, item) => total + (item.priceCatalog * item.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
+                            <td><strong>{originalItems ? originalItems.reduce((total, item) => total + (item.priceCatalog * item.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
                         </tr>
                     </tbody>
                 </table>

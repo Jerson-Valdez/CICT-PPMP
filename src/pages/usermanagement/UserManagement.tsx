@@ -294,6 +294,10 @@ export default function UserManagement() {
                             setEmail('');
                             setDepartmentRole('User');
                             setTemporaryPassword('');
+                            const emailElement = document.getElementById('email') as HTMLInputElement;
+                            const passwordElement = document.getElementById('temporaryPassword') as HTMLInputElement;
+                            emailElement.value = '';
+                            passwordElement.value = '';
                         }
                     }
                     catch (error) {
@@ -385,7 +389,7 @@ export default function UserManagement() {
         <div className="input-row">
             <div className="field-group">
                 <label htmlFor="fullName">Full Name</label>
-                <input type="text" id="fullName" onChange={handleFullNameChange} />
+                <input type="text" id="fullName" value={fullName} onChange={handleFullNameChange} />
                 <p className="error-message" id="fullnameError"></p>
             </div>
             <div className="field-group">
@@ -405,7 +409,10 @@ export default function UserManagement() {
                 <div className="input-field">
                     <input 
                         type={isPasswordVisible ? "text" : "password"} 
-                        id="temporaryPassword" 
+                        id="temporaryPassword"
+                        placeholder="Enter temporary password" 
+                        required 
+                        minLength={8} 
                         onChange={handleTemporaryPasswordChange} 
                     />
                     <button type="button" className="input-icon" onClick={togglePasswordVisibility}>

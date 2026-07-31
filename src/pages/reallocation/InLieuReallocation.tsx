@@ -8,7 +8,7 @@ import WarningNote from "../../components/notes/warning_note/WarningNote";
 import ViewInLieu from "../../components/dialogs/view_in_lieu/ViewInLieu";
 import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWrapper";
 import InLieuReallocationSkeleton from "../../components/skeleton/skeleton_pages/InLieuReallocationSkeleton";
-import { confirm } from "../../components/dialogs/global_dialog/DialogService";
+import { notify, confirm } from "../../components/dialogs/global_dialog/DialogService";
 import { useOutletContext } from "react-router";
 import { getAccessToken } from "../../../supadb";
 import { toast } from "../../components/toast/ToastService";
@@ -250,11 +250,15 @@ export default function InLieuReallocation() {
                 }
             });
 
+            const suggestions = await suggestionResponse.json()
+
             if (!suggestionResponse.ok) {
-                toast.error("Failed to generate suggestions. Please try again later.")
+                if(suggestions.error){
+                    notify("Smart Suggestion Error", suggestions.error, "error", "I understand");
+                }
+                toast.error(suggestions.error || "Failed to generate suggestions. Please try again later.")
                 throw new Error("Failed to generate suggestions.")
             } else {
-                const suggestions = await suggestionResponse.json()
                 suggestions.data.map((item: any) => {
                     handleToggleLieuItem(item)
                 })
