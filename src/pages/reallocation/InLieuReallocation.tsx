@@ -93,7 +93,7 @@ export default function InLieuReallocation() {
     const [inLieuSearchTerm, setInLieuSearchTerm] = useState<string>("");
     const [newItemsSearchTerm, setNewItemsSearchTerm] = useState<string>("");
 
-    let inLieuData = ppmpReallocationData.filter((item) => {
+    let inLieuData = ppmpReallocationData?.filter((item) => {
         const searchLower = inLieuSearchTerm.toLowerCase();
         const matchesSearch = inLieuSearchTerm === "" || item.itemName.toLowerCase().includes(searchLower);
 
@@ -102,7 +102,7 @@ export default function InLieuReallocation() {
 
     const filteredCatalogItems = newItemsSearchTerm.trim() === ""
         ? []
-        : ppmpReallocationData.filter(item =>
+        : ppmpReallocationData?.filter(item =>
             item.itemName.toLowerCase().includes(newItemsSearchTerm.toLowerCase())
         );
 
