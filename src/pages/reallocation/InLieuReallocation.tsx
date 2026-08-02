@@ -165,7 +165,7 @@ export default function InLieuReallocation() {
                 itemId: item.itemId,
                 itemName: item.itemName,
                 unitMeasurement: item.unitMeasurement,
-                reduceQuantity: item.reduceAmount > 0 ? item.reduceAmount : 1,
+                reduceQuantity: item.reduceQuantity > 0 ? item.reduceQuantity : 1,
                 priceCatalog: item.priceCatalog
             }]);
         }
@@ -242,6 +242,8 @@ export default function InLieuReallocation() {
             formData.append("NewItems", JSON.stringify(newItemsArray))
             formData.append("FiscalYear", selectedFiscalYear)
 
+            //http://127.0.0.1:8000
+            //https://test-ppmp.onrender.com
             const suggestionResponse = await fetch("https://test-ppmp.onrender.com/api/smart-suggest/", {
                 method: "POST",
                 body: formData,
@@ -253,19 +255,21 @@ export default function InLieuReallocation() {
             const suggestions = await suggestionResponse.json()
 
             if (!suggestionResponse.ok) {
-                if(suggestions.error){
-                    notify("Smart Suggestion Error", suggestions.error, "error", "I understand");
+                if (suggestionResponse.status == 400) {
+                    notify("Unable to Generate Smart Suggestions", suggestions.error, "error", "I understand")
+                } else {
+                    throw new Error("Unable to generate smart suggestions. Please try again later.")
                 }
-                toast.error(suggestions.error || "Failed to generate suggestions. Please try again later.")
-                throw new Error("Failed to generate suggestions.")
-            } else {
+            }
+            else {
+                setSelectedLieuItems([])
                 suggestions.data.map((item: any) => {
                     handleToggleLieuItem(item)
                 })
             }
         }
-        catch (error) {
-            toast.error("Error occurred while retrieving smart suggestions.")
+        catch (error: any) {
+            toast.error(error.message)
         }
         finally {
             loading()
@@ -405,29 +409,29 @@ export default function InLieuReallocation() {
                         </LoadingWrapper>
                     </div>
                 </div>
-                    <div className="button-container">
-                        <div className="left-btn-container">
-                            {newItemsArray.length > 0 && (
-                                <button className="btn-secondary green"
-                                    onClick={() => {
-                                        setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }]);
-                                    }}>
-                                    <IconTrash size={24} /> Clear Needs Cart
-                                </button>
-                            )}
-                            {selectedLieuItems.length > 0? (
-                                <button className="btn-secondary red"
-                                    onClick={() => {
-                                        setSelectedLieuItems([]);
-                                    }}>
-                                    <IconTrash size={24} /> Clear Lieu Pool
-                                </button>
-                            ):(
-                                <button className="btn-secondary red" disabled>
-                                    <IconTrash size={24} /> Clear Lieu Pool
-                                </button>
-                            )}
-                        </div>
+                <div className="button-container">
+                    <div className="left-btn-container">
+                        {newItemsArray.length > 0 && (
+                            <button className="btn-secondary green"
+                                onClick={() => {
+                                    setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }]);
+                                }}>
+                                <IconTrash size={24} /> Clear Needs Cart
+                            </button>
+                        )}
+                        {selectedLieuItems.length > 0 ? (
+                            <button className="btn-secondary red"
+                                onClick={() => {
+                                    setSelectedLieuItems([]);
+                                }}>
+                                <IconTrash size={24} /> Clear Lieu Pool
+                            </button>
+                        ) : (
+                            <button className="btn-secondary red" disabled>
+                                <IconTrash size={24} /> Clear Lieu Pool
+                            </button>
+                        )}
+                    </div>
                     {remainingBudget >= 0 && newItemsArray.length > 0 && requiredBudget > 0 && isNewItemsValid && isOldItemsValid ? (
                         <div className="right-btn-container">
                             <button
