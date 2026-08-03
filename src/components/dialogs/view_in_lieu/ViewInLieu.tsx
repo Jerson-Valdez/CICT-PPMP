@@ -115,23 +115,23 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                         {itemCategories.map((category, catIndex) => (
                             <Fragment key={catIndex}>
                                 <tr key={catIndex}>
-                                    <th colSpan={2} className="bg-gray-200 capitalize">{category}</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
+                                    <td colSpan={2} className="bg-gray-200 capitalize font-bold text-center">{category}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                                 {proposedItems?.filter((item) => item.itemCategory === category).map((item, index) => (
                                     <tr key={item.itemId}>

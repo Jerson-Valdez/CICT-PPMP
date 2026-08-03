@@ -9,6 +9,8 @@ interface NewItemCardProps {
     priceCatalog: number;
     itemCategories: string[];
     ppmpCategories: string[];
+    itemCategory?: string;
+    ppmpCategory?: string;
     ppmpReallocationData?: any[];
     onDelete: (id: number) => void;
     onUpdate: (id: number, field: 'name' | 'measurementUnit' | 'quantity' | 'unitPrice' | 'itemCategory' | 'ppmpCategory', value: string | number) => void;
@@ -22,6 +24,8 @@ export default function NewItemCard({
     priceCatalog, 
     itemCategories,
     ppmpCategories,
+    itemCategory, 
+    ppmpCategory,
     ppmpReallocationData, 
     onDelete, 
     onUpdate 
@@ -48,7 +52,13 @@ export default function NewItemCard({
                 </div>
                 <div className="field-group">
                     <label htmlFor={`itemCategory-${itemId}`}>Item Category</label>
-                    <select id={`itemCategory-${itemId}`} onChange={(e) => onUpdate(itemId, 'itemCategory', e.target.value)} required>
+                    <select 
+                        id={`itemCategory-${itemId}`} 
+                        value={isNewItemExisting? itemCategory || "" : ""} 
+                        onChange={(e) => onUpdate(itemId, 'itemCategory', e.target.value)} 
+                        disabled={isNewItemExisting} 
+                        required
+                        >
                         <option value="">Select Category</option>
                         {itemCategories?.map((category, index) => (
                             <option key={index} value={category}>{category}</option>
@@ -57,7 +67,13 @@ export default function NewItemCard({
                 </div>
                 <div className="field-group">
                     <label htmlFor={`ppmpCategory-${itemId}`}>PPMP Category</label>
-                    <select id={`ppmpCategory-${itemId}`} onChange={(e) => onUpdate(itemId, 'ppmpCategory', e.target.value)} required>
+                    <select 
+                        id={`ppmpCategory-${itemId}`} 
+                        value={isNewItemExisting? ppmpCategory || "" : ""} 
+                        onChange={(e) => onUpdate(itemId, 'ppmpCategory', e.target.value)} 
+                        disabled={isNewItemExisting} 
+                        required
+                        >
                         <option value="">Select Category</option>
                         {ppmpCategories?.map((category, index) => (
                             <option key={index} value={category}>{category}</option>
