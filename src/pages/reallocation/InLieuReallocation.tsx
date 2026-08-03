@@ -20,6 +20,8 @@ interface NewItem {
     measurementUnit: string;
     quantity: number;
     unitPrice: number;
+    itemCategory?: string;
+    ppmpCategory?: string;
     added: boolean;
 }
 interface SelectedLieuItem {

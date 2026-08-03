@@ -20,13 +20,14 @@ interface Item {
 }
 
 interface ViewInLieuProps {
-  inLieuId?: number;
-  requestDate?: string;
-  status?: string;
-  originalItems?: Item[];
-  proposedItems?: Item[];
-  isOpen: boolean;
-  onClose: () => void;
+    inLieuId?: number;
+    requestDate?: string;
+    status?: string;
+    originalItems?: Item[];
+    proposedItems?: Item[];
+    itemCategory?: string;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function ViewInLieu({
