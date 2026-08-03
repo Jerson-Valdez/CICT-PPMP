@@ -20,6 +20,7 @@ interface ViewInLieuProps {
     status?: string;
     originalItems?: Item[];
     proposedItems?: Item[];
+    itemCategory?: string;
     isOpen: boolean;
     onClose: () => void;
 }
