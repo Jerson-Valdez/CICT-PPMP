@@ -78,7 +78,6 @@ export default function InLieuReallocation() {
                     toast.error("Failed to fetch PPMP reallocation data. Please try again later.");
                 } else {
                     const reallocationResult = await reallocationResponse.json();
-                    console.log("PPMP Reallocation Data:", reallocationResult);
                     setItemCategories(reallocationResult.itemCategories || []);
                     setPpmpCategories(reallocationResult.ppmpCategories || []);
                     setPpmpReallocationData(reallocationResult.ppmpReallocationData || []);
