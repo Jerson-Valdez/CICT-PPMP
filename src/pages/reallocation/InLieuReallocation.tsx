@@ -78,7 +78,6 @@ export default function InLieuReallocation() {
                     toast.error("Failed to fetch PPMP reallocation data. Please try again later.");
                 } else {
                     const reallocationResult = await reallocationResponse.json();
-                    console.log("PPMP Reallocation Data:", reallocationResult);
                     setItemCategories(reallocationResult.itemCategories || []);
                     setPpmpCategories(reallocationResult.ppmpCategories || []);
                     setPpmpReallocationData(reallocationResult.ppmpReallocationData || []);
@@ -120,6 +119,8 @@ export default function InLieuReallocation() {
             newItemsArray[0].measurementUnit = catalogItem.unitMeasurement
             newItemsArray[0].quantity - 1
             newItemsArray[0].unitPrice = catalogItem.priceCatalog
+            newItemsArray[0].itemCategory = catalogItem.itemCategory? catalogItem.itemCategory : ""
+            newItemsArray[0].ppmpCategory = catalogItem.ppmpCategory? catalogItem.ppmpCategory : ""
             newItemsArray[0].added = false
         } else {
             setNewItemsArray(prev => [...prev, {
