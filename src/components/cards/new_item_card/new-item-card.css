@@ -3,30 +3,49 @@
 .new-item-card {
     @apply flex flex-col justify-start p-5 rounded-xl w-full gap-2 bg-green-500/20 border border-green-500;
 
-    & .input-group {
-        @apply flex flex-col gap-1 w-full; 
+    & .field-group {
+        & input {
+            @apply text-xs px-3 py-2 bg-gray-100 border border-green-300 focus:outline-none focus:ring-1 focus:ring-green-500;
+        }
+    }
 
-        & label {
-            @apply text-xs font-semibold;
+    & > .top-field-container {
+        @apply flex flex-row items-start justify-between w-full gap-2 max-sm:flex-col;
+
+        & > .field-group{
+            & > select{
+                @apply text-xs px-1 py-2 bg-gray-100 border border-green-300 focus:outline-none focus:ring-1 focus:ring-green-500;
+                & > option{
+                    @apply text-xs px-1;
+                }
+            }   
         }
 
-        & input {
-            @apply w-full px-3 py-2 text-sm rounded-lg bg-gray-100 border border-green-300 focus:outline-none focus:ring-1 focus:ring-green-500;
+        & .field-group:nth-child(1) {
+            @apply flex-[3];
+        }
+        
+        & .field-group:nth-child(2) {
+            @apply flex-[1.5]; 
+        }
+
+        & .field-group:nth-child(3) {
+            @apply flex-[1.5];
         }
     }
 
     & > .bottom-field-container {
         @apply flex flex-row items-start justify-between w-full gap-2 max-sm:flex-col;
 
-        & .input-group:nth-child(1) {
+        & .field-group:nth-child(1) {
             @apply flex-[2];
         }
         
-        & .input-group:nth-child(2) {
+        & .field-group:nth-child(2) {
             @apply flex-none w-24; 
         }
 
-        & .input-group:nth-child(3) {
+        & .field-group:nth-child(3) {
             @apply flex-[3];
         }
     }
