@@ -20,8 +20,8 @@ interface NewItem {
     measurementUnit: string;
     quantity: number;
     unitPrice: number;
-    itemCategory?: string;
-    ppmpCategory?: string;
+    itemCategory: string;
+    ppmpCategory: string;
     added: boolean;
 }
 interface SelectedLieuItem {
@@ -53,6 +53,9 @@ export default function InLieuReallocation() {
 
     const [ppmpReallocationData, setPpmpReallocationData] = useState<ppmpReallocationData[]>([]);
 
+    const [itemCategories, setItemCategories] = useState<string[]>([]);
+    const [ppmpCategories, setPpmpCategories] = useState<string[]>([]);
+
     useEffect(() => {
         const LoadPpmpReallocationData = async () => {
             handlePpmpReallocationFiscalYearChange(selectedFiscalYear);
@@ -75,7 +78,9 @@ export default function InLieuReallocation() {
                     toast.error("Failed to fetch PPMP reallocation data. Please try again later.");
                 } else {
                     const reallocationResult = await reallocationResponse.json();
-
+                    console.log("PPMP Reallocation Data:", reallocationResult);
+                    setItemCategories(reallocationResult.itemCategories || []);
+                    setPpmpCategories(reallocationResult.ppmpCategories || []);
                     setPpmpReallocationData(reallocationResult.ppmpReallocationData || []);
                     setOpenFunds(reallocationResult.openFunds || 0);
                     setFiscalYearHolder(selectedFiscalYear);
@@ -123,6 +128,8 @@ export default function InLieuReallocation() {
                 measurementUnit: catalogItem.unitMeasurement,
                 quantity: 1,
                 unitPrice: catalogItem.priceCatalog,
+                itemCategory: catalogItem.itemCategory,
+                ppmpCategory: catalogItem.ppmpCategory,
                 added: false
             }]);
         }
@@ -131,7 +138,7 @@ export default function InLieuReallocation() {
     };
 
     const [newItemsArray, setNewItemsArray] = useState<NewItem[]>([
-        { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }
+        { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, itemCategory: "", ppmpCategory: "", added: true }
     ]);
 
     const requiredBudget = newItemsArray.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
@@ -142,7 +149,9 @@ export default function InLieuReallocation() {
         item.name.trim() !== "" &&
         item.measurementUnit.trim() !== "" &&
         item.quantity > 0 &&
-        item.unitPrice > 0
+        item.unitPrice > 0 &&
+        item.itemCategory.trim() !== "" &&
+        item.ppmpCategory.trim() !== ""
     );
 
     const isOldItemsValid = selectedLieuItems.every(item =>
@@ -152,7 +161,7 @@ export default function InLieuReallocation() {
         item.priceCatalog > 0
     );
 
-    const handleAddItem = () => setNewItemsArray([...newItemsArray, { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }]);
+    const handleAddItem = () => setNewItemsArray([...newItemsArray, { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, itemCategory: "", ppmpCategory: "", added: true }]);
     const handleDeleteItem = (itemId: number) => setNewItemsArray(newItemsArray.filter(item => item.itemId !== itemId));
     const handleUpdateItem = (itemId: number, field: keyof NewItem, value: string | number) => {
         setNewItemsArray(prev => prev.map(item => item.itemId === itemId ? { ...item, [field]: value } : item));
@@ -214,7 +223,7 @@ export default function InLieuReallocation() {
                             throw new Error("Failed to create in-lieu request.");
                         } else {
                             toast.success("In Lieu request created successfully!");
-                            setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }]);
+                            setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, itemCategory: "", ppmpCategory: "", added: true }]);
                             setSelectedLieuItems([]);
                         }
                     }
@@ -341,7 +350,7 @@ export default function InLieuReallocation() {
                         </div>
                         <div className="new-items-card-container">
                             {newItemsArray.map((item) => (
-                                <NewItemCard key={item.itemId} itemId={item.itemId} itemName={item.name} unitMeasurement={item.measurementUnit} quantity={item.quantity} priceCatalog={item.unitPrice} onDelete={handleDeleteItem} onUpdate={handleUpdateItem} ppmpReallocationData={ppmpReallocationData} />
+                                <NewItemCard key={item.itemId} itemId={item.itemId} itemName={item.name} unitMeasurement={item.measurementUnit} quantity={item.quantity} priceCatalog={item.unitPrice} itemCategories={itemCategories} ppmpCategories={ppmpCategories} onDelete={handleDeleteItem} onUpdate={handleUpdateItem} ppmpReallocationData={ppmpReallocationData} />
                             ))}
                         </div>
                     </div>
@@ -416,7 +425,7 @@ export default function InLieuReallocation() {
                         {newItemsArray.length > 0 && (
                             <button className="btn-secondary green"
                                 onClick={() => {
-                                    setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, added: true }]);
+                                    setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, itemCategory: "", ppmpCategory: "", added: true }]);
                                 }}>
                                 <IconTrash size={24} /> Clear Needs Cart
                             </button>
@@ -480,7 +489,8 @@ export default function InLieuReallocation() {
                         quantity: item.quantity,
                         itemName: item.name,
                         unitMeasurement: item.measurementUnit,
-                        priceCatalog: item.unitPrice
+                        priceCatalog: item.unitPrice,
+                        itemCategory: item.itemCategory
                     }))}
                     status="To be Submitted"
                     isOpen={isPrintPROpen}

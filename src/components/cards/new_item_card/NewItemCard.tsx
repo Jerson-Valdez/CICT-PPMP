@@ -7,9 +7,11 @@ interface NewItemCardProps {
     unitMeasurement: string;
     quantity: number;
     priceCatalog: number;
+    itemCategories: string[];
+    ppmpCategories: string[];
     ppmpReallocationData?: any[];
     onDelete: (id: number) => void;
-    onUpdate: (id: number, field: 'name' | 'measurementUnit' | 'quantity' | 'unitPrice', value: string | number) => void;
+    onUpdate: (id: number, field: 'name' | 'measurementUnit' | 'quantity' | 'unitPrice' | 'itemCategory' | 'ppmpCategory', value: string | number) => void;
 }
 
 export default function NewItemCard({ 
@@ -18,6 +20,8 @@ export default function NewItemCard({
     unitMeasurement, 
     quantity, 
     priceCatalog, 
+    itemCategories,
+    ppmpCategories,
     ppmpReallocationData, 
     onDelete, 
     onUpdate 
@@ -28,21 +32,41 @@ export default function NewItemCard({
 
     return (
         <div className="new-item-card">
-            <div className="input-group">
-                <label htmlFor={`itemName-${itemId}`}>Item Name</label>
-                <input 
-                    type="text" 
-                    id={`itemName-${itemId}`} 
-                    placeholder="Enter item name" 
-                    value={itemName} 
-                    onChange={(e) => onUpdate(itemId, 'name', e.target.value)} 
-                    required
-                    disabled={isNewItemExisting}
-                    className="isNewItemExisting"
-                />
+            <div className="top-field-container">
+                <div className="field-group">
+                    <label htmlFor={`itemName-${itemId}`}>Item Name</label>
+                    <input 
+                        type="text" 
+                        id={`itemName-${itemId}`} 
+                        placeholder="Enter item name" 
+                        value={itemName} 
+                        onChange={(e) => onUpdate(itemId, 'name', e.target.value)} 
+                        required
+                        disabled={isNewItemExisting}
+                        className="isNewItemExisting"
+                    />
+                </div>
+                <div className="field-group">
+                    <label htmlFor={`itemCategory-${itemId}`}>Item Category</label>
+                    <select id={`itemCategory-${itemId}`} onChange={(e) => onUpdate(itemId, 'itemCategory', e.target.value)} required>
+                        <option value="">Select Category</option>
+                        {itemCategories?.map((category, index) => (
+                            <option key={index} value={category}>{category}</option>
+                        ))}
+                    </select>
+                </div>
+                <div className="field-group">
+                    <label htmlFor={`ppmpCategory-${itemId}`}>PPMP Category</label>
+                    <select id={`ppmpCategory-${itemId}`} onChange={(e) => onUpdate(itemId, 'ppmpCategory', e.target.value)} required>
+                        <option value="">Select Category</option>
+                        {ppmpCategories?.map((category, index) => (
+                            <option key={index} value={category}>{category}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
             <div className="bottom-field-container">
-                <div className="input-group">
+                <div className="field-group">
                     <label htmlFor={`unitMeasurement-${itemId}`}>Unit Measurement</label>
                     <input 
                         type="text" 
@@ -55,7 +79,7 @@ export default function NewItemCard({
                         className="isNewItemExisting"
                     />
                 </div>
-                <div className="input-group">
+                <div className="field-group">
                     <label htmlFor={`quantity-${itemId}`}>Quantity</label>
                     <input 
                         type="number" 
@@ -66,7 +90,7 @@ export default function NewItemCard({
                         required
                     />
                 </div>
-                <div className="input-group">
+                <div className="field-group">
                     <label htmlFor={`unitPrice-${itemId}`}>Unit Price (PHP)</label>
                     <input 
                         type="number" 
