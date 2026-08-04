@@ -7,6 +7,7 @@ import { IconLayoutDashboard, IconClipboardList, IconChartColumn, IconTransform,
 import type { JSX } from 'react/jsx-dev-runtime';
 import { getAccessToken, logoutUser } from "../../../supadb"
 import { toast } from '../toast/ToastService.js';
+import { confirm } from '../dialogs/global_dialog/DialogService.js';
 import { showCircleLoadingDialog } from '../dialogs/circle_loading_dialog/CircleLoadingDialogService';
 
 interface NavItem {
@@ -48,19 +49,24 @@ export default function Nav({userFullName, userEmailAddress, userRole, selectedF
 
     const navigate = useNavigate();
 
-    async function handleLogout() { 
-        const closeLoading = showCircleLoadingDialog();
+    function handleLogout() { 
+        confirm("Logout Confirmation", "Are you sure you want to logout?", "warning", "Yes, Logout")
+            .then(async (confirmed) => {
+                if (confirmed) {
+                    const closeLoading = showCircleLoadingDialog();
 
-        try {
-            await logoutUser();
-            navigate('/login');
-            toast.success("Logged out successfully.");
-        } catch (error) {
-            console.error("Logout error:", error);
-            toast.error("Network error. Please try again later.");
-        } finally {
-            closeLoading();
-        }
+                    try {
+                        await logoutUser();
+                        navigate('/login');
+                        toast.success("Logged out successfully.");
+                    } catch (error) {
+                        console.error("Logout error:", error);
+                        toast.error("Network error. Please try again later.");
+                    } finally {
+                        closeLoading();
+                    }
+                }
+            });
     }
 
     async function checkAccess(){
