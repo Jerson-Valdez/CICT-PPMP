@@ -39,30 +39,45 @@ export default function NewItemCard({
             <div className="top-field-container">
                 <div className="field-group">
                     <label htmlFor={`itemName-${itemId}`}>Item Name</label>
-                    <input 
-                        type="text" 
-                        id={`itemName-${itemId}`} 
-                        placeholder="Enter item name" 
-                        value={itemName} 
-                        onChange={(e) => onUpdate(itemId, 'name', e.target.value)} 
-                        required
-                        disabled={isNewItemExisting}
-                        className="isNewItemExisting"
-                    />
+                    {isNewItemExisting ? 
+                        <input 
+                            type="text"
+                            value={itemName} 
+                            disabled
+                            readOnly
+                            className="isNewItemExisting"
+                        />
+                    :
+                        <input 
+                            type="text" 
+                            id={`itemName-${itemId}`} 
+                            placeholder="Enter item name" 
+                            value={itemName} 
+                            onChange={(e) => onUpdate(itemId, 'name', e.target.value)} 
+                            required
+                            className="isNewItemExisting"
+                        />
+                    }
                 </div>
                 <div className="field-group">
                     <label htmlFor={`itemCategory-${itemId}`}>Item Category</label>
                     <select 
                         id={`itemCategory-${itemId}`} 
-                        value={isNewItemExisting? itemCategory || "" : ""} 
                         onChange={(e) => onUpdate(itemId, 'itemCategory', e.target.value)} 
                         disabled={isNewItemExisting} 
                         required
                         >
-                        <option value="">Select Category</option>
-                        {itemCategories?.map((category, index) => (
-                            <option key={index} value={category}>{category}</option>
-                        ))}
+
+                        {isNewItemExisting ?
+                            <option value={itemCategory}>{itemCategory}</option>
+                        :
+                            <>
+                                <option value="">Select Category</option>
+                                    {itemCategories?.map((category, index) => (
+                                        <option key={index} value={category}>{category}</option>
+                                    ))}
+                            </>
+                        }
                     </select>
                 </div>
                 <div className="field-group">
@@ -74,26 +89,41 @@ export default function NewItemCard({
                         disabled={isNewItemExisting} 
                         required
                         >
-                        <option value="">Select Category</option>
-                        {ppmpCategories?.map((category, index) => (
-                            <option key={index} value={category}>{category}</option>
-                        ))}
+                        {isNewItemExisting ?
+                            <option value={ppmpCategory}>{ppmpCategory}</option>
+                        :
+                            <>
+                                <option value="">Select Category</option>
+                                    {ppmpCategories?.map((category, index) => (
+                                        <option key={index} value={category}>{category}</option>
+                                    ))}
+                            </>
+                        }
                     </select>
                 </div>
             </div>
             <div className="bottom-field-container">
                 <div className="field-group">
                     <label htmlFor={`unitMeasurement-${itemId}`}>Unit Measurement</label>
-                    <input 
-                        type="text" 
-                        id={`unitMeasurement-${itemId}`} 
-                        placeholder="eg. piece, kg, box..." 
-                        value={unitMeasurement}
-                        onChange={(e) => onUpdate(itemId, 'measurementUnit', e.target.value)}
-                        required
-                        disabled={isNewItemExisting}
-                        className="isNewItemExisting"
-                    />
+                    {isNewItemExisting ? 
+                        <input 
+                            type="text" 
+                            value={unitMeasurement} 
+                            disabled
+                            readOnly
+                            className="isNewItemExisting"
+                        />
+                    :
+                        <input 
+                            type="text" 
+                            id={`unitMeasurement-${itemId}`} 
+                            placeholder="eg. piece, kg, box..." 
+                            value={unitMeasurement}
+                            onChange={(e) => onUpdate(itemId, 'measurementUnit', e.target.value)}
+                            required
+                            className="isNewItemExisting"
+                        />
+                    }
                 </div>
                 <div className="field-group">
                     <label htmlFor={`quantity-${itemId}`}>Quantity</label>
@@ -108,17 +138,26 @@ export default function NewItemCard({
                 </div>
                 <div className="field-group">
                     <label htmlFor={`unitPrice-${itemId}`}>Unit Price (PHP)</label>
-                    <input 
-                        type="number" 
-                        id={`unitPrice-${itemId}`} 
-                        min="1" 
-                        step="0.01"
-                        value={priceCatalog === 0 ? '' : priceCatalog} 
-                        onChange={(e) => onUpdate(itemId, 'unitPrice', parseFloat(e.target.value) || 0)} 
-                        required
-                        disabled={isNewItemExisting}
-                        className="isNewItemExisting"
-                    />
+                    {isNewItemExisting ?
+                        <input 
+                            type="number"
+                            value={priceCatalog}
+                            disabled
+                            readOnly
+                            className="isNewItemExisting"
+                        />
+                    :   
+                        <input 
+                            type="number" 
+                            id={`unitPrice-${itemId}`} 
+                            min="1" 
+                            step="0.01"
+                            value={priceCatalog === 0 ? '' : priceCatalog} 
+                            onChange={(e) => onUpdate(itemId, 'unitPrice', parseFloat(e.target.value) || 0)} 
+                            required
+                            className="isNewItemExisting"
+                        />
+                    }
                 </div>
             </div>
             <div className="total-price">
