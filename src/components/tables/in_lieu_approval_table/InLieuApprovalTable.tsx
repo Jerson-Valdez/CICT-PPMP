@@ -12,11 +12,13 @@ import DynamicFilterDialog, { type FilterGroup } from "../../dialogs/dynamic_fil
 interface InLieuApprovalTableProps {
     data: any[];
     handleInLieuStatusChange: (inLieuId: number, newStatus: string) => void;
-    itemCategories?: string[];
-    ppmpCategories?: string[];
+    itemCategoriesOriginal?: string[];
+    itemCategoriesProposed?: string[];
+    ppmpCategoriesOriginal?: string[];
+    ppmpCategoriesProposed?: string[];
 }
 
-export default function InLieuApprovalTable({ data, handleInLieuStatusChange, itemCategories, ppmpCategories }: InLieuApprovalTableProps) {
+export default function InLieuApprovalTable({ data, handleInLieuStatusChange, itemCategoriesOriginal, itemCategoriesProposed, ppmpCategoriesOriginal, ppmpCategoriesProposed }: InLieuApprovalTableProps) {
     const [openDialogIndex, setOpenDialogIndex] = useState<number | null>(null);
 
     const { userRole } = useOutletContext<{ userRole: string }>();
@@ -25,14 +27,19 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange, it
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
         const [sortFilter, setSortFilter] = useState<string>("");
         const [statusFilter, setStatusFilter] = useState<string>("");
-        const [itemCatFilter, setItemCatFilter] = useState<string>("");
-        const [ppmpCatFilter, setPpmpCatFilter] = useState<string>("");
+        const [itemCatFilterOriginal, setItemCatFilterOriginal] = useState<string>("");
+        const [itemCatFilterProposed, setItemCatFilterProposed] = useState<string>("");
+        const [ppmpCatFilterOriginal, setPpmpCatFilterOriginal] = useState<string>("");
+        const [ppmpCatFilterProposed, setPpmpCatFilterProposed] = useState<string>("");
+
     
         const clearAllFilters = () => {
             setSortFilter("");
             setStatusFilter("");
-            setItemCatFilter("");
-            setPpmpCatFilter("");
+            setItemCatFilterOriginal("");
+            setItemCatFilterProposed("");
+            setPpmpCatFilterOriginal("");
+            setPpmpCatFilterProposed("");
         };
     
         const filterConfig: FilterGroup[] = [
@@ -58,18 +65,32 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange, it
                 ]
             },
             {
-                id: 'itemCategory',
-                title: 'Item Category',
-                selectedValue: itemCatFilter,
-                onChange: setItemCatFilter,
-                options: (itemCategories || []).map(cat => ({ label: cat, value: cat }))
+                id: 'itemCategoryOriginal',
+                title: 'Item Category of Original Items',
+                selectedValue: itemCatFilterOriginal,
+                onChange: setItemCatFilterOriginal,
+                options: (itemCategoriesOriginal || []).map(cat => ({ label: cat, value: cat }))
             },
             {
-                id: 'ppmpCategory',
-                title: 'PPMP Category',
-                selectedValue: ppmpCatFilter,
-                onChange: setPpmpCatFilter,
-                options: (ppmpCategories || []).map(cat => ({ label: cat, value: cat }))
+                id: 'itemCategoryProposed',
+                title: 'Item Category of Proposed Items',
+                selectedValue: itemCatFilterProposed,
+                onChange: setItemCatFilterProposed,
+                options: (itemCategoriesProposed || []).map(cat => ({ label: cat, value: cat }))
+            },
+            {
+                id: 'ppmpCategoryOriginal',
+                title: 'PPMP Category of Original Items',
+                selectedValue: ppmpCatFilterOriginal,
+                onChange: setPpmpCatFilterOriginal,
+                options: (ppmpCategoriesOriginal || []).map(cat => ({ label: cat, value: cat }))
+            },
+            {
+                id: 'ppmpCategoryProposed',
+                title: 'PPMP Category of Proposed Items',
+                selectedValue: ppmpCatFilterProposed,
+                onChange: setPpmpCatFilterProposed,
+                options: (ppmpCategoriesProposed || []).map(cat => ({ label: cat, value: cat }))
             }
         ];
     
@@ -82,10 +103,12 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange, it
             if (statusFilter === "approved") matchesStatus = request.status.toLowerCase() === "approved";
             if (statusFilter === "rejected") matchesStatus = request.status.toLowerCase() === "rejected";
 
-            const matchesItemCat = itemCatFilter === "" || request.itemCategory === itemCatFilter;
-            const matchesPpmpCat = ppmpCatFilter === "" || request.ppmpCategory === ppmpCatFilter;
-    
-            return matchesSearch && matchesStatus && matchesItemCat && matchesPpmpCat;
+            const matchesItemCatOriginal = itemCatFilterOriginal === "" || request.inLieuReducedItems.some((reducedItem: any) => reducedItem.itemCategory === itemCatFilterOriginal);
+            const matchesItemCatProposed = itemCatFilterProposed === "" || request.inLieuAdditionItems.some((additionItem: any) => additionItem.itemCategory === itemCatFilterProposed);
+            const matchesPpmpCatOriginal = ppmpCatFilterOriginal === "" || request.inLieuReducedItems.some((reducedItem: any) => reducedItem.ppmpCategory === ppmpCatFilterOriginal);
+            const matchesPpmpCatProposed = ppmpCatFilterProposed === "" || request.inLieuAdditionItems.some((additionItem: any) => additionItem.ppmpCategory === ppmpCatFilterProposed);
+
+            return matchesSearch && matchesStatus && matchesItemCatOriginal && matchesItemCatProposed && matchesPpmpCatOriginal && matchesPpmpCatProposed;
         });
     
         if (sortFilter === "asc") {
@@ -94,7 +117,7 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange, it
             processedData.sort((a, b) => b.requestDate.localeCompare(a.requestDate));
         }
     
-        const activeFilterCount = [sortFilter, statusFilter, itemCatFilter, ppmpCatFilter].filter(Boolean).length;
+        const activeFilterCount = [sortFilter, statusFilter, itemCatFilterOriginal, itemCatFilterProposed, ppmpCatFilterOriginal, ppmpCatFilterProposed].filter(Boolean).length;
 
     function handleOnApproveInLieu(inLieuId: number) {
         confirm("In Lieu Approval", "Are you sure you want to approve this Reallocation \n Note: Once you approve this, it will cause changes to the PPMP master list.", "success", "Yes Approve Reallocation")

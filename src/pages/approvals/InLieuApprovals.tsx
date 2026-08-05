@@ -36,8 +36,10 @@ export default function InLieuApprovals() {
     const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
     const [inLieuApprovalData, setInLieuApprovalData] = useState<InLieuApprovalData[]>([]);
-    const [itemCategories, setItemCategories] = useState<string[]>([]);
-    const [ppmpCategories, setPpmpCategories] = useState<string[]>([]);
+    const [itemCategoriesOriginal, setItemCategoriesOriginal] = useState<string[]>([]);
+    const [itemCategoriesProposed, setItemCategoriesProposed] = useState<string[]>([]);
+    const [ppmpCategoriesOriginal, setPpmpCategoriesOriginal] = useState<string[]>([]);
+    const [ppmpCategoriesProposed, setPpmpCategoriesProposed] = useState<string[]>([]);
 
     useEffect(() => {
             const loadPpmpApprovalData = async () => {
@@ -62,17 +64,18 @@ export default function InLieuApprovals() {
                         const approvalResult = await approvalResponse.json();
     
                         setInLieuApprovalData(approvalResult.inLieuApprovalData || []);
-
-                        const uniqueReducedItemCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuReducedItems.map((reducedItem) => reducedItem.itemCategory))));
-
-                        const uniqueAdditionItemCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuAdditionItems.map((additionItem) => additionItem.itemCategory))));
-                        const combinedItemCategories: string[] = Array.from(new Set([...uniqueReducedItemCategories, ...uniqueAdditionItemCategories]));
-                        setItemCategories(combinedItemCategories);
                         
-                        const uniqueReducedPpmpCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuReducedItems.map((reducedItem) => reducedItem.ppmpCategory))));
-                        const uniqueAdditionPpmpCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuAdditionItems.map((additionItem) => additionItem.ppmpCategory))));
-                        const combinedPpmpCategories: string[] = Array.from(new Set([...uniqueReducedPpmpCategories, ...uniqueAdditionPpmpCategories]));
-                        setPpmpCategories(combinedPpmpCategories);
+                        const uniqueOriginalItemCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuReducedItems.map((reducedItem) => reducedItem.itemCategory))));
+                        setItemCategoriesOriginal(uniqueOriginalItemCategories);
+
+                        const uniqueProposedItemCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuAdditionItems.map((additionItem) => additionItem.itemCategory))));
+                        setItemCategoriesProposed(uniqueProposedItemCategories);
+
+                        const uniqueOriginalPpmpCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuReducedItems.map((reducedItem) => reducedItem.ppmpCategory))));
+                        setPpmpCategoriesOriginal(uniqueOriginalPpmpCategories);
+
+                        const uniqueProposedPpmpCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuAdditionItems.map((additionItem) => additionItem.ppmpCategory))));
+                        setPpmpCategoriesProposed(uniqueProposedPpmpCategories);
 
                         setFiscalYearHolder(selectedFiscalYear);
                     }
@@ -105,7 +108,7 @@ export default function InLieuApprovals() {
     return (
         <main className="page-container approvals">
             <LoadingWrapper isLoading={isInitialLoading} skeleton={<TableSkeleton />}>
-                <InLieuApprovalTable data={inLieuApprovalData} handleInLieuStatusChange={handleInLieuStatusChange} itemCategories={itemCategories} ppmpCategories={ppmpCategories} />
+                <InLieuApprovalTable data={inLieuApprovalData} handleInLieuStatusChange={handleInLieuStatusChange} itemCategoriesOriginal={itemCategoriesOriginal} itemCategoriesProposed={itemCategoriesProposed} ppmpCategoriesOriginal={ppmpCategoriesOriginal} ppmpCategoriesProposed={ppmpCategoriesProposed} />
             </LoadingWrapper>
         </main>
     )
