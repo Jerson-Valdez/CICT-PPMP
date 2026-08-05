@@ -137,8 +137,8 @@ export default function ProcurementMonitor() {
             onChange: setStatusFilter,
             options: [
                 { label: 'Pending PR', value: 'pending' },
-                { label: 'Fulfilled', value: 'fulfilled' },
-                { label: 'Available in Lieu', value: 'available' }
+                { label: 'Fulfilled PR', value: 'fulfilled' },
+                { label: 'Available Items', value: 'available' }
             ]
         },
         {
