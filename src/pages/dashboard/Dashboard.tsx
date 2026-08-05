@@ -34,7 +34,7 @@ interface aiFeaturesData {
     icon: JSX.Element;
     title: string;
     description: string;
-    percentage: number;
+    percentage?: number;
 }
 
 export default function Dashboard(){
@@ -73,7 +73,7 @@ export default function Dashboard(){
                             "Authorization": `Bearer ${await getAccessToken() || ""}`
                         }
                     }),
-                    fetch('https://test-ppmp.onrender.com/api/get_importances/', {
+                    fetch('https://test-ppmp.onrender.com/api/get_importances/?year=' + selectedFiscalYear, {
                         method: "GET",
                         headers: {
                             "Authorization": `Bearer ${await getAccessToken() || ""}`
@@ -95,9 +95,6 @@ export default function Dashboard(){
 
                     setLogs((dashboardCardsResult.logs || []).slice().reverse());
 
-                    console.log("Pending In Lieu Count: ", dashboardCardsResult.pendingInLieuCount);
-                    console.log("Dashboard cards data retrieved: ", dashboardCardsResult);
-
                     setCommittedFundsPercentage((dashboardCardsResult.committedFunds / dashboardCardsResult.totalAnnualBudget) * 100);
                     setOpenFundsPercentage((dashboardCardsResult.openFunds / dashboardCardsResult.totalAnnualBudget) * 100);
                 }
@@ -107,10 +104,13 @@ export default function Dashboard(){
                 }
                 else {
                     const importancesResult = await importancesResponse.json();
-                    console.log("AI importances data retrieved: ", importancesResult);
-                    setAiNotUtilizedItemsPercentage((importancesResult.PlannedQuantity + importancesResult.AvailableQuantity)*100 || 0);
-                    setAiFrequentInLieuItemsPercentage(importancesResult.InLieuTotalQuantity*100 || 0);
-                    setAiNotUtilizedCurrentYearPercentage(importancesResult.notUtilizedCurrentYearPercentage || 0);
+                    const item1 = importancesResult.notUtilizedItems || 0;
+                    const item2 = importancesResult.frequentInLieuItems || 0;
+                    const item3 = importancesResult.notUtilizedCurrentYear || 0;
+
+                    setAiNotUtilizedItemsPercentage(Number((item1 * 0.90).toFixed(2)));
+                    setAiFrequentInLieuItemsPercentage(Number((item2 * 0.90).toFixed(2)));
+                    setAiNotUtilizedCurrentYearPercentage(Number((item3 * 0.10).toFixed(2)));
                 }
 
             } catch (error) {
@@ -134,11 +134,17 @@ export default function Dashboard(){
         {icon: <IconChecklist size={24} />, iconColor: "green", title: "Fulfilled Items", description: "Allocated funds of fulfilled items", value: arrivedFunds,  color: "green-yellow",},
     ];
 
-    const aiFeaturesData: aiFeaturesData[] = [
+    const aiFeaturesDataTraining: aiFeaturesData[] = [
         {icon: <IconChartBarOff size={18}/>, title: "Not Utilized Items", description: "Based on the historical low-utilization items", percentage: aiNotUtilizedItemsPercentage},
         {icon: <IconTransform size={18}/>, title: "Frequent In Lieu Items", description: "Based on the historical frequency of in-lieu items", percentage: aiFrequentInLieuItemsPercentage},
+    ];
+
+    const aiFeaturesDataCurrentYear: aiFeaturesData[] = [
         {icon: <IconChartBarOff size={18}/>, title: "Not Utilized in Current Year", description: "Based on Items not utilized for the current fiscal year", percentage: aiNotUtilizedCurrentYearPercentage},
-        {icon: <IconClockDollar size={18}/>, title: "Lowest Price", description: "Based on the items price to fit the budget", percentage: 10},
+    ];
+
+    const knapsackFeaturesData: aiFeaturesData[] = [
+        {icon: <IconClockDollar size={18}/>, title: "Lowest Price possible of Combined Items", description: "Algorithm to find the lowest price possible of combined items based on the available budget."},
     ];
 
     function handleDashboardFiscalYearChange(newFiscalYear: string) {
@@ -209,26 +215,52 @@ export default function Dashboard(){
                         <div className="ai-features-header">
                             <div className="title-container">
                                 <h2>Bulk Budget Balancing (AI Decision Weights)</h2>
-                                <p>In Lieu Assistant</p>
+                                <p>Your AI-powered budget optimization tool</p>
                             </div>
                         </div>
                         <div className="content-container">
                             <Link to="/in-lieu-reallocation" className="btn-alab">
-                                <img src={alab} alt="ALAB Icon" className="alab-link-icon" style={{ width: '25px', height: '25px' }}/>
+                                <img src={alab} alt="ALAB Icon" className="alab-link-icon" style={{ width: '20px', height: '20px' }}/>
                                 <span>Optimize Your Budget with ALAB</span>
                             </Link>
-
-                            {aiFeaturesData.map((data, index) => (
-                                <div className="ai-features-content" key={index}>
-                                    <div className="icon red">{data.icon}</div>
-                                    <div className="description">
-                                        <h3>{data.title}</h3>
-                                        <p>{data.description}</p>
+                            <div className="title-content-container">
+                                <h4>Training Data Importances</h4>
+                                {aiFeaturesDataTraining.map((data, index) => (
+                                    <div className="ai-features-content" key={index}>
+                                        <div className="icon blue">{data.icon}</div>
+                                        <div className="description">
+                                            <h3>{data.title}</h3>
+                                            <p>{data.description}</p>
+                                        </div>
+                                        <span>{data.percentage !== undefined ? data.percentage.toFixed(2) : 'N/A'}%</span>
                                     </div>
-                                    <span>{data.percentage.toFixed(2)}%</span>
-                                </div>
-                            ))}
-
+                                ))}
+                            </div>
+                            <div className="title-content-container">
+                                <h4>Current Year Importances</h4>
+                                {aiFeaturesDataCurrentYear.map((data, index) => (
+                                    <div className="ai-features-content" key={index}>
+                                        <div className="icon green">{data.icon}</div>
+                                        <div className="description">
+                                            <h3>{data.title}</h3>
+                                            <p>{data.description}</p>
+                                        </div>
+                                        <span>{data.percentage !== undefined ? data.percentage.toFixed(2) : 'N/A'}%</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="title-content-container">
+                                <h4>Knapsack Problem Features</h4>
+                                {knapsackFeaturesData.map((data, index) => (
+                                    <div className="ai-features-content" key={index}>
+                                        <div className="icon purple">{data.icon}</div>
+                                        <div className="description">
+                                            <h3>{data.title}</h3>
+                                            <p>{data.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -318,10 +318,15 @@ export default function InLieuReallocation() {
                 }
             }
             else {
-                setSelectedLieuItems([])
-                suggestions.inLieuData.map((item: any) => {
-                    handleToggleLieuItem(item)
-                })
+                const optimizedItems = suggestions.inLieuData.map((item: any) => ({
+                    itemId: item.itemId,
+                    itemName: item.itemName,
+                    unitMeasurement: item.unitMeasurement,
+                    reduceQuantity: item.reduceQuantity > 0 ? item.reduceQuantity : 1,
+                    priceCatalog: item.priceCatalog
+                }));
+                
+                setSelectedLieuItems(optimizedItems);
             }
         }
         catch (error: any) {
@@ -430,7 +435,7 @@ export default function InLieuReallocation() {
                         </div>
                         <LoadingWrapper isLoading={isInitialLoading} skeleton={<InLieuReallocationSkeleton />}>
                             <div className="lieu-items-card-container">
-                                {openFunds > 0 && (() => {
+                                {openFunds > 0 && (() => {  
                                     const selectedOpenFunds = selectedLieuItems.find(selected => selected.itemId === 0);
                                     const isSelected = !!selectedOpenFunds;
                                     const currentReduceQty = selectedOpenFunds ? selectedOpenFunds.reduceQuantity : 0;
