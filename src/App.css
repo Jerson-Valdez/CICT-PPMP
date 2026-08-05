@@ -226,8 +226,11 @@
         background-color: color-mix(in srgb, var(--text-gray) 20%, transparent);
 
     & > .filter-select {
-        @apply outline-none border-l px-2 text-black cursor-pointer text-xs w-full;
+        @apply outline-none border-l px-2 text-black cursor-pointer text-xs w-full relative;
         border-color: var(--text-gray);
+        & > .filter-badge{
+            @apply absolute -top-5 -right-5 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center;
+        }
     }
     &:hover {
         @apply border-gray-600 bg-gray-100 transition-all duration-300 ease-in-out;

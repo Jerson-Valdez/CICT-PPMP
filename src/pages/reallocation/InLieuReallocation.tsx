@@ -288,6 +288,49 @@ export default function InLieuReallocation() {
         }
     }
 
+    const getTestingSuggestions = async () => {
+        const loading = showCircleLoadingDialog();
+
+        try {
+            const formData = new FormData();
+            formData.append("Sum", JSON.stringify(requiredBudget))
+            formData.append("NewItems", JSON.stringify(newItemsArray))
+            formData.append("FiscalYear", selectedFiscalYear)
+
+            //http://127.0.0.1:8000
+            //https://test-ppmp.onrender.com
+            const suggestionResponse = await fetch("https://test-ppmp.onrender.com/api/smart-suggest/", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Authorization": `Bearer ${await getAccessToken() || ""}`
+                }
+            });
+
+            const suggestions = await suggestionResponse.json()
+
+            if (!suggestionResponse.ok) {
+                if (suggestionResponse.status == 400) {
+                    notify("Unable to Generate Smart Suggestions", suggestions.error, "error", "I understand")
+                } else {
+                    throw new Error("Unable to generate smart suggestions. Please try again later.")
+                }
+            }
+            else {
+                setSelectedLieuItems([])
+                suggestions.data.map((item: any) => {
+                    handleToggleLieuItem(item)
+                })
+            }
+        }
+        catch (error: any) {
+            toast.error(error.message)
+        }
+        finally {
+            loading()
+        }
+    }
+
     return (
         <main className="page-container reallocation">
             <div className="budget-balancing-container">
@@ -377,7 +420,10 @@ export default function InLieuReallocation() {
                         <div className="title-button-container">
                             <h3><IconTransform size={24} color="red" /> Available Lieu Pool</h3>
                             {newItemsArray.length > 0 && requiredBudget > 0 && isNewItemsValid ?
-                                (<button className="btn-alab" onClick={getSmartSuggestions}><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />Suggest Optimization</button>) : (
+                                (<><button className="btn-alab" onClick={getSmartSuggestions}><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />Suggest Optimization</button>
+
+                                <button className="btn-alab" onClick={getTestingSuggestions}><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />Testing</button></>
+                                ) : (
                                     <button className="btn-alab" disabled><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />Suggest Optimization</button>
                                 )}
                         </div>

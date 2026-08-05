@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+.dynamic-filter-dialog{
+    @apply flex flex-col w-lg p-5 shadow-2xl rounded-xl justify-start gap-2 items-start left-0 right-0 top-1/2 -translate-y-1/2 mx-auto;
+
+    & > .header{
+        @apply flex flex-row items-center justify-between gap-2 w-full;
+        & > .title-wrapper {
+            @apply flex flex-row items-center justify-start gap-2 text-base font-semibold;
+        }
+        & > .close-btn{
+            @apply p-1 rounded-full text-gray-500 hover:text-red-800 hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer;
+        }
+    }
+
+    & > .filter-content{
+        @apply flex flex-col items-start justify-start gap-4 w-full;
+
+        & > .filter-row{
+            @apply flex flex-col border-t border-gray-300 pt-2 w-full gap-2;
+            & > h4{
+                @apply text-xs font-bold text-red-800;
+            }
+            & > .chip-container{
+                @apply flex flex-row flex-wrap items-center justify-start gap-2 w-full;
+
+                & > .filter-chip{
+                    @apply px-3 py-2 border border-gray-300 rounded-full text-[0.625rem] font-medium cursor-pointer;
+                    &:hover{
+                        @apply transition-all duration-300 ease-in-out text-red-800 border-red-800 -translate-y-0.5;
+                        background-color: color-mix(in srgb, var(--primary) 10%, transparent);
+                    }
+                    &.active{
+                        @apply bg-red-800 text-white border-red-800;
+                    }
+                }
+            }
+        }
+    }
+
+    & > .action-btns{
+        @apply flex flex-row items-center justify-end gap-2 w-full;
+        & > button{
+            @apply px-4 py-2 text-xs; 
+        }
+    }
+}

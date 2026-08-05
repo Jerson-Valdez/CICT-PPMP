@@ -2,6 +2,7 @@ import { useState } from 'react';
 import CreatePR from '../../dialogs/create_PR/CreatePR';
 import '../table-design.css';
 import { IconSearch, IconFileTypeXls, IconFilter, IconFileStack } from '@tabler/icons-react';
+import DynamicFilterDialog, { type FilterGroup } from '../../dialogs/dynamic_filter_dialog/DynamicFilterDialog';
 
 interface MasterlistTableProps {
     itemCount: number;
@@ -9,31 +10,88 @@ interface MasterlistTableProps {
     exportFunction?: () => void;
     purchaseRequestQuantityChange: (prQuantity: number, itemId: number) => void;
     data: any[];
+    itemCategories?: string[];
+    ppmpCategories?: string[];
 }
 
-export default function MasterlistTable({ itemCount, unitCount, exportFunction, purchaseRequestQuantityChange, data }: MasterlistTableProps) {
+export default function MasterlistTable({ itemCount, unitCount, exportFunction, purchaseRequestQuantityChange, data, itemCategories, ppmpCategories }: MasterlistTableProps) {
 
     const [openDialogIndex, setOpenDialogIndex] = useState<number | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [filterOption, setFilterOption] = useState<string>("");
+
+    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
+    const [sortFilter, setSortFilter] = useState<string>("");
+    const [statusFilter, setStatusFilter] = useState<string>("");
+    const [itemCatFilter, setItemCatFilter] = useState<string>("");
+    const [ppmpCatFilter, setPpmpCatFilter] = useState<string>("");
+
+    const clearAllFilters = () => {
+        setSortFilter("");
+        setStatusFilter("");
+        setItemCatFilter("");
+        setPpmpCatFilter("");
+    };
+
+    const filterConfig: FilterGroup[] = [
+        {
+            id: 'sort',
+            title: 'Sort Order',
+            selectedValue: sortFilter,
+            onChange: setSortFilter,
+            options: [
+                { label: 'Ascending (A-Z)', value: 'asc' },
+                { label: 'Descending (Z-A)', value: 'desc' }
+            ]
+        },
+        {
+            id: 'status',
+            title: 'Item Status',
+            selectedValue: statusFilter,
+            onChange: setStatusFilter,
+            options: [
+                { label: 'Pending PR', value: 'pending' },
+                { label: 'Fulfilled', value: 'fulfilled' },
+                { label: 'Available in Lieu', value: 'available' }
+            ]
+        },
+        {
+            id: 'itemCategory',
+            title: 'Item Category',
+            selectedValue: itemCatFilter,
+            onChange: setItemCatFilter,
+            options: (itemCategories || []).map(cat => ({ label: cat, value: cat }))
+        },
+        {
+            id: 'ppmpCategory',
+            title: 'PPMP Category',
+            selectedValue: ppmpCatFilter,
+            onChange: setPpmpCatFilter,
+            options: (ppmpCategories || []).map(cat => ({ label: cat, value: cat }))
+        }
+    ];
 
     let processedData = data.filter((item) => {
         const searchLower = searchTerm.toLowerCase();
         const matchesSearch = searchTerm === "" || item.itemName.toLowerCase().includes(searchLower);
 
         let matchesStatus = true;
-        if (filterOption === "pendingItems") matchesStatus = item.pendingQuantity > 0;
-        if (filterOption === "fulfilledItems") matchesStatus = item.fulfilledQuantity > 0;
-        if (filterOption === "availableItems") matchesStatus = item.availableQuantity > 0;
+        if (statusFilter === "pending") matchesStatus = item.pendingQuantity > 0;
+        if (statusFilter === "fulfilled") matchesStatus = item.fulfilledQuantity > 0;
+        if (statusFilter === "available") matchesStatus = item.availableQuantity > 0;
 
-        return matchesSearch && matchesStatus;
+        const matchesItemCat = itemCatFilter === "" || item.itemCategory === itemCatFilter;
+        const matchesPpmpCat = ppmpCatFilter === "" || item.ppmpCategory === ppmpCatFilter;
+
+        return matchesSearch && matchesStatus && matchesItemCat && matchesPpmpCat;
     });
 
-    if (filterOption === "ascendingByitemName") {
+    if (sortFilter === "asc") {
         processedData.sort((a, b) => a.itemName.localeCompare(b.itemName));
-    } else if (filterOption === "descendingByitemName") {
+    } else if (sortFilter === "desc") {
         processedData.sort((a, b) => b.itemName.localeCompare(a.itemName));
     }
+
+    const activeFilterCount = [sortFilter, statusFilter, itemCatFilter, ppmpCatFilter].filter(Boolean).length;
 
     return (
         <div className="table-container masterlist">
@@ -52,14 +110,22 @@ export default function MasterlistTable({ itemCount, unitCount, exportFunction, 
                 </button>
                 <div className="filter-container">
                     <IconFilter size={24} />
-                    <select className="filter-select" value={filterOption} onChange={(e) => setFilterOption(e.target.value)}>
-                        <option value="">Filter by:</option>
-                        <option value="ascendingByitemName">Ascending Item Name</option>
-                        <option value="descendingByitemName">Descending Item Name</option>
-                        <option value="availableItems">Available Items</option>
-                        <option value="pendingItems">Pending Items</option>
-                        <option value="fulfilledItems">Fulfilled Items</option>
-                    </select>
+                    <button className="filter-select" onClick={() => setIsFilterDialogOpen(true)}>
+                        Filters
+                        {activeFilterCount > 0 && (
+                        <span className="filter-badge">
+                            {activeFilterCount}
+                        </span>
+                    )}
+                    </button>
+                    {isFilterDialogOpen && (
+                        <DynamicFilterDialog 
+                            isOpen={isFilterDialogOpen}
+                            onClose={() => setIsFilterDialogOpen(false)}
+                            onClearAll={clearAllFilters}
+                            filterGroups={filterConfig}
+                        />
+                    )}
                 </div>
             </div>
             <div className="table-wrapper">

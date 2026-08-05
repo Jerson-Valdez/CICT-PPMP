@@ -8,6 +8,7 @@ import MonitoringSkeleton from "../../components/skeleton/skeleton_pages/Monitor
 import { toast } from '../../components/toast/ToastService';
 import { useOutletContext } from 'react-router';
 import { getAccessToken } from "../../../supadb";
+import DynamicFilterDialog, { type FilterGroup } from '../../components/dialogs/dynamic_filter_dialog/DynamicFilterDialog';
 
 interface ItemsCountCardData {
     icon: string;
@@ -33,6 +34,9 @@ interface ppmpMonitoringData {
     availableQuantity: number;
     pendingQuantity: number;
     fulfilledQuantity: number;
+    itemCategory: string;
+    ppmpCategory: string;
+
     prHistory: prHistory[];
     prHistoryCount: number;
 }
@@ -49,6 +53,8 @@ export default function ProcurementMonitor() {
     const [totalFulfilledItemCount, setTotalFulfilledItemCount] = useState<number>(0);
 
     const [ppmpMonitoringData, setPpmpMonitoringData] = useState<ppmpMonitoringData[]>([]);
+    const [itemCategories, setItemCategories] = useState<string[]>([]);
+    const [ppmpCategories, setPpmpCategories] = useState<string[]>([]);
 
     useEffect(() => {
         const loadPpmpMonitoringData = async () => {
@@ -81,7 +87,9 @@ export default function ProcurementMonitor() {
                     setTotalFulfilledItemCount(monitoringResult.totalFulfilledItemCount || 0);
                     
                     setPpmpMonitoringData(monitoringResult.ppmpMonitoringData || []);
-                    
+                    setItemCategories(monitoringResult.itemCategories || []);
+                    setPpmpCategories(monitoringResult.ppmpCategories || []);
+
                     setFiscalYearHolder(selectedFiscalYear);
                 }
             } catch (error) {
@@ -97,25 +105,80 @@ export default function ProcurementMonitor() {
     }, [selectedFiscalYear]);
 
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [filterOption, setFilterOption] = useState<string>("");
 
-    const processedData = ppmpMonitoringData.filter((item) => {
+    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
+    const [sortFilter, setSortFilter] = useState<string>("");
+    const [statusFilter, setStatusFilter] = useState<string>("");
+    const [itemCatFilter, setItemCatFilter] = useState<string>("");
+    const [ppmpCatFilter, setPpmpCatFilter] = useState<string>("");
+
+    const clearAllFilters = () => {
+        setSortFilter("");
+        setStatusFilter("");
+        setItemCatFilter("");
+        setPpmpCatFilter("");
+    };
+
+    const filterConfig: FilterGroup[] = [
+        {
+            id: 'sort',
+            title: 'Sort Order',
+            selectedValue: sortFilter,
+            onChange: setSortFilter,
+            options: [
+                { label: 'Ascending (A-Z)', value: 'asc' },
+                { label: 'Descending (Z-A)', value: 'desc' }
+            ]
+        },
+        {
+            id: 'status',
+            title: 'Item Status',
+            selectedValue: statusFilter,
+            onChange: setStatusFilter,
+            options: [
+                { label: 'Pending PR', value: 'pending' },
+                { label: 'Fulfilled', value: 'fulfilled' },
+                { label: 'Available in Lieu', value: 'available' }
+            ]
+        },
+        {
+            id: 'itemCategory',
+            title: 'Item Category',
+            selectedValue: itemCatFilter,
+            onChange: setItemCatFilter,
+            options: (itemCategories || []).map(cat => ({ label: cat, value: cat }))
+        },
+        {
+            id: 'ppmpCategory',
+            title: 'PPMP Category',
+            selectedValue: ppmpCatFilter,
+            onChange: setPpmpCatFilter,
+            options: (ppmpCategories || []).map(cat => ({ label: cat, value: cat }))
+        }
+    ];
+
+    let processedData = ppmpMonitoringData.filter((item) => {
         const searchLower = searchTerm.toLowerCase();
         const matchesSearch = searchTerm === "" || item.itemName.toLowerCase().includes(searchLower);
 
         let matchesStatus = true;
-        if (filterOption === "pendingItems") matchesStatus = item.pendingQuantity > 0;
-        if (filterOption === "fulfilledItems") matchesStatus = item.fulfilledQuantity > 0;
-        if (filterOption === "availableItems") matchesStatus = item.availableQuantity > 0;
+        if (statusFilter === "pending") matchesStatus = item.pendingQuantity > 0;
+        if (statusFilter === "fulfilled") matchesStatus = item.fulfilledQuantity > 0;
+        if (statusFilter === "available") matchesStatus = item.availableQuantity > 0;
 
-        return matchesSearch && matchesStatus;
+        const matchesItemCat = itemCatFilter === "" || item.itemCategory === itemCatFilter;
+        const matchesPpmpCat = ppmpCatFilter === "" || item.ppmpCategory === ppmpCatFilter;
+
+        return matchesSearch && matchesStatus && matchesItemCat && matchesPpmpCat;
     });
 
-    if (filterOption === "ascendingByItemName") {
+    if (sortFilter === "asc") {
         processedData.sort((a, b) => a.itemName.localeCompare(b.itemName));
-    } else if (filterOption === "descendingByItemName") {
+    } else if (sortFilter === "desc") {
         processedData.sort((a, b) => b.itemName.localeCompare(a.itemName));
     }
+
+    const activeFilterCount = [sortFilter, statusFilter, itemCatFilter, ppmpCatFilter].filter(Boolean).length;
 
     const ItemsCountCardData: ItemsCountCardData[] = [
         {icon: 'package', title: 'Total Items in Planned', count: totalPlannedItemCount, color: 'gray'},
@@ -197,14 +260,22 @@ export default function ProcurementMonitor() {
                 </div>
                 <div className="filter-container">
                     <IconFilter size={24} />
-                    <select className="filter-select" value={filterOption} onChange={(e) => setFilterOption(e.target.value)}>
-                        <option value="">Filter by:</option>
-                        <option value="ascendingByItemName">Ascending Item Name</option>
-                        <option value="descendingByItemName">Descending Item Name</option>
-                        <option value="availableItems">Available Items</option>
-                        <option value="pendingItems">Pending Items</option>
-                        <option value="fulfilledItems">Fulfilled Items</option>
-                    </select>
+                    <button className="filter-select" onClick={() => setIsFilterDialogOpen(true)}>
+                        Filters
+                        {activeFilterCount > 0 && (
+                        <span className="filter-badge">
+                            {activeFilterCount}
+                        </span>
+                    )}
+                    </button>
+                    {isFilterDialogOpen && (
+                        <DynamicFilterDialog 
+                            isOpen={isFilterDialogOpen}
+                            onClose={() => setIsFilterDialogOpen(false)}
+                            onClearAll={clearAllFilters}
+                            filterGroups={filterConfig}
+                        />
+                    )}
                 </div>
             </div>
             <div className="tracking-items-card-container">

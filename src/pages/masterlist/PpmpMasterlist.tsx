@@ -32,6 +32,8 @@ export default function PpmpMasterlist() {
     const [totalPlannedFunds, setTotalPlannedFunds] = useState(0);
 
     const [ppmpTableData, setPpmpTableData] = useState<PPMPItem[]>([]);
+    const [itemCategories, setItemCategories] = useState<string[]>([]);
+    const [ppmpCategories, setPpmpCategories] = useState<string[]>([]);
     
     useEffect(() => {
         const loadPpmpTableData = async () => {
@@ -74,7 +76,9 @@ export default function PpmpMasterlist() {
                 }
                 else {
                     const masterlistResult = await masterlistResponse.json();
-                    setPpmpTableData(masterlistResult);
+                    setPpmpTableData(masterlistResult.ppmpData);
+                    setItemCategories(masterlistResult.itemCategories);
+                    setPpmpCategories(masterlistResult.ppmpCategories);
                 }
             } catch (error) {
                 console.error("Error fetching PPMP masterlist data:", error);
@@ -171,6 +175,8 @@ export default function PpmpMasterlist() {
                     data={ppmpTableData}
                     exportFunction={exportLatestPPMP}
                     purchaseRequestQuantityChange={handlePRQuantityChange}
+                    itemCategories={itemCategories}
+                    ppmpCategories={ppmpCategories}
                     />
             </LoadingWrapper>
         </main>
