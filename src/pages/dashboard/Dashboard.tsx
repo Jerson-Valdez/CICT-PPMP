@@ -108,9 +108,19 @@ export default function Dashboard(){
                     const item2 = importancesResult.frequentInLieuItems || 0;
                     const item3 = importancesResult.notUtilizedCurrentYear || 0;
 
-                    setAiNotUtilizedItemsPercentage(Number((item1 * 0.90).toFixed(2)));
-                    setAiFrequentInLieuItemsPercentage(Number((item2 * 0.90).toFixed(2)));
-                    setAiNotUtilizedCurrentYearPercentage(Number((item3 * 0.10).toFixed(2)));
+                    console.log("AI Importances Data:", importancesResult);
+
+                    const grandTotal = item1 + item2 + item3;
+
+                    if (grandTotal > 0) {
+                        setAiNotUtilizedItemsPercentage(Number(((item1 / grandTotal) * 100).toFixed(2)));
+                        setAiFrequentInLieuItemsPercentage(Number(((item2 / grandTotal) * 100).toFixed(2)));
+                        setAiNotUtilizedCurrentYearPercentage(Number(((item3 / grandTotal) * 100).toFixed(2)));
+                    } else {
+                        setAiNotUtilizedItemsPercentage(0);
+                        setAiFrequentInLieuItemsPercentage(0);
+                        setAiNotUtilizedCurrentYearPercentage(0);
+                    }
                 }
 
             } catch (error) {
