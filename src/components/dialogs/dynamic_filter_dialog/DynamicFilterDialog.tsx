@@ -58,7 +58,7 @@ export default function DynamicFilterDialog({ isOpen, onClose, onClearAll, filte
             <div className="header">
                 <div className="title-wrapper">
                     <div className="icon royal-red">
-                        <IconFilter size={24}/>
+                        <IconFilter size={20}/>
                     </div>
                     <h3>Filter & Sort</h3>
                 </div>
@@ -67,7 +67,7 @@ export default function DynamicFilterDialog({ isOpen, onClose, onClearAll, filte
                 </button>
             </div>
             
-            <div className="content">
+            <div className="filter-content">
                 {filterGroups.map((group) => (
                     <div className="filter-row" key={group.id}>
                         <h4>{group.title}</h4>
