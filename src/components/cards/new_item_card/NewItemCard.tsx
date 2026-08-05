@@ -84,7 +84,6 @@ export default function NewItemCard({
                     <label htmlFor={`ppmpCategory-${itemId}`}>PPMP Category</label>
                     <select 
                         id={`ppmpCategory-${itemId}`} 
-                        value={isNewItemExisting? ppmpCategory || "" : ""} 
                         onChange={(e) => onUpdate(itemId, 'ppmpCategory', e.target.value)} 
                         disabled={isNewItemExisting} 
                         required
