@@ -7,32 +7,94 @@ import { useOutletContext } from 'react-router';
 import { showCircleLoadingDialog } from "../../dialogs/circle_loading_dialog/CircleLoadingDialogService";
 import { getAccessToken } from "../../../../supadb";
 import { toast } from "../../toast/ToastService";
+import DynamicFilterDialog, { type FilterGroup } from "../../dialogs/dynamic_filter_dialog/DynamicFilterDialog";
 
-export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: { data: any[]; handleInLieuStatusChange: (inLieuId: number, newStatus: string) => void }) {
+interface InLieuApprovalTableProps {
+    data: any[];
+    handleInLieuStatusChange: (inLieuId: number, newStatus: string) => void;
+    itemCategories?: string[];
+    ppmpCategories?: string[];
+}
+
+export default function InLieuApprovalTable({ data, handleInLieuStatusChange, itemCategories, ppmpCategories }: InLieuApprovalTableProps) {
     const [openDialogIndex, setOpenDialogIndex] = useState<number | null>(null);
 
     const { userRole } = useOutletContext<{ userRole: string }>();
 
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [filterOption, setFilterOption] = useState<string>("");
+    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
+        const [sortFilter, setSortFilter] = useState<string>("");
+        const [statusFilter, setStatusFilter] = useState<string>("");
+        const [itemCatFilter, setItemCatFilter] = useState<string>("");
+        const [ppmpCatFilter, setPpmpCatFilter] = useState<string>("");
+    
+        const clearAllFilters = () => {
+            setSortFilter("");
+            setStatusFilter("");
+            setItemCatFilter("");
+            setPpmpCatFilter("");
+        };
+    
+        const filterConfig: FilterGroup[] = [
+            {
+                id: 'sort',
+                title: 'Sort Order',
+                selectedValue: sortFilter,
+                onChange: setSortFilter,
+                options: [
+                    { label: 'Ascending (Date)', value: 'asc' },
+                    { label: 'Descending (Date)', value: 'desc' }
+                ]
+            },
+            {
+                id: 'status',
+                title: 'Request Status',
+                selectedValue: statusFilter,
+                onChange: setStatusFilter,
+                options: [
+                    { label: 'Pending', value: 'pending' },
+                    { label: 'Approved', value: 'approved' },
+                    { label: 'Rejected', value: 'rejected' }
+                ]
+            },
+            {
+                id: 'itemCategory',
+                title: 'Item Category',
+                selectedValue: itemCatFilter,
+                onChange: setItemCatFilter,
+                options: (itemCategories || []).map(cat => ({ label: cat, value: cat }))
+            },
+            {
+                id: 'ppmpCategory',
+                title: 'PPMP Category',
+                selectedValue: ppmpCatFilter,
+                onChange: setPpmpCatFilter,
+                options: (ppmpCategories || []).map(cat => ({ label: cat, value: cat }))
+            }
+        ];
+    
+        let processedData = data.filter((request) => {
+            const searchLower = searchTerm.toLowerCase();
+            const matchesSearch = searchTerm === "" || request.itemName.toLowerCase().includes(searchLower);
+    
+            let matchesStatus = true;
+            if (statusFilter === "pending") matchesStatus = request.status.toLowerCase() === "pending";
+            if (statusFilter === "approved") matchesStatus = request.status.toLowerCase() === "approved";
+            if (statusFilter === "rejected") matchesStatus = request.status.toLowerCase() === "rejected";
 
-    let processedData = data.filter((item) => {
-        const searchLower = searchTerm.toLowerCase();
-        const matchesSearch = searchTerm === "" || item.requestedBy.toLowerCase().includes(searchLower) || item.requestDate.toLowerCase().includes(searchLower) || item.inLieuReducedItems.some((i: any) => i.itemName.toLowerCase().includes(searchLower)) || item.inLieuAdditionItems.some((i: any) => i.itemName.toLowerCase().includes(searchLower));
-
-        let matchesStatus = true;
-        if (filterOption === "pending") matchesStatus = item.status.toLowerCase() === "pending";
-        if (filterOption === "approved") matchesStatus = item.status.toLowerCase() === "approved";
-        if (filterOption === "rejected") matchesStatus = item.status.toLowerCase() === "rejected";
-
-        return matchesSearch && matchesStatus;
-    });
-
-    if (filterOption === "ascending") {
-        processedData.sort((a, b) => a.requestDate.localeCompare(b.requestDate));
-    } else if (filterOption === "descending") {
-        processedData.sort((a, b) => b.requestDate.localeCompare(a.requestDate));
-    }
+            const matchesItemCat = itemCatFilter === "" || request.itemCategory === itemCatFilter;
+            const matchesPpmpCat = ppmpCatFilter === "" || request.ppmpCategory === ppmpCatFilter;
+    
+            return matchesSearch && matchesStatus && matchesItemCat && matchesPpmpCat;
+        });
+    
+        if (sortFilter === "asc") {
+            processedData.sort((a, b) => a.requestDate.localeCompare(b.requestDate));
+        } else if (sortFilter === "desc") {
+            processedData.sort((a, b) => b.requestDate.localeCompare(a.requestDate));
+        }
+    
+        const activeFilterCount = [sortFilter, statusFilter, itemCatFilter, ppmpCatFilter].filter(Boolean).length;
 
     function handleOnApproveInLieu(inLieuId: number) {
         confirm("In Lieu Approval", "Are you sure you want to approve this Reallocation \n Note: Once you approve this, it will cause changes to the PPMP master list.", "success", "Yes Approve Reallocation")
@@ -122,14 +184,22 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange }: 
                 </div>
                 <div className="filter-container">
                     <IconFilter size={24} />
-                    <select className="filter-select" value={filterOption} onChange={(e) => setFilterOption(e.target.value)}>
-                        <option value="">Filter by:</option>
-                        <option value="ascending">Ascending by Request Date</option>
-                        <option value="descending">Descending by Request Date</option>
-                        <option value="pending">Pending Items</option>
-                        <option value="approved">Approved Items</option>
-                        <option value="rejected">Rejected Items</option>
-                    </select>
+                    <button className="filter-select" onClick={() => setIsFilterDialogOpen(true)}>
+                        Filters
+                        {activeFilterCount > 0 && (
+                        <span className="filter-badge">
+                            {activeFilterCount}
+                        </span>
+                    )}
+                    </button>
+                    {isFilterDialogOpen && (
+                        <DynamicFilterDialog 
+                            isOpen={isFilterDialogOpen}
+                            onClose={() => setIsFilterDialogOpen(false)}
+                            onClearAll={clearAllFilters}
+                            filterGroups={filterConfig}
+                        />
+                    )}
                 </div>
             </div>
             

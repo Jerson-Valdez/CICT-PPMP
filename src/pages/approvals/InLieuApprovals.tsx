@@ -15,6 +15,8 @@ interface Item{
     priceCatalog: number;
     availableQuantityAfter?: number;
     plannedQuantity?: number;
+    itemCategory?: string;
+    ppmpCategory?: string;
 }
 interface InLieuApprovalData {
     inLieuId: number;
@@ -34,6 +36,8 @@ export default function InLieuApprovals() {
     const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
     const [inLieuApprovalData, setInLieuApprovalData] = useState<InLieuApprovalData[]>([]);
+    const [itemCategories, setItemCategories] = useState<string[]>([]);
+    const [ppmpCategories, setPpmpCategories] = useState<string[]>([]);
 
     useEffect(() => {
             const loadPpmpApprovalData = async () => {
@@ -57,10 +61,19 @@ export default function InLieuApprovals() {
                     } else {
                         const approvalResult = await approvalResponse.json();
     
-                        console.log("In-Lieu approval data retrieved: ", approvalResult.inLieuApprovalData);
-    
                         setInLieuApprovalData(approvalResult.inLieuApprovalData || []);
+
+                        const uniqueReducedItemCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuReducedItems.map((reducedItem) => reducedItem.itemCategory))));
+
+                        const uniqueAdditionItemCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuAdditionItems.map((additionItem) => additionItem.itemCategory))));
+                        const combinedItemCategories: string[] = Array.from(new Set([...uniqueReducedItemCategories, ...uniqueAdditionItemCategories]));
+                        setItemCategories(combinedItemCategories);
                         
+                        const uniqueReducedPpmpCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuReducedItems.map((reducedItem) => reducedItem.ppmpCategory))));
+                        const uniqueAdditionPpmpCategories: string[] = Array.from(new Set(approvalResult.inLieuApprovalData.flatMap((item: InLieuApprovalData) => item.inLieuAdditionItems.map((additionItem) => additionItem.ppmpCategory))));
+                        const combinedPpmpCategories: string[] = Array.from(new Set([...uniqueReducedPpmpCategories, ...uniqueAdditionPpmpCategories]));
+                        setPpmpCategories(combinedPpmpCategories);
+
                         setFiscalYearHolder(selectedFiscalYear);
                     }
                 } catch (error) {
@@ -92,7 +105,7 @@ export default function InLieuApprovals() {
     return (
         <main className="page-container approvals">
             <LoadingWrapper isLoading={isInitialLoading} skeleton={<TableSkeleton />}>
-                <InLieuApprovalTable data={inLieuApprovalData} handleInLieuStatusChange={handleInLieuStatusChange} />
+                <InLieuApprovalTable data={inLieuApprovalData} handleInLieuStatusChange={handleInLieuStatusChange} itemCategories={itemCategories} ppmpCategories={ppmpCategories} />
             </LoadingWrapper>
         </main>
     )

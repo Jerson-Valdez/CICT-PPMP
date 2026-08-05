@@ -53,6 +53,9 @@ export default function Dashboard(){
     const [committedFundsPercentage, setCommittedFundsPercentage] = useState(0);
     const [openFundsPercentage, setOpenFundsPercentage] = useState(0);
     const [logs, setLogs] = useState<Log[]>([]);
+    const [aiNotUtilizedItemsPercentage, setAiNotUtilizedItemsPercentage] = useState(0);
+    const [aiFrequentInLieuItemsPercentage, setAiFrequentInLieuItemsPercentage] = useState(0);
+    const [aiNotUtilizedCurrentYearPercentage, setAiNotUtilizedCurrentYearPercentage] = useState(0);
 
     useEffect(() => {
         const loadDashboardData = async () => {
@@ -61,11 +64,17 @@ export default function Dashboard(){
                 const formData = new FormData();
                 formData.append('year', String(selectedFiscalYear));
 
-                const [dashboardCardsResponse] = await Promise.all([
+                const [dashboardCardsResponse, importancesResponse] = await Promise.all([
 
                     fetch('https://test-ppmp.onrender.com/api/dashboard_cards/', {
                         method: "POST",
                         body: formData,
+                        headers: {
+                            "Authorization": `Bearer ${await getAccessToken() || ""}`
+                        }
+                    }),
+                    fetch('https://test-ppmp.onrender.com/api/get_importances/', {
+                        method: "GET",
                         headers: {
                             "Authorization": `Bearer ${await getAccessToken() || ""}`
                         }
@@ -93,6 +102,17 @@ export default function Dashboard(){
                     setOpenFundsPercentage((dashboardCardsResult.openFunds / dashboardCardsResult.totalAnnualBudget) * 100);
                 }
 
+                if (!importancesResponse.ok) {
+                    toast.error("Failed to fetch AI importances data. Please try again later.");
+                }
+                else {
+                    const importancesResult = await importancesResponse.json();
+                    console.log("AI importances data retrieved: ", importancesResult);
+                    setAiNotUtilizedItemsPercentage((importancesResult.PlannedQuantity + importancesResult.AvailableQuantity)*100 || 0);
+                    setAiFrequentInLieuItemsPercentage(importancesResult.InLieuTotalQuantity*100 || 0);
+                    setAiNotUtilizedCurrentYearPercentage(importancesResult.notUtilizedCurrentYearPercentage || 0);
+                }
+
             } catch (error) {
                 console.error("Error fetching dashboard cards data:", error);
                 toast.error("Network error. Please try again later.");
@@ -115,9 +135,9 @@ export default function Dashboard(){
     ];
 
     const aiFeaturesData: aiFeaturesData[] = [
-        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized Items", description: "Based on the historical low-utilization items", percentage: 35},
-        {icon: <IconTransform size={18}/>, title: "Frequent In Lieu Items", description: "Based on the historical frequency of in-lieu items", percentage: 35},
-        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized in Current Year", description: "Based on Items not utilized for the current fiscal year", percentage: 20},
+        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized Items", description: "Based on the historical low-utilization items", percentage: aiNotUtilizedItemsPercentage},
+        {icon: <IconTransform size={18}/>, title: "Frequent In Lieu Items", description: "Based on the historical frequency of in-lieu items", percentage: aiFrequentInLieuItemsPercentage},
+        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized in Current Year", description: "Based on Items not utilized for the current fiscal year", percentage: aiNotUtilizedCurrentYearPercentage},
         {icon: <IconClockDollar size={18}/>, title: "Lowest Price", description: "Based on the items price to fit the budget", percentage: 10},
     ];
 
@@ -205,7 +225,7 @@ export default function Dashboard(){
                                         <h3>{data.title}</h3>
                                         <p>{data.description}</p>
                                     </div>
-                                    <span>{data.percentage}%</span>
+                                    <span>{data.percentage.toFixed(2)}%</span>
                                 </div>
                             ))}
 

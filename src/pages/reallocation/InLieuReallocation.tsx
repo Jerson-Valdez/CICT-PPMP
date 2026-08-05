@@ -293,13 +293,14 @@ export default function InLieuReallocation() {
 
         try {
             const formData = new FormData();
-            formData.append("Sum", JSON.stringify(requiredBudget))
-            formData.append("NewItems", JSON.stringify(newItemsArray))
-            formData.append("FiscalYear", selectedFiscalYear)
+            
+            formData.append("targetBudget", JSON.stringify(requiredBudget));
+            formData.append("year", selectedFiscalYear)
 
+            console.log("Required Budget:", requiredBudget);
             //http://127.0.0.1:8000
             //https://test-ppmp.onrender.com
-            const suggestionResponse = await fetch("https://test-ppmp.onrender.com/api/smart-suggest/", {
+            const suggestionResponse = await fetch("https://test-ppmp.onrender.com/api/test_ml/", {
                 method: "POST",
                 body: formData,
                 headers: {
@@ -318,7 +319,7 @@ export default function InLieuReallocation() {
             }
             else {
                 setSelectedLieuItems([])
-                suggestions.data.map((item: any) => {
+                suggestions.inLieuData.map((item: any) => {
                     handleToggleLieuItem(item)
                 })
             }
