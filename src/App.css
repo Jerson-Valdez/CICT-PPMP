@@ -31,6 +31,10 @@
         @apply bg-gray-500/20 text-gray-500 border-gray-500;
     }
 
+    &.white {
+        @apply bg-white/20 text-white border-white;
+    }
+
     &.royal-red {
         background-color: color-mix(in srgb, var(--primary) 20%, transparent);
         color: var(--primary);

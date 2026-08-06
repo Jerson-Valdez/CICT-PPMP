@@ -108,8 +108,6 @@ export default function Dashboard(){
                     const item2 = importancesResult.frequentInLieuItems || 0;
                     const item3 = importancesResult.notUtilizedCurrentYear || 0;
 
-                    console.log("AI Importances Data:", importancesResult);
-
                     const grandTotal = item1 + item2 + item3;
 
                     if (grandTotal > 0) {
@@ -221,7 +219,7 @@ export default function Dashboard(){
                         </div>
                     </div>
 
-                    <div className="ai-features-container">
+                    <div className="ai-features-container btn-alab">
                         <div className="ai-features-header">
                             <div className="title-container">
                                 <h2>Bulk Budget Balancing (AI Decision Weights)</h2>
@@ -237,7 +235,7 @@ export default function Dashboard(){
                                 <h4>Training Data Importances</h4>
                                 {aiFeaturesDataTraining.map((data, index) => (
                                     <div className="ai-features-content" key={index}>
-                                        <div className="icon blue">{data.icon}</div>
+                                        <div className="icon white">{data.icon}</div>
                                         <div className="description">
                                             <h3>{data.title}</h3>
                                             <p>{data.description}</p>
@@ -250,7 +248,7 @@ export default function Dashboard(){
                                 <h4>Current Year Importances</h4>
                                 {aiFeaturesDataCurrentYear.map((data, index) => (
                                     <div className="ai-features-content" key={index}>
-                                        <div className="icon green">{data.icon}</div>
+                                        <div className="icon white">{data.icon}</div>
                                         <div className="description">
                                             <h3>{data.title}</h3>
                                             <p>{data.description}</p>
@@ -263,7 +261,7 @@ export default function Dashboard(){
                                 <h4>Knapsack Problem Features</h4>
                                 {knapsackFeaturesData.map((data, index) => (
                                     <div className="ai-features-content" key={index}>
-                                        <div className="icon purple">{data.icon}</div>
+                                        <div className="icon white">{data.icon}</div>
                                         <div className="description">
                                             <h3>{data.title}</h3>
                                             <p>{data.description}</p>
