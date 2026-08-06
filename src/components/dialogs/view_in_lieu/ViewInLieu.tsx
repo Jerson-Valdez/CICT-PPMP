@@ -147,8 +147,8 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
 
                                         <td className="text-center">{item.quantity}</td>
 
-                                        <td className="text-right">{item.priceCatalog.toFixed(2)}</td>
-                                        <td className="text-right">{(item.priceCatalog * item.quantity).toFixed(2)}</td>
+                                        <td className="text-right">{item.priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                        <td className="text-right">{(item.priceCatalog * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                     </tr>
                                 ))}
                                 </Fragment>
@@ -193,8 +193,8 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                                 <td>{item.quantity}</td>
                                 <td>{item.itemName}</td>
                                 <td>{item.unitMeasurement}</td>
-                                <td className="text-right">{item.priceCatalog.toFixed(2)}</td>
-                                <td className="text-right">{(item.priceCatalog * item.quantity).toFixed(2)}</td>
+                                <td className="text-right">{item.priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td className="text-right">{(item.priceCatalog * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                             </tr>
                         ))}
                         <tr>

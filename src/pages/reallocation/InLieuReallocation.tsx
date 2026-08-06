@@ -458,6 +458,7 @@ export default function InLieuReallocation() {
                                                 priceCatalog: 1
                                             })}
                                             onQuantityChange={handleUpdateLieuQuantity}
+                                            isOpenFunds={true}
                                         />
                                     );
                                 })()}

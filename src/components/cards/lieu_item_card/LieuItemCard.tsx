@@ -13,10 +13,11 @@ interface LieuItemCardProps {
     reduceQuantity: number;
     onToggle: () => void;
     onQuantityChange: (id: number, qty: number) => void;
+    isOpenFunds?: boolean;
 }
 
 export default function LieuItemCard({itemId, itemName, unitMeasurement, priceCatalog, plannedQuantity, availableQuantity, 
-    isSelected, reduceQuantity, onToggle, onQuantityChange
+    isSelected, reduceQuantity, onToggle, onQuantityChange, isOpenFunds = false
 }: LieuItemCardProps) {
 
     const [error, setError] = useState<string>("");
@@ -51,10 +52,18 @@ export default function LieuItemCard({itemId, itemName, unitMeasurement, priceCa
                 
                 <div className="item-description">
                     <h3>{itemName}</h3>
-                    <p>{availableQuantity}/{plannedQuantity} avail. @ PHP {priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} per: {unitMeasurement}</p>
+                    {isOpenFunds ? (
+                        <p>{availableQuantity.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} avail. @ PHP {priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} per: {unitMeasurement}</p>
+                    ) : (
+                        <p>{availableQuantity}/{plannedQuantity} avail. @ PHP {priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} per: {unitMeasurement}</p>
+                    )}
                 </div>
                 <div className="available-quantity-container">
-                    <p>{availableQuantity} AVAIL.</p>
+                    {isOpenFunds ? (
+                        <p>{availableQuantity.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} AVAIL.</p>
+                    ) : (
+                        <p>{availableQuantity} AVAIL.</p>
+                    )}
                 </div>
             </div>
             
