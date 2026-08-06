@@ -386,9 +386,11 @@ export default function Settings() {
                         const formData = new FormData();
                         formData.append("email", email);
 
-                        const response = await fetch("https://test-ppmp.onrender.com/api/auth/forgot_password/", {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/retrain_ml//", {
                             method: "POST",
-                            body: formData
+                            headers: {
+                                "Authorization": `Bearer ${await getAccessToken() || ""}`
+                            },
                         });
 
                         const responseData = await response.json();
