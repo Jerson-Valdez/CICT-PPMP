@@ -7,7 +7,7 @@ interface UserManagementTableProps {
     onDeactivate: (userId: number, userName: string) => void;
     onActivate: (userId: number, userName: string) => void;
     onDelete: (userId: number, userName: string) => void;
-    onSendResetLink: (email: string, userName: string) => void;
+    onSendResetLink: (email: string) => void;
 }
 
 export default function UserManagementTable({data, onPromote, onDeactivate, onActivate, onDelete, onSendResetLink}: UserManagementTableProps) {
@@ -63,7 +63,7 @@ export default function UserManagementTable({data, onPromote, onDeactivate, onAc
                                 </div>
                                 ):(
                                 <div className="button-container">
-                                    <button className="btn-solid gray" onClick={() => onSendResetLink(user.email, user.fullname)}>
+                                    <button className="btn-solid gray" onClick={() => onSendResetLink(user.email)}>
                                             <IconRestore size={18} /> Reset Password
                                     </button>
                                     <button className="btn-solid blue" onClick={() => onPromote(user.userId, user.fullname)}>

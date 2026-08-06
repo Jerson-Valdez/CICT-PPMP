@@ -346,7 +346,7 @@ export default function UserManagement() {
             });
     }
 
-    async function onSendResetLink(email: string, userName: string) {
+    async function onSendResetLink(email: string) {
 
         const closeLoading = showCircleLoadingDialog();
 
