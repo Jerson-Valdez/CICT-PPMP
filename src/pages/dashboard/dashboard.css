@@ -63,34 +63,41 @@
                 }
             }
             & > .ai-features-container{
-                @apply flex-5 flex flex-col items-center justify-start rounded-xl w-full min-w-80;
-                box-shadow: var(--red-shadow);
+                @apply flex-5 flex flex-col items-center justify-start rounded-xl w-full min-w-80 p-0;
+                box-shadow: var(--yellow-shadow-strong);
                 height: 28rem;
                 
+                &:active {
+                    @apply translate-y-0 scale-100;
+                }
+
                 & > .ai-features-header{
-                    @apply flex flex-row items-center justify-start gap-2 w-full rounded-t-xl p-4;
-                    background: linear-gradient(90deg, var(--primary), var(--secondary));
+                    @apply flex flex-row items-center justify-start gap-2 w-full rounded-t-xl px-5 py-3;
 
                     & > .title-container{
                         @apply flex flex-col items-start justify-start;
 
                         & > h2 {
-                            @apply text-sm font-bold text-white;
+                            @apply text-sm font-semibold text-white;
                         }
 
                         & > p {
-                            @apply text-xs text-gray-300;
+                            @apply text-xs text-white font-normal;
                         }
                     }
                 }
                 & > .content-container{
                     @apply flex flex-col items-center justify-start py-2 px-5 gap-2 w-full h-full overflow-y-auto;
 
+                    & > .btn-alab{
+                        @apply border border-white;
+                    }
+
                     & > .title-content-container{
                         @apply flex flex-col items-start justify-start gap-1 w-full border-b border-gray-300;
 
                         & > h4{
-                            @apply text-sm font-bold text-red-800;
+                            @apply text-sm font-bold text-white;
                         }
 
                         & > .ai-features-content{
@@ -99,15 +106,14 @@
                             & > .description{
                                 @apply flex-1;
                                 & > h3 {
-                                    @apply text-xs font-semibold;
+                                    @apply text-xs font-bold text-red-800;
                                 }
                                 & > p {
-                                    @apply text-xs;
-                                    color: var(--text-gray);
+                                    @apply text-xs text-white font-light;
                                 }
                             }
                             & > span{
-                                @apply text-sm font-semibold text-green-500;
+                                @apply text-sm font-semibold text-red-800;
                             }
                         }
                         &:nth-last-child(1) {
