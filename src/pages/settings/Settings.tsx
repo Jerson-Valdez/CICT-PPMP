@@ -383,8 +383,6 @@ export default function Settings() {
                     const closeLoading = showCircleLoadingDialog();
 
                     try {
-                        const formData = new FormData();
-                        formData.append("email", email);
 
                         const response = await fetch("https://test-ppmp.onrender.com/api/retrain_ml//", {
                             method: "POST",
