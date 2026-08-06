@@ -25,7 +25,7 @@ export default function PRHistoryCard({prId, quantity, itemId, itemName, unitMea
     const [isPrintPROpen, setPrintPROpen] = useState(false);
 
     function handleArrivedClick() {
-        confirm("Arrive", "Confirmation if you want to mark this PR as arrived/fulfilled?", "info", "Yes Mark as Fulfilled")
+        confirm("Fulfilled Purchase Request", `Do you want to mark PR-${prId}: ${itemName} with a quantity of ${quantity} as Fulfilled?`, "info", "Yes Mark as Fulfilled")
             .then(async (confirmed) => {
                 if (confirmed) {
 
@@ -62,7 +62,7 @@ export default function PRHistoryCard({prId, quantity, itemId, itemName, unitMea
     }
 
     function handleCancelClick() {
-        confirm("Cancel", "Are you sure you want to cancel this PR \n Note: You cannot undo this action?", "warning", "Yes Cancel PR")
+        confirm("Cancel Purchase Request", `Are you sure you want to cancel PR-${prId}: ${itemName} with a quantity of ${quantity}? \n Note: You cannot undo this action?`, "warning", "Yes Cancel PR")
             .then(async (confirmed) => {
                 if (confirmed) {
 

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./settings.css";
-import { IconUser, IconEye, IconEyeOff, IconShield, IconCheck, IconX, IconStackBack, IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconUser, IconEye, IconEyeOff, IconShield, IconCheck, IconX, IconStackBack, IconPlus, IconTrash, IconSettingsAi } from '@tabler/icons-react';
 import { confirm, notify } from "../../components/dialogs/global_dialog/DialogService";
 import { showCircleLoadingDialog } from "../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService";
 import { toast } from "../../components/toast/ToastService";
@@ -12,9 +12,10 @@ import WarningNote from "../../components/notes/warning_note/WarningNote";
 
 export default function Settings() {
     const navigate = useNavigate();
-    const { userFullName, userEmailAddress, prAsignatories, revisedAsignatories, approvedAsignatories, setUserFullName, setPrAsignatories, setApprovedAsignatories, setRevisedAsignatories } = useOutletContext<{
+    const { userFullName, userEmailAddress, userRole, prAsignatories, revisedAsignatories, approvedAsignatories, setUserFullName, setPrAsignatories, setApprovedAsignatories, setRevisedAsignatories } = useOutletContext<{
         userFullName: string;
         userEmailAddress: string;
+        userRole: string;
         prAsignatories: any[];
         revisedAsignatories: any[];
         approvedAsignatories: any[];
@@ -45,6 +46,41 @@ export default function Settings() {
     const [upperLowerCase, setUpperLowerCase] = useState<boolean>(false);
     const [number, setNumber] = useState<boolean>(false);
     const [specialCharacter, setSpecialCharacter] = useState<boolean>(false);
+
+    const [timeLeft, setTimeLeft] = useState<number>(0);
+
+    useEffect(() => {
+        const buttonCoolDown = localStorage.getItem("retrainButtonCoolDown");
+
+        if(buttonCoolDown){
+            const remaining = Math.ceil(Number(buttonCoolDown) - Date.now());
+            if(remaining > 0){
+                setTimeLeft(remaining);
+            }else{
+                localStorage.removeItem("retrainButtonCoolDown");
+                setTimeLeft(0);
+            }
+        }
+    },[])
+
+    useEffect(()=>{
+        if(timeLeft <= 0){
+            return;
+        }
+
+        const interval = setInterval(()=>{
+            setTimeLeft(prevTime => {
+                if(prevTime <= 1000){
+                    clearInterval(interval);
+                    localStorage.removeItem("retrainButtonCoolDown");
+                    return 0;
+                }
+                return prevTime - 1000;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [timeLeft]);
 
     function handleAsignatoryChange(
         category: 'pr' | 'approved' | 'revised', 
@@ -339,6 +375,41 @@ export default function Settings() {
             });
     }
 
+    function retrainAIModel() {
+        confirm("Retrain AI Model", "Are you sure you want to retrain the AI model? This process may take some time.", "info", "Yes Retrain")
+            .then(async (confirmed) => {
+                if (confirmed) {
+
+                    const closeLoading = showCircleLoadingDialog();
+
+                    try {
+                        const formData = new FormData();
+                        formData.append("email", email);
+
+                        const response = await fetch("https://test-ppmp.onrender.com/api/auth/forgot_password/", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        const responseData = await response.json();
+                        
+                        if(responseData.status === "success"){
+                            toast.success("AI Model retraining successfully!");
+                            const endTime = Date.now() + 60 * 60 * 1000;
+                            localStorage.setItem("retrainButtonCoolDown", endTime.toString());
+                            setTimeLeft(60 * 60 * 1000); 
+                        } else {
+                            toast.error(responseData.message || "Failed to retrain AI model.");
+                        }
+                    } catch (error) {
+                        toast.error("Network error. Please try again later.");
+                    } finally {
+                        closeLoading();
+                    }
+                }
+            });
+    }
+
     return (
         <main className="page-container settings">
             <div className="profile-container">
@@ -539,6 +610,30 @@ export default function Settings() {
                     )}
                 </div>
             </div>
+            {userRole === "Admin" && (
+                <div className="ml-retrain-container">
+                    <div className="content-management-title">
+                        <div className="icon royal-red">
+                            <IconSettingsAi size={20} />
+                        </div>
+                        <div className="title">
+                            <h2>Artificial Intelligence</h2>
+                            <p>Manage the training curve of the AI model by retraining it with new data</p>
+                        </div>
+                    </div>
+                    <InfoNote message="The AI model is advisable to train every other procurement year." />
+                    <WarningNote message="The AI model requires regular retraining to maintain optimal performance with new data." />
+                    {timeLeft > 0 ? (
+                        <button className='btn-alab' disabled>
+                            Retrain AI Model ({Math.ceil(timeLeft / 1000)}s)
+                        </button>
+                    ) : (
+                        <button className='btn-alab' onClick={(e) => {e.preventDefault(); retrainAIModel()}}>
+                            Retrain AI Model
+                        </button>
+                    )}
+                </div>
+            )}
         </main>
     );
 }

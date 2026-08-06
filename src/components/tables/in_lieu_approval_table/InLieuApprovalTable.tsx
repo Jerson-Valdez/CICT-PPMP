@@ -120,7 +120,7 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange, it
         const activeFilterCount = [sortFilter, statusFilter, itemCatFilterOriginal, itemCatFilterProposed, ppmpCatFilterOriginal, ppmpCatFilterProposed].filter(Boolean).length;
 
     function handleOnApproveInLieu(inLieuId: number) {
-        confirm("In Lieu Approval", "Are you sure you want to approve this Reallocation \n Note: Once you approve this, it will cause changes to the PPMP master list.", "success", "Yes Approve Reallocation")
+        confirm("In Lieu Approval", `Are you sure you want to approve In-Lieu Reallocation ${inLieuId}? \n Note: Once you approve this, it will cause changes to the PPMP master list.`, "success", "Yes Approve Reallocation")
             .then(async (confirmed) => {
                 if (confirmed) {
 
@@ -159,7 +159,7 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange, it
     }
 
     function handleOnRejectInLieu(inLieuId: number) {
-        confirm("In Lieu Approval", "Are you sure you want to reject this Reallocation \n Note: Once you reject this, it will cause changes to the PPMP master list.", "warning", "Yes Reject Reallocation")
+        confirm("In Lieu Approval", `Are you sure you want to reject In-Lieu Reallocation ${inLieuId}? \n Note: Once you reject this, it will cause changes to the PPMP master list.`, "warning", "Yes Reject Reallocation")
             .then(async (confirmed) => {
                 if (confirmed) {
 

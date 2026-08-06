@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .page-container.settings{
-    & > .profile-container, & > .security-container, & > .content-management-container{
+    & > .profile-container, & > .security-container, & > .content-management-container, & > .ml-retrain-container{
         @apply flex flex-col w-full rounded-xl shadow-xl p-8 gap-2 max-md:p-5;
 
         & > .profile-title, & > .security-title, & > .content-management-title{
@@ -48,6 +48,11 @@
             & > .valid {
                     @apply text-green-500;
             }
+        }
+    }
+    & > .ml-retrain-container{
+        & > .btn-alab{
+            @apply w-fit px-5 py-2.5 text-sm;
         }
     }
 }
