@@ -150,8 +150,8 @@ export default function UserManagement() {
         setUsers(prevTableData => prevTableData.filter(user => user.userId !== userId));
     }
 
-    function onPromote(userId: number) {
-        confirm("User Promotion", "Are you sure you want to promote this user? \n Note: Once the user is promoted, you will be domoted to user level access", "warning", "Continue Promotion")
+    function onPromote(userId: number, userName: string) {
+        confirm("User Promotion", `Are you sure you want to promote ${userName}? to Admin \n Note: Once the user is promoted, you will be demoted to user level access`, "warning", "Yes Promote User")
             .then(async (confirmed) => {
                 if (confirmed) {
 
@@ -188,8 +188,8 @@ export default function UserManagement() {
             });
     }
 
-    function onDeactivate(userId: number) {
-        confirm("User Deactivation", "Are you sure you want to Deactivate this user? \n Note: Once the user is deactivated, he/she will be prevented to login in this system", "warning", "Continue Deactivation")
+    function onDeactivate(userId: number, userName: string) {
+        confirm("User Deactivation", `Are you sure you want to Deactivate ${userName}? \n Note: Once the user is deactivated, he/she will be prevented to login in this system`, "warning", "Continue Deactivation")
             .then(async (confirmed) => {
                 if (confirmed) {
 
@@ -225,8 +225,8 @@ export default function UserManagement() {
             });
     }
 
-    function onActivate(userId: number) {
-        confirm("User Activation", "Are you sure you want to Activate this user? \n Note: Once the user is activated, he/she will be allowed to login and perform in the system", "info", "Continue Activation")
+    function onActivate(userId: number, userName: string) {
+        confirm("User Activation", `Are you sure you want to Activate ${userName}? \n Note: Once the user is activated, he/she will be allowed to login and perform in the system`, "info", "Continue Activation")
             .then(async (confirmed) => {
                 if (confirmed) {
 
@@ -310,8 +310,8 @@ export default function UserManagement() {
             });
     }
 
-    function onDelete(userId: number) {
-        confirm("Delete User", "Are you sure you want to delete this user? \n Note: This action cannot be undone and the user will lose all access to the system.", "warning", "Continue Deletion")
+    function onDelete(userId: number, userName: string) {
+        confirm("Delete User", `Are you sure you want to delete ${userName}? \n Note: This action cannot be undone and the user will lose all access to the system.`, "warning", "Continue Deletion")
             .then(async (confirmed) => {
                 if (confirmed) {
 
@@ -346,7 +346,7 @@ export default function UserManagement() {
             });
     }
 
-    async function onSendResetLink(email: string){
+    async function onSendResetLink(email: string, userName: string) {
 
         const closeLoading = showCircleLoadingDialog();
 

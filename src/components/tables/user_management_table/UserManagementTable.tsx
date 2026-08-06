@@ -3,11 +3,11 @@ import { IconRestore ,IconUserCheck,IconUserCancel,IconTrash, IconUserUp } from 
 
 interface UserManagementTableProps {
     data: any[];
-    onPromote: (userId: number) => void;
-    onDeactivate: (userId: number) => void;
-    onActivate: (userId: number) => void;
-    onDelete: (userId: number) => void;
-    onSendResetLink: (email: string) => void;
+    onPromote: (userId: number, userName: string) => void;
+    onDeactivate: (userId: number, userName: string) => void;
+    onActivate: (userId: number, userName: string) => void;
+    onDelete: (userId: number, userName: string) => void;
+    onSendResetLink: (email: string, userName: string) => void;
 }
 
 export default function UserManagementTable({data, onPromote, onDeactivate, onActivate, onDelete, onSendResetLink}: UserManagementTableProps) {
@@ -63,22 +63,22 @@ export default function UserManagementTable({data, onPromote, onDeactivate, onAc
                                 </div>
                                 ):(
                                 <div className="button-container">
-                                    <button className="btn-solid gray" onClick={() => onSendResetLink(user.email)}>
+                                    <button className="btn-solid gray" onClick={() => onSendResetLink(user.email, user.fullname)}>
                                             <IconRestore size={18} /> Reset Password
                                     </button>
-                                    <button className="btn-solid blue" onClick={() => onPromote(user.userId)}>
+                                    <button className="btn-solid blue" onClick={() => onPromote(user.userId, user.fullname)}>
                                             <IconUserUp size={18} /> Promote
                                     </button>
                                 {user.status === "Active" ? (
-                                    <button className="btn-solid red" onClick={() => onDeactivate(user.userId)}>
+                                    <button className="btn-solid red" onClick={() => onDeactivate(user.userId, user.fullname)}>
                                         <IconUserCancel size={18} /> Deactivate
                                     </button>
                                 ) : (
-                                    <button className="btn-solid green" onClick={() => onActivate(user.userId)} >
+                                    <button className="btn-solid green" onClick={() => onActivate(user.userId, user.fullname)} >
                                         <IconUserCheck size={18} /> Activate
                                     </button>
                                 )}
-                                    <button className="btn-secondary" onClick={() => onDelete(user.userId)}>
+                                    <button className="btn-secondary" onClick={() => onDelete(user.userId, user.fullname)}>
                                         <IconTrash size={18} /> Delete
                                     </button>
                                 </div>
