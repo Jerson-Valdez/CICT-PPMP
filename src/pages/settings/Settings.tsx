@@ -384,7 +384,7 @@ export default function Settings() {
 
                     try {
 
-                        const response = await fetch("https://test-ppmp.onrender.com/api/retrain_ml//", {
+                        const response = await fetch("https://test-ppmp.onrender.com/api/retrain_ml/", {
                             method: "POST",
                             headers: {
                                 "Authorization": `Bearer ${await getAccessToken() || ""}`
