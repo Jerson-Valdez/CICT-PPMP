@@ -96,7 +96,7 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange, it
     
         let processedData = data.filter((request) => {
             const searchLower = searchTerm.toLowerCase();
-            const matchesSearch = searchTerm === "" || request.itemName.toLowerCase().includes(searchLower);
+            const matchesSearch = searchTerm === "" || request.requestedBy.toLowerCase().includes(searchLower);
     
             let matchesStatus = true;
             if (statusFilter === "pending") matchesStatus = request.status.toLowerCase() === "pending";
@@ -203,7 +203,7 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange, it
                 </div>
                 <div className="search-container">
                     <IconSearch size={24} />
-                    <input type="text" placeholder="Search..." className="search-input" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                    <input type="text" placeholder="Search By Requester Name..." className="search-input" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
                 <div className="filter-container">
                     <IconFilter size={24} />
