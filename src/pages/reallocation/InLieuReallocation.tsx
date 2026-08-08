@@ -117,12 +117,14 @@ export default function InLieuReallocation() {
             newItemsArray[0].itemId = catalogItem.itemId
             newItemsArray[0].name = catalogItem.itemName
             newItemsArray[0].measurementUnit = catalogItem.unitMeasurement
-            newItemsArray[0].quantity - 1
+            newItemsArray[0].quantity = 1
             newItemsArray[0].unitPrice = catalogItem.priceCatalog
             newItemsArray[0].itemCategory = catalogItem.itemCategory? catalogItem.itemCategory : ""
             newItemsArray[0].ppmpCategory = catalogItem.ppmpCategory? catalogItem.ppmpCategory : ""
             newItemsArray[0].added = false
-        } else {
+        } else if(newItemsArray.some(item => item.itemId === catalogItem.itemId)) {
+            notify("Duplicate Item", "This item is already in the New Needs Cart. Please select a different item.", "error", "I understand");
+        }else {
             setNewItemsArray(prev => [...prev, {
                 itemId: catalogItem.itemId,
                 name: catalogItem.itemName,
@@ -199,7 +201,8 @@ export default function InLieuReallocation() {
             lieuFundedValue: selectedItemsValue,
             openFundsUtilized: openFundsUsed,
             itemsToProcure: newItemsArray,
-            itemsToReduce: actualItemsToReduce
+            itemsToReduce: actualItemsToReduce,
+            year: selectedFiscalYear
         };
 
         confirm("In Lieu Reallocation", "Are you sure you want to proceed this reallocation? \n Note: This action needs an approval of the relevant authorities before it reflects to the system.", "info", "Yes Proceed")
