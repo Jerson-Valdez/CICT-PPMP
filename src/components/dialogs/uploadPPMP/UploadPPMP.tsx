@@ -275,7 +275,14 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                 setSelectedUnit(null);
                 setSelectedTotalQuantity(null);
                 setSelectedPricePerUnit(null);
-                console.log(responseData);
+                if(responseData && responseData.status === "success"){
+                    confirm("Import Successful", "The data has been imported successfully. Do you want to reload the page for the action to take effect and see the updated data?", "success", "Yes, Reload Page")
+                        .then((confirmed) => {
+                            if (confirmed) {
+                                window.location.reload();
+                            }
+                        });
+                }
                 onClose();
             }
         } catch (error) {
@@ -304,8 +311,8 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                             <td>{row.Description ?? ""}</td>
                             <td>{row.Unit ?? ""}</td>
                             <td>{row.Quantity ?? ""}</td>
-                            <td>{row.CatalogPrice ?? ""}</td>
-                            <td>{row.TotalAmount ?? ""}</td>
+                            <td>{row.CatalogPrice?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? ""}</td>
+                            <td>{row.TotalAmount?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? ""}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -519,7 +526,7 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
             )}
             {previewImportStep === "current" && (
                 <div className="preview-import-container">
-                    <InfoNote message="Please review the first 5 rows of data before importing it into the system."/>
+                    <InfoNote message="Please review the data before importing it into the system."/>
                     <br />
                     
                     {onDualXslToggle ? (
@@ -536,8 +543,8 @@ export default function UploadPPMP({ fiscalYears, isOpen, onClose }: UploadPPMPP
                     ) : (
                         <>
                             <div className="preview-section">
-                                <p>File: <strong>{file2Uploaded?.name}</strong></p>
-                                {renderPreviewTable(previewData2)}
+                                <p>File: <strong>{fileUploaded?.name}</strong></p>
+                                {renderPreviewTable(previewData)}
                             </div>
                         </>
                     )}

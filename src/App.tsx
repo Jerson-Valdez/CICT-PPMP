@@ -117,8 +117,7 @@ function PrivateLayout() {
                 }
 
             } catch (error) {
-                console.error("Error fetching initial data:", error);
-                toast.error("Network error. Please try again later.");
+                toast.error("Network error. Please try again later or Reload the page.");
             } finally {
                 console.log(selectedFiscalYear);
                 setIsCheckingAuth(false);
