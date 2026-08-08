@@ -150,7 +150,7 @@
                             @apply text-xs font-semibold;
 
                             &:nth-child(1) {
-                                @apply text-red-500;
+                                @apply text-green-500;
                             }
                             &:nth-child(2) {
                                 @apply text-green-500;
