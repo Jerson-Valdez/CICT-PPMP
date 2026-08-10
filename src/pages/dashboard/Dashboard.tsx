@@ -143,16 +143,16 @@ export default function Dashboard(){
     ];
 
     const aiFeaturesDataTraining: aiFeaturesData[] = [
-        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized Items", description: "Based on the historical low-utilization items", percentage: aiNotUtilizedItemsPercentage},
-        {icon: <IconTransform size={18}/>, title: "Frequent In Lieu Items", description: "Based on the historical frequency of in-lieu items", percentage: aiFrequentInLieuItemsPercentage},
+        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized Items", description: "Based on the historical low-utilization of item quantities", percentage: aiNotUtilizedItemsPercentage},
+        {icon: <IconTransform size={18}/>, title: "Frequent In Lieu Items", description: "Based on the historical in-lieu quantity of items", percentage: aiFrequentInLieuItemsPercentage},
     ];
 
     const aiFeaturesDataCurrentYear: aiFeaturesData[] = [
-        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized in Current Year", description: "Based on Items not utilized for the current fiscal year", percentage: aiNotUtilizedCurrentYearPercentage},
+        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized in Current Year", description: "Based on the utilization rate of items in the current fiscal year", percentage: aiNotUtilizedCurrentYearPercentage},
     ];
 
     const knapsackFeaturesData: aiFeaturesData[] = [
-        {icon: <IconClockDollar size={18}/>, title: "Lowest Price possible of Combined Items", description: "Algorithm to find the lowest price possible of combined items based on the available budget."},
+        {icon: <IconClockDollar size={18}/>, title: "Lowest Price possible of Combined Items", description: "Algorithm to find the lowest price possible of combined items based on the target budget."},
     ];
 
     function handleDashboardFiscalYearChange(newFiscalYear: string) {
