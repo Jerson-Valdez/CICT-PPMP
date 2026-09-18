@@ -374,7 +374,7 @@ export default function InLieuReallocation() {
                             <IconSearch size={24} />
                             <input
                                 type="text"
-                                placeholder="Search Catalog to add new item..."
+                                placeholder="Search Catalog to add quantity of existing item..."
                                 className="search-input w-full"
                                 value={newItemsSearchTerm}
                                 onChange={(e) => setNewItemsSearchTerm(e.target.value)} />

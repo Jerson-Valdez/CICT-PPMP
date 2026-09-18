@@ -17,6 +17,7 @@ const InLieuReallocation = lazy(() => import('./pages/reallocation/InLieuRealloc
 const InLieuApprovals = lazy(() => import('./pages/approvals/InLieuApprovals'));
 const UserManagement = lazy(() => import('./pages/usermanagement/UserManagement'));
 const Settings = lazy(() => import('./pages/settings/Settings'));
+const SupplementalPpmp = lazy(() => import('./pages/supplemental/SupplementalPpmp'));
 
 // Components
 import Nav from './components/nav/Nav';
@@ -181,6 +182,7 @@ export default function App() {
                     <Route path="/procurement-monitor" element={<ProcurementMonitor />} />
                     <Route path="/in-lieu-reallocation" element={<InLieuReallocation />} />
                     <Route path="/in-lieu-approvals" element={<InLieuApprovals />} />
+                    <Route path="/supplemental-ppmp" element={<SupplementalPpmp />} />
                     <Route path="/settings" element={<Settings />} />
 
                     {/* Admin Only Route */}

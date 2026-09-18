@@ -3,7 +3,7 @@ import './nav.css';
 import bulsu from '../../assets/univlogo/bulsu_logo.svg';
 import cict from '../../assets/univlogo/cict_logo.svg';
 import arrow_secondary from '../../assets/designs/arrow_secondary.svg';
-import { IconLayoutDashboard, IconClipboardList, IconChartColumn, IconTransform, IconChecklist, IconUsers, IconSettings2, IconCalendarWeek, IconLogout2 } from '@tabler/icons-react';
+import { IconLayoutDashboard, IconClipboardList, IconChartColumn, IconTransform, IconChecklist, IconUsers, IconSettings2, IconCalendarWeek, IconLogout2, IconDeviceTabletPlus } from '@tabler/icons-react';
 import type { JSX } from 'react/jsx-dev-runtime';
 import { getAccessToken, logoutUser } from "../../../supadb"
 import { toast } from '../toast/ToastService.js';
@@ -34,6 +34,7 @@ export default function Nav({userFullName, userEmailAddress, userRole, selectedF
         {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} />},
         {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={20} /> },
         {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={20} /> },
+        {name: 'Supplemental PPMP', to: 'supplemental-ppmp', icon: <IconDeviceTabletPlus size={20} /> },
         {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} />},
     ]
 
@@ -43,6 +44,7 @@ export default function Nav({userFullName, userEmailAddress, userRole, selectedF
         {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} />},
         {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={20} /> },
         {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={20} /> },
+        {name: 'Supplemental PPMP', to: 'supplemental-ppmp', icon: <IconDeviceTabletPlus size={20} /> },
         {name: 'User Management', to: 'user-management', icon: <IconUsers size={20} /> },
         {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} />},
     ]

@@ -60,6 +60,10 @@ export default function Header({ userFullName, userEmailAddress, fiscalYears }: 
       currentPageName = "Settings";
       currentPageDescription = "Manage your account and system preferences";
       break;
+    case '/supplemental-ppmp':
+      currentPageName = "Supplemental PPMP";
+      currentPageDescription = "Additional budget and items for the fiscal year";
+      break;
     }
 
   return (
