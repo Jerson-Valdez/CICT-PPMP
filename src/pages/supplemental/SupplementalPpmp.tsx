@@ -345,6 +345,7 @@ export default function SupplementalPpmp() {
         formData.append("newItems", JSON.stringify(newItems));
         formData.append("year", year);
         formData.append("additionalBudget", budget.toString());
+        formData.append("description", description);
 
         const loading = showCircleLoadingDialog();
 
