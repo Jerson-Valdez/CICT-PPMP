@@ -24,10 +24,10 @@ import { showCircleLoadingDialog } from "../../components/dialogs/circle_loading
 
 interface NewItem {
   itemId: number;
-  name: string;
+  itemName: string;
   measurementUnit: string;
   quantity: number;
-  unitPrice: number;
+  priceCatalog: number;
   itemCategory: string;
   ppmpCategory: string;
   added: boolean;
@@ -35,10 +35,10 @@ interface NewItem {
 
 interface NewItemHistory {
   itemId: number;
-  name: string;
+  itemName: string;
   measurementUnit: string;
   quantity: number;
-  unitPrice: number;
+  priceCatalog: number;
   itemCategory: string;
   ppmpCategory: string;
 }
@@ -87,19 +87,19 @@ export default function SupplementalPpmp() {
       newItems: [
         {
           itemId: 1,
-          name: "Item 1",
+          itemName: "Item 1",
           measurementUnit: "pcs",
           quantity: 10,
-          unitPrice: 20.0,
+          priceCatalog: 20.0,
           itemCategory: "Category A",
           ppmpCategory: "PPMP Category 1",
         },
         {
           itemId: 2,
-          name: "Item 2",
+          itemName: "Item 2",
           measurementUnit: "pcs",
           quantity: 5,
-          unitPrice: 30.0,
+          priceCatalog: 30.0,
           itemCategory: "Category B",
           ppmpCategory: "PPMP Category 2",
         },
@@ -113,10 +113,10 @@ export default function SupplementalPpmp() {
       newItems: [
         {
           itemId: 3,
-          name: "Item 3",
+          itemName: "Item 3",
           measurementUnit: "pcs",
           quantity: 8,
-          unitPrice: 25.0,
+          priceCatalog: 25.0,
           itemCategory: "Category C",
           ppmpCategory: "PPMP Category 3",
         },
@@ -130,19 +130,19 @@ export default function SupplementalPpmp() {
       newItems: [
         {
           itemId: 4,
-          name: "Item 4",
+          itemName: "Item 4",
           measurementUnit: "pcs",
           quantity: 12,
-          unitPrice: 15.0,
+          priceCatalog: 15.0,
           itemCategory: "Category D",
           ppmpCategory: "PPMP Category 4",
         },
         {
           itemId: 5,
-          name: "Item 5",
+          itemName: "Item 5",
           measurementUnit: "pcs",
           quantity: 6,
-          unitPrice: 40.0,
+          priceCatalog: 40.0,
           itemCategory: "COMMON OFFICE SUPPLIES",
           ppmpCategory: "PPMP Category 5",
         },
@@ -214,12 +214,12 @@ export default function SupplementalPpmp() {
         );
 
   const handleSelectNewItem = (catalogItem: any) => {
-    if (newItemsArray.length == 1 && newItemsArray[0].name.trim().length == 0) {
+    if (newItemsArray.length == 1 && newItemsArray[0].itemName.trim().length == 0) {
       newItemsArray[0].itemId = catalogItem.itemId;
-      newItemsArray[0].name = catalogItem.itemName;
+      newItemsArray[0].itemName = catalogItem.itemName;
       newItemsArray[0].measurementUnit = catalogItem.unitMeasurement;
       newItemsArray[0].quantity = 1;
-      newItemsArray[0].unitPrice = catalogItem.priceCatalog;
+      newItemsArray[0].priceCatalog = catalogItem.priceCatalog;
       newItemsArray[0].itemCategory = catalogItem.itemCategory
         ? catalogItem.itemCategory
         : "";
@@ -241,10 +241,10 @@ export default function SupplementalPpmp() {
         ...prev,
         {
           itemId: catalogItem.itemId,
-          name: catalogItem.itemName,
+          itemName: catalogItem.itemName,
           measurementUnit: catalogItem.unitMeasurement,
           quantity: 1,
-          unitPrice: catalogItem.priceCatalog,
+          priceCatalog: catalogItem.priceCatalog,
           itemCategory: catalogItem.itemCategory,
           ppmpCategory: catalogItem.ppmpCategory,
           added: false,
@@ -256,17 +256,17 @@ export default function SupplementalPpmp() {
   };
 
   const newItemsValue = newItemsArray.reduce(
-    (sum, item) => sum + item.quantity * item.unitPrice,
+    (sum, item) => sum + item.quantity * item.priceCatalog,
     0,
   );
   const remainingBudget = additionalBudget - newItemsValue;
 
   const isNewItemsValid = newItemsArray.every(
     (item) =>
-      item.name.trim() !== "" &&
+      item.itemName.trim() !== "" &&
       item.measurementUnit.trim() !== "" &&
       item.quantity > 0 &&
-      item.unitPrice > 0 &&
+      item.priceCatalog > 0 &&
       item.itemCategory.trim() !== "" &&
       item.ppmpCategory.trim() !== "",
   );
@@ -276,10 +276,10 @@ export default function SupplementalPpmp() {
       ...newItemsArray,
       {
         itemId: Date.now(),
-        name: "",
+        itemName: "",
         measurementUnit: "",
         quantity: 1,
-        unitPrice: 0,
+        priceCatalog: 0,
         itemCategory: "",
         ppmpCategory: "",
         added: true,
@@ -494,10 +494,10 @@ export default function SupplementalPpmp() {
               <NewItemCard
                 key={item.itemId}
                 itemId={item.itemId}
-                itemName={item.name}
+                itemName={item.itemName}
                 unitMeasurement={item.measurementUnit}
                 quantity={item.quantity}
-                priceCatalog={item.unitPrice}
+                priceCatalog={item.priceCatalog}
                 itemCategories={itemCategories}
                 ppmpCategories={ppmpCategories}
                 itemCategory={item.itemCategory ? item.itemCategory : ""}

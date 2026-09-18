@@ -16,10 +16,10 @@ import { showCircleLoadingDialog } from "../../components/dialogs/circle_loading
 
 interface NewItem {
     itemId: number;
-    name: string;
+    itemName: string;
     measurementUnit: string;
     quantity: number;
-    unitPrice: number;
+    priceCatalog: number;
     itemCategory: string;
     ppmpCategory: string;
     added: boolean;
@@ -113,12 +113,12 @@ export default function InLieuReallocation() {
         );
 
     const handleSelectNewItem = (catalogItem: any) => {
-        if (newItemsArray.length == 1 && newItemsArray[0].name.trim().length == 0) {
+        if (newItemsArray.length == 1 && newItemsArray[0].itemName.trim().length == 0) {
             newItemsArray[0].itemId = catalogItem.itemId
-            newItemsArray[0].name = catalogItem.itemName
+            newItemsArray[0].itemName = catalogItem.itemName
             newItemsArray[0].measurementUnit = catalogItem.unitMeasurement
             newItemsArray[0].quantity = 1
-            newItemsArray[0].unitPrice = catalogItem.priceCatalog
+            newItemsArray[0].priceCatalog = catalogItem.priceCatalog
             newItemsArray[0].itemCategory = catalogItem.itemCategory? catalogItem.itemCategory : ""
             newItemsArray[0].ppmpCategory = catalogItem.ppmpCategory? catalogItem.ppmpCategory : ""
             newItemsArray[0].added = false
@@ -127,10 +127,10 @@ export default function InLieuReallocation() {
         }else {
             setNewItemsArray(prev => [...prev, {
                 itemId: catalogItem.itemId,
-                name: catalogItem.itemName,
+                itemName: catalogItem.itemName,
                 measurementUnit: catalogItem.unitMeasurement,
                 quantity: 1,
-                unitPrice: catalogItem.priceCatalog,
+                priceCatalog: catalogItem.priceCatalog,
                 itemCategory: catalogItem.itemCategory,
                 ppmpCategory: catalogItem.ppmpCategory,
                 added: false
@@ -141,18 +141,18 @@ export default function InLieuReallocation() {
     };
 
     const [newItemsArray, setNewItemsArray] = useState<NewItem[]>([
-        { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, itemCategory: "", ppmpCategory: "", added: true }
+        { itemId: Date.now(), itemName: "", measurementUnit: "", quantity: 1, priceCatalog: 0, itemCategory: "", ppmpCategory: "", added: true }
     ]);
 
-    const requiredBudget = newItemsArray.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
+    const requiredBudget = newItemsArray.reduce((sum, item) => sum + (item.quantity * item.priceCatalog), 0);
     const [selectedLieuItems, setSelectedLieuItems] = useState<SelectedLieuItem[]>([]);
     const selectedItemsValue = selectedLieuItems.reduce((sum, item) => sum + (item.reduceQuantity * item.priceCatalog), 0);
     const remainingBudget = selectedItemsValue - requiredBudget;
     const isNewItemsValid = newItemsArray.every(item =>
-        item.name.trim() !== "" &&
+        item.itemName.trim() !== "" &&
         item.measurementUnit.trim() !== "" &&
         item.quantity > 0 &&
-        item.unitPrice > 0 &&
+        item.priceCatalog > 0 &&
         item.itemCategory.trim() !== "" &&
         item.ppmpCategory.trim() !== ""
     );
@@ -164,7 +164,7 @@ export default function InLieuReallocation() {
         item.priceCatalog > 0
     );
 
-    const handleAddItem = () => setNewItemsArray([...newItemsArray, { itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, itemCategory: "", ppmpCategory: "", added: true }]);
+    const handleAddItem = () => setNewItemsArray([...newItemsArray, { itemId: Date.now(), itemName: "", measurementUnit: "", quantity: 1, priceCatalog: 0, itemCategory: "", ppmpCategory: "", added: true }]);
     const handleDeleteItem = (itemId: number) => setNewItemsArray(newItemsArray.filter(item => item.itemId !== itemId));
     const handleUpdateItem = (itemId: number, field: keyof NewItem, value: string | number) => {
         setNewItemsArray(prev => prev.map(item => item.itemId === itemId ? { ...item, [field]: value } : item));
@@ -227,7 +227,7 @@ export default function InLieuReallocation() {
                             throw new Error("Failed to create in-lieu request.");
                         } else {
                             toast.success("In Lieu request created successfully!");
-                            setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, itemCategory: "", ppmpCategory: "", added: true }]);
+                            setNewItemsArray([{ itemId: Date.now(), itemName: "", measurementUnit: "", quantity: 1, priceCatalog: 0, itemCategory: "", ppmpCategory: "", added: true }]);
                             setSelectedLieuItems([]);
                         }
                     }
@@ -406,10 +406,10 @@ export default function InLieuReallocation() {
                                 <NewItemCard 
                                     key={item.itemId} 
                                     itemId={item.itemId} 
-                                    itemName={item.name} 
+                                    itemName={item.itemName} 
                                     unitMeasurement={item.measurementUnit} 
                                     quantity={item.quantity} 
-                                    priceCatalog={item.unitPrice} 
+                                    priceCatalog={item.priceCatalog} 
                                     itemCategories={itemCategories} 
                                     ppmpCategories={ppmpCategories} 
                                     itemCategory={item.itemCategory? item.itemCategory : ""}
@@ -494,7 +494,7 @@ export default function InLieuReallocation() {
                         {newItemsArray.length > 0 && (
                             <button className="btn-secondary green"
                                 onClick={() => {
-                                    setNewItemsArray([{ itemId: Date.now(), name: "", measurementUnit: "", quantity: 1, unitPrice: 0, itemCategory: "", ppmpCategory: "", added: true }]);
+                                    setNewItemsArray([{ itemId: Date.now(), itemName: "", measurementUnit: "", quantity: 1, priceCatalog: 0, itemCategory: "", ppmpCategory: "", added: true }]);
                                 }}>
                                 <IconTrash size={24} /> Clear Needs Cart
                             </button>
@@ -556,9 +556,9 @@ export default function InLieuReallocation() {
                     proposedItems={newItemsArray.map(item => ({
                         itemId: item.itemId,
                         quantity: item.quantity,
-                        itemName: item.name,
+                        itemName: item.itemName,
                         unitMeasurement: item.measurementUnit,
-                        priceCatalog: item.unitPrice,
+                        priceCatalog: item.priceCatalog,
                         itemCategory: item.itemCategory
                     }))}
                     status="To be Submitted"
