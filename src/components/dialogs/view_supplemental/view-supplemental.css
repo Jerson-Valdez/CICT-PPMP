@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+.view-supplemental{
+    @apply fixed flex-col w-6xl p-6 rounded-lg bg-white shadow-lg left-0 right-0 top-1/2 -translate-y-1/2 mx-auto z-50;
+    & > .header{
+        @apply flex flex-row justify-start items-center mb-4 gap-2;
+        & > .title{
+            @apply flex flex-col items-start justify-center;
+            & > h3{
+                @apply text-sm font-semibold;
+            }
+            & > p{
+                @apply text-xs font-normal;
+                color: var(--text-gray);
+            }
+        }
+    }
+    & > .action-btns{
+        @apply flex flex-row items-center justify-between w-full gap-2 mt-4;
+        & > .cancel-btn-container{
+            @apply flex-1;
+        }
+    }
+}
+.content{
+    @apply flex flex-col items-start justify-start gap-1 w-full border border-gray-300 rounded-lg p-2 print:p-0 print:border-none;
+    & > .title{
+        @apply flex flex-row items-center justify-center w-full text-base font-bold;
+    }
+    & > table{
+        @apply w-full border-collapse;
+        & > thead{
+            & > tr{
+                & > th{
+                    @apply text-center border text-xs font-black p-1 print:p-0 print:px-1;
+                }
+            }
+        }
+        & > tbody{
+            & > tr{
+                & > td{
+                    @apply border text-xs p-1 print:p-0 print:px-1;
+                }
+            }
+        }
+    }
+    & > .supplemental-table{
+        @apply w-2/3;
+    }
+    & > .signatory{
+        @apply flex flex-row items-center justify-between w-full my-6;
+        & > .submitted-by{
+            @apply w-4/12;
+        }
+    }
+}

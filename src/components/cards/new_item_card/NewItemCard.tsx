@@ -13,7 +13,7 @@ interface NewItemCardProps {
     ppmpCategory?: string;
     ppmpReallocationData?: any[];
     onDelete: (id: number) => void;
-    onUpdate: (id: number, field: 'name' | 'measurementUnit' | 'quantity' | 'unitPrice' | 'itemCategory' | 'ppmpCategory', value: string | number) => void;
+    onUpdate: (id: number, field: 'itemName' | 'measurementUnit' | 'quantity' | 'priceCatalog' | 'itemCategory' | 'ppmpCategory', value: string | number) => void;
 }
 
 export default function NewItemCard({ 
@@ -53,7 +53,7 @@ export default function NewItemCard({
                             id={`itemName-${itemId}`} 
                             placeholder="Enter item name" 
                             value={itemName} 
-                            onChange={(e) => onUpdate(itemId, 'name', e.target.value)} 
+                            onChange={(e) => onUpdate(itemId, 'itemName', e.target.value)} 
                             required
                             className="isNewItemExisting"
                         />
@@ -152,7 +152,7 @@ export default function NewItemCard({
                             min="1" 
                             step="0.01"
                             value={priceCatalog === 0 ? '' : priceCatalog} 
-                            onChange={(e) => onUpdate(itemId, 'unitPrice', parseFloat(e.target.value) || 0)} 
+                            onChange={(e) => onUpdate(itemId, 'priceCatalog', parseFloat(e.target.value) || 0)} 
                             required
                             className="isNewItemExisting"
                         />

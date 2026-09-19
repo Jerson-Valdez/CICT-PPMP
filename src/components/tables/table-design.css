@@ -9,6 +9,9 @@
     &.approvals{
         @apply h-[calc(100vh-120px)] max-md:h-[calc(100vh-100px)];
     }
+    &.supplemental{
+        @apply h-fit max-md:h-[calc(100vh-100px)];
+    }
 
     & > .table-title-container{
         @apply flex flex-row flex-wrap items-center gap-5 p-5 shrink-0 max-md:items-start max-md:gap-3 max-md:px-3 max-md:py-3 max-md:justify-center max-sm:flex-col max-sm:items-start max-sm:gap-2;
@@ -159,6 +162,43 @@
                     }
                     & > .original-items > .original-item > span {
                         @apply text-[10px] font-semibold text-red-500;
+                    }
+                    & > .proposed-items > .proposed-item > span {
+                        @apply text-[10px] font-semibold text-green-500;
+                    }
+                }
+            }
+
+            &.supplemental{
+                & > thead > tr > th{
+                    &:nth-child(3) {
+                        & > h3 {
+                            @apply text-green-500;
+                        }
+                    }
+                    &:nth-child(4) {
+                        & > h3 {
+                            @apply text-green-500;
+                        }
+                    }
+                }
+                & > tbody > tr > td{
+                    & > .budget-impact{
+                        @apply flex flex-col items-center justify-center gap-1;
+
+                        & > span {
+                            @apply text-xs font-semibold;
+
+                            &:nth-child(1) {
+                                @apply text-green-500;
+                            }
+                            &:nth-child(2) {
+                                @apply text-green-500;
+                            }
+                        }
+                    }
+                    & > .original-items > .original-item > span {
+                        @apply text-[10px] font-semibold text-green-500;
                     }
                     & > .proposed-items > .proposed-item > span {
                         @apply text-[10px] font-semibold text-green-500;

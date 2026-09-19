@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+.page-container.supplemental {
+  & > .supplemental-content-container {
+    @apply flex flex-col items-center justify-center p-5 gap-5 bg-white shadow-2xl rounded-xl w-full max-sm:p-0 max-sm:bg-transparent max-sm:shadow-none;
+
+    & > .title-container {
+      @apply flex flex-col items-start justify-center w-full;
+
+      & > h2 {
+        @apply text-lg font-bold;
+      }
+      & > p {
+        @apply text-xs;
+        color: var(--text-gray);
+      }
+    }
+
+    & > .price-balancing-container {
+      @apply flex flex-row flex-wrap items-center justify-between w-full px-5 py-3 rounded-xl border border-gray-300 bg-gray-500/20 shadow-lg;
+
+      & > .required-budget-container,
+      & > .available-budget-container,
+      & > .remaining-budget-container {
+        @apply flex flex-col items-start justify-center;
+
+        & > p {
+          @apply text-xl font-semibold;
+        }
+        & > h3 {
+          @apply text-xs;
+          color: var(--text-gray);
+        }
+      }
+      &.balanced {
+        @apply border-green-500 bg-green-500/20;
+        & > .remaining-budget-container {
+          @apply text-green-500;
+        }
+      }
+      &.unbalanced {
+        @apply border-red-500 bg-red-500/20;
+        & > .remaining-budget-container {
+          @apply text-red-500;
+        }
+      }
+    }
+
+    & > .budget-injection-form-container {
+      @apply flex flex-row items-start px-5 justify-between w-full gap-5;
+
+      & div:nth-child(1) {
+        @apply flex-1;
+      }
+      & div:nth-child(2) {
+        @apply flex-2;
+      }
+    }
+
+    & > .new-items-container.supplemental {
+      @apply flex flex-col w-full p-5 gap-3 shadow-2xl rounded-xl;
+
+      & > .title-button-container {
+        @apply flex flex-row items-center justify-between w-full;
+
+        & > h3 {
+          @apply flex flex-row text-sm font-bold;
+        }
+      }
+
+      & > .search-button-container {
+        @apply flex flex-row items-center justify-between w-full gap-5 max-sm:flex-col;
+
+        & > .search-container {
+          @apply w-full;
+          & > .option-container {
+            @apply absolute top-full left-0 mt-1 w-full bg-white rounded-xl shadow-2xl z-50 max-h-80 overflow-y-auto;
+            & > ul {
+              @apply flex flex-col;
+              & > li {
+                @apply px-3 py-2 text-sm cursor-pointer hover:bg-red-800 hover:text-white border-b last:border-b-0 flex justify-between items-center transition-colors;
+                & > .item-name {
+                  @apply font-semibold text-xs;
+                }
+                & > .item-details {
+                  @apply text-gray-500 text-xs hover:text-white;
+                }
+                &:hover {
+                  & > .item-details {
+                    @apply text-white;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      & > .new-items-card-container {
+        @apply flex flex-col items-center justify-start gap-2 w-full h-fit max-h-80 overflow-y-auto;
+      }
+    }
+
+    & > .proceed-button-container {
+      @apply flex flex-row items-center justify-end w-full gap-2;
+    }
+  }
+}
