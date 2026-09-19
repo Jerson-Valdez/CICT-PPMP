@@ -21,6 +21,7 @@ import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWra
 import TableSkeleton from "../../components/skeleton/TableSkeleton";
 import SupplementalTable from "../../components/tables/supplemental_table/SupplementalTable";
 import { showCircleLoadingDialog } from "../../components/dialogs/circle_loading_dialog/CircleLoadingDialogService";
+import ViewSupplemental from "../../components/dialogs/view_supplemental/ViewSupplemental";
 
 interface NewItem {
   itemId: number;
@@ -59,7 +60,7 @@ interface SupplementalPpmpHistory {
   createdAt: string;
   createdBy: string;
   supplementalABC: number;
-  newItems: NewItemHistory[];
+  supplementalItems: NewItemHistory[];
 }
 
 export default function SupplementalPpmp() {
@@ -70,6 +71,10 @@ export default function SupplementalPpmp() {
   }>();
   const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
+  const {userFullName} = useOutletContext<{
+    userFullName: string;
+  }>();
+
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
 
   const [ppmpSupplementalData, setPpmpSupplementalData] = useState<
@@ -78,77 +83,7 @@ export default function SupplementalPpmp() {
 
   const [ppmpSupplementalHistory, setPpmpSupplementalHistory] = useState<
     SupplementalPpmpHistory[]
-  >([
-    {
-      supplementalId: 0,
-      createdAt: "2026-01-01",
-      createdBy: "Jerson patrick Valdez",
-      supplementalABC: 200.0,
-      newItems: [
-        {
-          itemId: 1,
-          itemName: "Item 1",
-          measurementUnit: "pcs",
-          quantity: 10,
-          priceCatalog: 20.0,
-          itemCategory: "Category A",
-          ppmpCategory: "PPMP Category 1",
-        },
-        {
-          itemId: 2,
-          itemName: "Item 2",
-          measurementUnit: "pcs",
-          quantity: 5,
-          priceCatalog: 30.0,
-          itemCategory: "Category B",
-          ppmpCategory: "PPMP Category 2",
-        },
-      ],
-    },
-    {
-      supplementalId: 1,
-      createdAt: "2026-02-15",
-      createdBy: "Jane Doe",
-      supplementalABC: 150.0,
-      newItems: [
-        {
-          itemId: 3,
-          itemName: "Item 3",
-          measurementUnit: "pcs",
-          quantity: 8,
-          priceCatalog: 25.0,
-          itemCategory: "Category C",
-          ppmpCategory: "PPMP Category 3",
-        },
-      ],
-    },
-    {
-      supplementalId: 2,
-      createdAt: "2026-03-10",
-      createdBy: "John Smith",
-      supplementalABC: 3000.0,
-      newItems: [
-        {
-          itemId: 4,
-          itemName: "Item 4",
-          measurementUnit: "pcs",
-          quantity: 12,
-          priceCatalog: 15.0,
-          itemCategory: "Category D",
-          ppmpCategory: "PPMP Category 4",
-        },
-        {
-          itemId: 5,
-          itemName: "Item 5",
-          measurementUnit: "pcs",
-          quantity: 6,
-          priceCatalog: 40.0,
-          itemCategory: "COMMON OFFICE SUPPLIES",
-          ppmpCategory: "PPMP Category 5",
-        },
-      ],
-    },
-  ]);
+  >([]);
 
   const [itemCategories, setItemCategories] = useState<string[]>([]);
   const [ppmpCategories, setPpmpCategories] = useState<string[]>([]);
@@ -163,7 +98,7 @@ export default function SupplementalPpmp() {
         formData.append("year", String(selectedFiscalYear));
 
         const [supplementalResponse] = await Promise.all([
-          fetch("https://test-ppmp.onrender.com/api/in_lieu_data/", {
+          fetch("https://test-ppmp.onrender.com/api/supplementals/", {
             method: "POST",
             body: formData,
             headers: {
@@ -181,11 +116,11 @@ export default function SupplementalPpmp() {
           setItemCategories(supplementalResult.itemCategories || []);
           setPpmpCategories(supplementalResult.ppmpCategories || []);
           setPpmpSupplementalData(
-            supplementalResult.ppmpReallocationData || [],
+            supplementalResult.ppmpTableData || [],
           );
-          //   setPpmpSupplementalHistory(
-          //     supplementalResult.ppmpSupplementalHistory || [],
-          //   );
+            setPpmpSupplementalHistory(
+              supplementalResult.supplementalHistory || [],
+            );
           setFiscalYearHolder(selectedFiscalYear);
         }
       } catch (error) {
@@ -329,6 +264,27 @@ export default function SupplementalPpmp() {
     }
   }
 
+  function handleSupplementalHistoryChange(createdAt: string, createdBy: string, supplementalABC: number, newItems: NewItemHistory[]) {
+    setPpmpSupplementalHistory((prevHistory) => [
+      ...prevHistory,
+      {
+        supplementalId: prevHistory.length + 1,
+        createdAt,
+        createdBy,
+        supplementalABC,
+        supplementalItems: newItems.map((cat) => ({
+          itemId: cat.itemId,
+          itemName: cat.itemName, 
+          measurementUnit: cat.measurementUnit,
+          quantity: cat.quantity,
+          priceCatalog: cat.priceCatalog,
+          itemCategory: cat.itemCategory,
+          ppmpCategory: cat.ppmpCategory,
+        })),
+      },
+    ]);
+  }
+
   const handleSaveToDatabase = () => {
     const newItems = newItemsArray;
     const year = selectedFiscalYear;
@@ -351,7 +307,7 @@ export default function SupplementalPpmp() {
 
         try {
           const response = await fetch(
-            "https://test-ppmp.onrender.com/api/supplemental_ppmp/",
+            "https://test-ppmp.onrender.com/api/add_supplemental/",
             {
               method: "POST",
               body: formData,
@@ -367,6 +323,21 @@ export default function SupplementalPpmp() {
             throw new Error("Failed to create supplemental PPMP.");
           } else {
             toast.success("Supplemental PPMP created successfully!");
+            handleSupplementalHistoryChange(
+              new Date().toISOString(),
+              userFullName,
+              additionalBudget,
+              newItems.map((item) => ({
+                itemId: item.itemId,
+                itemName: item.itemName,
+                measurementUnit: item.measurementUnit,
+                quantity: item.quantity,
+                priceCatalog: item.priceCatalog,
+                itemCategory: item.itemCategory,
+                ppmpCategory: item.ppmpCategory,
+              })),
+            );
+
             setAdditionalBudget(0);
             setDescription("");
             setNewItemsSearchTerm("");
@@ -544,6 +515,20 @@ export default function SupplementalPpmp() {
             </>
           )}
         </div>
+        <ViewSupplemental
+            createdAt={new Date().toLocaleString('en-PH')}
+            supplementalItems={newItemsArray.map(item => ({
+                itemId: item.itemId,
+                quantity: item.quantity,
+                itemName: item.itemName,
+                unitMeasurement: item.measurementUnit,
+                itemCategory: item.itemCategory,
+                priceCatalog: item.priceCatalog
+                    }))}
+            supplementalABC={additionalBudget}
+            isOpen={isPrintPreviewOpen}
+            onClose={() => setIsPrintPreviewOpen(false)}
+          />
       </div>
       <LoadingWrapper isLoading={isInitialLoading} skeleton={<TableSkeleton />}>
         {ppmpSupplementalHistory.length > 0 && (

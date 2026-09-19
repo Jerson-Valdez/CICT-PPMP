@@ -1,10 +1,10 @@
 import "../table-design.css";
 import { useState } from "react";
 import { IconSearch, IconFilter, IconFileStack } from "@tabler/icons-react";
-import ViewInLieu from "../../dialogs/view_in_lieu/ViewInLieu";
 import DynamicFilterDialog, {
   type FilterGroup,
 } from "../../dialogs/dynamic_filter_dialog/DynamicFilterDialog";
+import ViewSupplemental from "../../dialogs/view_supplemental/ViewSupplemental";
 
 interface SupplementalTableProps {
   data: any[];
@@ -72,12 +72,12 @@ export default function SupplementalTable({
 
     const matchesItemCat =
       itemCatFilter === "" ||
-      create.newItems.some(
+      create.supplementalItems?.some(
         (reducedItem: any) => reducedItem.itemCategory === itemCatFilter,
       );
     const matchesPpmpCat =
       ppmpCatFilter === "" ||
-      create.newItems.some(
+      create.supplementalItems?.some(
         (additionItem: any) => additionItem.ppmpCategory === ppmpCatFilter,
       );
 
@@ -166,12 +166,12 @@ export default function SupplementalTable({
                 <td>{item.createdBy}</td>
               <td>
                 <div className="proposed-items">
-                  {item.newItems.map((i: any, index: number) => (
+                  {item.supplementalItems?.map((i: any, index: number) => (
                     <div key={index} className="proposed-item">
                       <span>
                         {i.quantity} {i.measurementUnit} •{" "}
                       </span>
-                      <span>{i.name}</span>
+                      <span>{i.itemName}</span>
                     </div>
                   ))}
                 </div>
@@ -196,16 +196,15 @@ export default function SupplementalTable({
                   </button>
                 </div>
 
-                {/* <ViewInLieu
-                  key={item.inLieuId || index}
-                  inLieuId={item.inLieuId}
-                  requestDate={item.requestDate}
-                  originalItems={item.newItems}
-                  proposedItems={item.inLieuAdditionItems}
-                  status={item.status}
+                <ViewSupplemental
+                  key={item.supplementalId || index}
+                  supplementalId={item.supplementalId || index}
+                  createdAt={item.createdAt}
+                  supplementalItems={item.supplementalItems}
+                  supplementalABC={item.supplementalABC}
                   isOpen={openDialogIndex === index}
                   onClose={() => setOpenDialogIndex(null)}
-                /> */}
+                />
               </td>
             </tr>
             ))}

@@ -1,0 +1,217 @@
+import "./view-supplemental.css";
+import { IconFileStack, IconX, IconPrinter } from '@tabler/icons-react';
+import { Fragment, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router";
+import { useReactToPrint } from "react-to-print";
+
+interface Item {
+    itemId: number;
+    quantity: number;
+    itemName: string;
+    unitMeasurement: string;
+    priceCatalog: number;
+    itemCategory?: string;
+}
+
+interface ViewSupplementalProps {
+    supplementalId?: number;
+    createdAt?: string;
+    supplementalItems?: Item[];
+    supplementalABC?: number;
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+export default function ViewSupplemental({supplementalId, createdAt, supplementalItems, supplementalABC, isOpen, onClose }: ViewSupplementalProps) {
+    const dialogRef = useRef<HTMLDialogElement>(null);
+    const printRef = useRef<HTMLDivElement>(null);
+    const { selectedFiscalYear, deanName } = useOutletContext<{ selectedFiscalYear: string, userRole: string, deanName: string}>();
+    const parsedRequestDate = createdAt ? new Date(String(createdAt)) : null;
+    const requestMonthIndex = parsedRequestDate ? parsedRequestDate.getMonth() : null;
+
+    const itemCategories = [...new Set(supplementalItems?.map(item => item.itemCategory) || [])];
+
+    useEffect(() => {
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+
+        if (isOpen) {
+            if (!dialog.hasAttribute('open')) {
+                dialog.showModal();
+            }
+        } else {
+            dialog.close();
+        }
+    }, [isOpen]);
+
+    const handleCancel = (e: React.SyntheticEvent) => {
+        e.preventDefault(); 
+        onClose();          
+    };
+
+    const handleClose = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        onClose();
+    };
+
+    const handlePrint = useReactToPrint({
+        contentRef: printRef, 
+        documentTitle: `Supplemental_${supplementalId || 'New'}`,
+        pageStyle: `
+            @page {
+                size: auto;
+                margin: 25mm 20mm;
+            }
+        `
+    });
+
+    return (
+        <dialog className="view-supplemental" ref={dialogRef} onCancel={handleCancel}>
+            <div className="header">
+                <div className="icon blue">
+                    <IconFileStack size={24} />
+                </div>
+                <div className="title">
+                    <h3>View Supplemental</h3>
+                    <p>Detailed Information of the Supplemental</p>
+                </div>
+            </div>
+            <div className="content" ref={printRef}>
+                <div className="title">
+                    <h3>SUPPLEMENTAL PROJECT PROCUREMENT MANAGEMENT PLAN {selectedFiscalYear}</h3>
+                </div>
+                <p className="font-bold">END-USER/UNIT: <u>CICT</u></p>
+                <p className="font-bold">SOURCE OF FUND: ________________</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th rowSpan={2}>NO.</th>
+                            <th rowSpan={2}>GENERAL DESCRIPTION</th>
+                            <th rowSpan={2}>UNIT OF MEASUREMENT</th>
+                            <th colSpan={13}>SCHEDULE/MILESTONES OF ACTIVITIES</th>
+                            <th rowSpan={2}>PRICE CATALOGUE</th>
+                            <th rowSpan={2}>AMOUNT</th>
+                        </tr>
+                        <tr>
+                            <th>JAN</th>
+                            <th>FEB</th>
+                            <th>MAR</th>
+                            <th>APR</th>
+                            <th>MAY</th>
+                            <th>JUN</th>
+                            <th>JUL</th>
+                            <th>AUG</th>
+                            <th>SEP</th>
+                            <th>OCT</th>
+                            <th>NOV</th>
+                            <th>DEC</th>
+                            <th>TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {itemCategories.map((category, catIndex) => (
+                            <Fragment key={catIndex}>
+                                <tr key={catIndex}>
+                                    <td colSpan={2} className="bg-gray-200 capitalize font-bold text-center">{category}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                {supplementalItems?.filter((item) => item.itemCategory === category).map((item, index) => (
+                                    <tr key={item.itemId}>
+                                        <td className="text-center">{index + 1}</td>
+                                        <td className="text-left">{item.itemName}</td>
+                                        <td className="text-center">{item.unitMeasurement}</td>
+                                        
+                                        {Array.from({ length: 12 }).map((_, monthIndex) => (
+                                            <td key={monthIndex} className="text-center">
+                                                {requestMonthIndex === monthIndex ? item.quantity : ""}
+                                            </td>
+                                        ))}
+
+                                        <td className="text-center">{item.quantity}</td>
+
+                                        <td className="text-right">{item.priceCatalog.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                        <td className="text-right">{(item.priceCatalog * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                    </tr>
+                                ))}
+                                </Fragment>
+                        ))}
+                        <tr className="bg-gray-200">
+                            <td colSpan={2} className="text-right"><strong>TOTAL AMOUNT</strong></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td className="text-right"><strong>{supplementalItems ? supplementalItems.reduce((total, item) => total + (item.priceCatalog * item.quantity), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>"in Additional of Budget"</p>
+                <table className="supplemental-table">
+                    <thead>
+                        <tr>
+                            <th>Quantity</th>
+                            <th>Item</th>
+                            <th>Unit of Measurement</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{supplementalABC}</td>
+                            <td>Funds Added</td>
+                            <td>PHP</td>
+                            <td className="text-right">{supplementalABC ? supplementalABC.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</td>
+                        </tr>
+                        <tr>
+                            <td colSpan={3} className="text-right"><strong>TOTAL AMOUNT:</strong></td>
+                            <td><strong>{supplementalABC ? supplementalABC.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div className="signatory">
+                    <div className="submitted-by">
+                        <p>Created By:</p>
+                        <p className="signatory-name ml-5"><strong>{deanName}</strong></p>
+                        <p className="ml-5">Dean, CICT</p>
+                    </div>
+                </div>
+            </div>
+            <div className="action-btns">
+                <div className="cancel-btn-container">
+                    <button className="btn-secondary" onClick={handleClose}>
+                        <IconX size={18} /> Close
+                    </button>
+                </div>
+                <button className="btn-solid blue" onClick={handlePrint}>
+                    <IconPrinter size={18} /> Print
+                </button>
+            </div>
+        </dialog>
+    );
+}
