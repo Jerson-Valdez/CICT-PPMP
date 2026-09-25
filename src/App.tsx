@@ -89,7 +89,6 @@ function PrivateLayout() {
                     return; 
                 } else {
                     const headerResult = await headerResponse.json();
-                    console.log("Header info retrieved: ", headerResult);
                     setUserFullName(headerResult.UserFullName);
                     setUserEmailAddress(headerResult.UserEmailAddress);
                     setUserRole(headerResult.UserRole);
@@ -100,7 +99,6 @@ function PrivateLayout() {
                     return;
                 } else {
                     const deanNameResult = await deanNameResponse.json();
-                    console.log("Dean name retrieved: ", deanNameResult);
                     setDeanName(deanNameResult.fullname);
                 }
 
@@ -120,7 +118,6 @@ function PrivateLayout() {
             } catch (error) {
                 toast.error("Network error. Please try again later or Reload the page.");
             } finally {
-                console.log(selectedFiscalYear);
                 setIsCheckingAuth(false);
             }
         };
