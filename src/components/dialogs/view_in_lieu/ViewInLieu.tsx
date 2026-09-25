@@ -134,7 +134,7 @@ export default function ViewInLieu({inLieuId, requestDate, status, originalItems
                                     <td></td>
                                 </tr>
                                 {proposedItems?.filter((item) => item.itemCategory === category).map((item, index) => (
-                                    <tr key={item.itemId}>
+                                    <tr key={item.itemId? item.itemId : index}>
                                         <td className="text-center">{index + 1}</td>
                                         <td className="text-left">{item.itemName}</td>
                                         <td className="text-center">{item.unitMeasurement}</td>

@@ -79,8 +79,6 @@ export default function ProcurementMonitor() {
                 } else {
                     const monitoringResult = await monitoringResponse.json();
 
-                    console.log("PPMP monitoring data retrieved: ", monitoringResult);
-
                     setTotalPlannedItemCount(monitoringResult.totalPlannedItemCount || 0);
                     setTotalAvailableItemCount(monitoringResult.totalAvailableItemCount || 0);
                     setTotalPendingItemCount(monitoringResult.totalPendingItemCount || 0);
