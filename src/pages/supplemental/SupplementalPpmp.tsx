@@ -238,7 +238,7 @@ export default function SupplementalPpmp() {
     event: React.ChangeEvent<HTMLInputElement>,
   ) {
     const newBudget = parseFloat(event.target.value);
-    if (!isNaN(newBudget)) {
+    if (!isNaN(newBudget) && newBudget >= 0) {
       setAdditionalBudget(newBudget);
     } else {
       setAdditionalBudget(0);
@@ -408,6 +408,7 @@ export default function SupplementalPpmp() {
               type="number"
               id="budget-injection"
               placeholder="Enter the amount of additional budget"
+              value={additionalBudget? additionalBudget : ""}
               onChange={onAdditionalBudgetChange}
             />
           </div>

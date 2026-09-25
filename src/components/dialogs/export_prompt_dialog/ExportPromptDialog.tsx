@@ -65,6 +65,11 @@ export default function ExportPromptDialog({
     }
   }
 
+  function handleExport() {
+    exportFunction(selectedOptions);
+    onClose();
+  }
+
   let counter = selectedOptions.length;
 
   return (
@@ -117,7 +122,7 @@ export default function ExportPromptDialog({
         {counter > 0 ? (
           <button
             className="btn-primary-rd-shadow"
-            onClick={() => exportFunction(selectedOptions)}
+            onClick={handleExport}
           >
             <IconTableExport size={18} />
             Export Data

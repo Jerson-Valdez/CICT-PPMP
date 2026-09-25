@@ -136,6 +136,13 @@ export default function PpmpMasterlist() {
     formData.append("year", String(selectedFiscalYear));
     formData.append("options", JSON.stringify(options));
 
+    const fileName =
+      options.length > 0
+        ? options
+            .map((opt) => opt.charAt(0).toUpperCase() + opt.slice(1))
+            .join("_")
+        : "PPMP";
+
     try {
       toast.info("Exporting the latest PPMP. Please wait...");
       const response = await fetch(
@@ -159,7 +166,7 @@ export default function PpmpMasterlist() {
         link.href = url;
         link.setAttribute(
           "download",
-          `Revised_PPMP_${selectedFiscalYear}_as_of_${new Date().toISOString().split("T")[0]}.xlsx`,
+          `${fileName}_${selectedFiscalYear}_as_of_${new Date().toISOString().split("T")[0]}.xlsx`,
         );
         document.body.appendChild(link);
         link.click();
