@@ -99,13 +99,6 @@ export default function InLieuReallocation() {
     const [inLieuSearchTerm, setInLieuSearchTerm] = useState<string>("");
     const [newItemsSearchTerm, setNewItemsSearchTerm] = useState<string>("");
 
-    let inLieuData = ppmpReallocationData?.filter((item) => {
-        const searchLower = inLieuSearchTerm.toLowerCase();
-        const matchesSearch = inLieuSearchTerm === "" || item.itemName.toLowerCase().includes(searchLower);
-
-        return matchesSearch;
-    });
-
     const filteredCatalogItems = newItemsSearchTerm.trim() === ""
         ? []
         : ppmpReallocationData?.filter(item =>
@@ -163,6 +156,25 @@ export default function InLieuReallocation() {
         item.reduceQuantity > 0 &&
         item.priceCatalog > 0
     );
+
+    let inLieuData = (ppmpReallocationData || [])
+        .filter((item) => {
+            const searchLower = inLieuSearchTerm.toLowerCase();
+            const matchesSearch = inLieuSearchTerm === "" || item.itemName.toLowerCase().includes(searchLower);
+            return matchesSearch;
+        })
+        .sort((a, b) => {
+            // Check if item A or item B are currently in the selected array
+            const isASelected = selectedLieuItems.some(selected => selected.itemId === a.itemId);
+            const isBSelected = selectedLieuItems.some(selected => selected.itemId === b.itemId);
+
+            // If A is selected and B is not, push A to the top (-1)
+            if (isASelected && !isBSelected) return -1;
+            // If B is selected and A is not, push B to the top (1)
+            if (!isASelected && isBSelected) return 1;
+            // If both are selected or neither are, maintain their default order
+            return 0; 
+        });
 
     const handleAddItem = () => setNewItemsArray([...newItemsArray, { itemId: Date.now(), itemName: "", measurementUnit: "", quantity: 1, priceCatalog: 0, itemCategory: "", ppmpCategory: "", added: true }]);
     const handleDeleteItem = (itemId: number) => setNewItemsArray(newItemsArray.filter(item => item.itemId !== itemId));
@@ -248,49 +260,6 @@ export default function InLieuReallocation() {
         }
     }
 
-    // const getSmartSuggestions = async () => {
-    //     const loading = showCircleLoadingDialog();
-
-    //     try {
-    //         const formData = new FormData();
-    //         formData.append("Sum", JSON.stringify(requiredBudget))
-    //         formData.append("NewItems", JSON.stringify(newItemsArray))
-    //         formData.append("FiscalYear", selectedFiscalYear)
-
-    //         //http://127.0.0.1:8000
-    //         //https://test-ppmp.onrender.com
-    //         const suggestionResponse = await fetch("https://test-ppmp.onrender.com/api/smart-suggest/", {
-    //             method: "POST",
-    //             body: formData,
-    //             headers: {
-    //                 "Authorization": `Bearer ${await getAccessToken() || ""}`
-    //             }
-    //         });
-
-    //         const suggestions = await suggestionResponse.json()
-
-    //         if (!suggestionResponse.ok) {
-    //             if (suggestionResponse.status == 400) {
-    //                 notify("Unable to Generate Smart Suggestions", suggestions.error, "error", "I understand")
-    //             } else {
-    //                 throw new Error("Unable to generate smart suggestions. Please try again later.")
-    //             }
-    //         }
-    //         else {
-    //             setSelectedLieuItems([])
-    //             suggestions.data.map((item: any) => {
-    //                 handleToggleLieuItem(item)
-    //             })
-    //         }
-    //     }
-    //     catch (error: any) {
-    //         toast.error(error.message)
-    //     }
-    //     finally {
-    //         loading()
-    //     }
-    // }
-
     const getTestingSuggestions = async () => {
         const loading = showCircleLoadingDialog();
 
@@ -301,8 +270,6 @@ export default function InLieuReallocation() {
             formData.append("year", selectedFiscalYear)
 
             console.log("Required Budget:", requiredBudget);
-            //http://127.0.0.1:8000
-            //https://test-ppmp.onrender.com
             const suggestionResponse = await fetch("https://test-ppmp.onrender.com/api/test_ml/", {
                 method: "POST",
                 body: formData,

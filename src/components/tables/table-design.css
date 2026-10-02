@@ -10,7 +10,7 @@
         @apply h-[calc(100vh-120px)] max-md:h-[calc(100vh-100px)];
     }
     &.supplemental{
-        @apply h-fit max-md:h-[calc(100vh-100px)];
+        @apply h-[calc(100vh-100px)] max-md:h-[calc(100vh-100px)];
     }
 
     & > .table-title-container{

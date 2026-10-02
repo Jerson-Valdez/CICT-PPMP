@@ -91,6 +91,7 @@ export default function Login(){
                     refresh_token: responseData.refresh_token,
                 });
                 toast.success("Logged in successfully!");
+                localStorage.setItem("isLoggedIn", "true");
                 navigate("/dashboard");
             } else {
                 toast.error(responseData.message || "Login failed. Please check your credentials.");

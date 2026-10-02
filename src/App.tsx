@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet, useNavigate } from 'rea
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { FourSquare } from 'react-loading-indicators';
 import './App.css';
+import { useAutoLogout } from './components/hook/useAutoLogout';
 
 // Pages
 import Landing from './pages/landing/Landing';
@@ -22,11 +23,28 @@ const SupplementalPpmp = lazy(() => import('./pages/supplemental/SupplementalPpm
 // Components
 import Nav from './components/nav/Nav';
 import Header from './components/header/Header';
-import { getAccessToken } from '../supadb';
+import { getAccessToken, logoutUser } from '../supadb';
 import { toast } from './components/toast/ToastService';
 
 function PrivateLayout() {
     const navigate = useNavigate();
+
+    const hasToken = localStorage.getItem("isLoggedIn")? true : false;
+
+    const handleLogout = async () => {
+        try {
+            localStorage.removeItem("isLoggedIn"); 
+            await logoutUser(); 
+            navigate('/login');
+            toast.success("Logged out due to inactivity.");
+        } catch (error) {
+            console.error("Logout error:", error);
+            toast.error("Network error. Inactivity logout failed.");
+        }
+    };
+
+    useAutoLogout(handleLogout, hasToken);
+
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     
     const [fiscalYears, setFiscalYears] = useState<string[]>([]);

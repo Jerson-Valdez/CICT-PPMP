@@ -3,6 +3,8 @@ import GlobalDialog, { type DialogUIProps } from './GlobalDialog';
 
 type DialogOptions = Omit<DialogUIProps, 'isOpen' | 'onConfirm' | 'onCancel'>;
 
+let activeForceClose: (() => void) | null = null;
+
 export const showDialog = (options: DialogOptions): Promise<boolean> => {
     return new Promise((resolve) => {
         const dialogContainer = document.createElement('div');
@@ -36,6 +38,10 @@ export const showDialog = (options: DialogOptions): Promise<boolean> => {
             resolve(false); 
         };
 
+        activeForceClose = () => {
+            handleCancel();
+        };
+
         root.render(
             <GlobalDialog
                 {...options}
@@ -52,3 +58,9 @@ export const notify = (title: string, message: string, type: DialogOptions['type
 
 export const confirm = (title: string, message: string, type: DialogOptions['type'] = "info", confirmButtonText: string = "OK") => 
     showDialog({ title, message, type, mode: "confirmation", confirmButtonText });
+
+export const closeConfirmDialog = () => {
+    if (activeForceClose) {
+        activeForceClose();
+    }
+};
