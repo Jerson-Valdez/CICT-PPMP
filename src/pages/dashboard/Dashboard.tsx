@@ -68,6 +68,7 @@ export default function Dashboard() {
   const [pendingInLieuCount, setPendingInLieuCount] = useState(0);
   const [committedFundsPercentage, setCommittedFundsPercentage] = useState(0);
   const [openFundsPercentage, setOpenFundsPercentage] = useState(0);
+  const [prTrendData, setPrTrendData] = useState<any[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
 
   useEffect(() => {
@@ -121,6 +122,20 @@ export default function Dashboard() {
         toast.error("Network error. Please try again later.");
       } finally {
         setIsInitialLoading(false);
+        setPrTrendData([
+          { month: "Jan", "2024": 12, "2025": 15, "2026": 10 },
+          { month: "Feb", "2024": 8, "2025": 10, "2026": 14 },
+          { month: "Mar", "2024": 7, "2025": 20, "2026": 28 },
+          { month: "Apr", "2024": 7, "2025": 32, "2026": 28 },
+          { month: "May", "2024": 2, "2025": 20, "2026": 6 },
+          { month: "Jun", "2024": 23, "2025": 6, "2026": 45 },
+          { month: "Jul", "2024": 13, "2025": 4, "2026": 28 },
+          { month: "Aug", "2024": 42, "2025": 20, "2026": 34 },
+          { month: "Sep", "2024": 6, "2025": 9, "2026": 28 },
+          { month: "Oct", "2024": 34, "2025": 20, "2026": 6 },
+          { month: "Nov", "2024": 1, "2025": 8, "2026": 28 },
+          { month: "Dec", "2024": 23, "2025": 20, "2026": 12 },
+        ]);
       }
     };
     loadDashboardData();
@@ -177,21 +192,6 @@ export default function Dashboard() {
       value: arrivedFunds,
       color: "green-yellow",
     },
-  ];
-
-  const prTrendData = [
-    { month: "Jan", "2024": 12, "2025": 15, "2026": 10 },
-    { month: "Feb", "2024": 8, "2025": 10, "2026": 14 },
-    { month: "Mar", "2024": 7, "2025": 20, "2026": 28 },
-    { month: "Apr", "2024": 7, "2025": 32, "2026": 28 },
-    { month: "May", "2024": 2, "2025": 20, "2026": 6 },
-    { month: "Jun", "2024": 23, "2025": 6, "2026": 45 },
-    { month: "Jul", "2024": 13, "2025": 4, "2026": 28 },
-    { month: "Aug", "2024": 42, "2025": 20, "2026": 34 },
-    { month: "Sep", "2024": 6, "2025": 9, "2026": 28 },
-    { month: "Oct", "2024": 34, "2025": 20, "2026": 6 },
-    { month: "Nov", "2024": 1, "2025": 8, "2026": 28 },
-    { month: "Dec", "2024": 23, "2025": 20, "2026": 12 },
   ];
 
   const budgetData = [
