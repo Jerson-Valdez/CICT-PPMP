@@ -1,278 +1,455 @@
-import { useState, useEffect, type JSX } from 'react'; // 1. Added useState and useEffect
-import DashboardCard from '../../components/cards/dashboard_card/DashboardCard';
-import './dashboard.css';
-import { IconWallet, IconFilter2Check, IconStatusChange, IconCurrencyDollarOff, IconGitPullRequestDraft, IconChecklist, IconChartBarOff, IconTransform, IconClockDollar, IconAlertCircle, IconArrowRight } from '@tabler/icons-react';
-import DashboardProcurementCard from '../../components/cards/dashboard_procurement_card/DashboardProcurementCard';
-import alab from '../../assets/icons/alab.svg';
-import { Link } from 'react-router';
-import LoadingWrapper from '../../components/wrappers/loading wrapper/LoadingWrapper';
-import DashboardSkeleton from '../../components/skeleton/skeleton_pages/DashboardSkeleton';
-import { toast } from '../../components/toast/ToastService';
-import { useOutletContext } from 'react-router';
-import { getAccessToken } from '../../../supadb';
+import { useState, useEffect, type JSX } from "react";
+import DashboardCard from "../../components/cards/dashboard_card/DashboardCard";
+import "./dashboard.css";
+import {
+  IconWallet,
+  IconFilter2Check,
+  IconStatusChange,
+  IconCurrencyDollarOff,
+  IconGitPullRequestDraft,
+  IconChecklist,
+  IconAlertCircle,
+  IconArrowRight,
+} from "@tabler/icons-react";
+import DashboardProcurementCard from "../../components/cards/dashboard_procurement_card/DashboardProcurementCard";
+import { Link } from "react-router";
+import LoadingWrapper from "../../components/wrappers/loading wrapper/LoadingWrapper";
+import DashboardSkeleton from "../../components/skeleton/skeleton_pages/DashboardSkeleton";
+import { toast } from "../../components/toast/ToastService";
+import { useOutletContext } from "react-router";
+import { getAccessToken } from "../../../supadb";
+
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
 
 interface DashboardData {
-    icon: JSX.Element;
-    iconColor: string;
-    title: string;
-    description: string;
-    value: number;
-    color: string;
-    additionalInfo?: string;
+  icon: JSX.Element;
+  iconColor: string;
+  title: string;
+  description: string;
+  value: number;
+  color: string;
+  additionalInfo?: string;
 }
 
 interface Log {
-    actionType: string;
-    description: string;
-    date: string;
-    value?: number;
-    userFullName: string;
-    fiscalYear: number;
+  actionType: string;
+  description: string;
+  date: string;
+  value?: number;
+  userFullName: string;
+  fiscalYear: number;
 }
 
-interface aiFeaturesData {
-    icon: JSX.Element;
-    title: string;
-    description: string;
-    percentage?: number;
-}
+export default function Dashboard() {
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-export default function Dashboard(){
-    const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const { selectedFiscalYear } = useOutletContext<{
+    selectedFiscalYear: string;
+  }>();
+  const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
-    const { selectedFiscalYear } = useOutletContext<{ selectedFiscalYear: string }>();
-    const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
+  const [totalAnnualBudget, setTotalAnnualBudget] = useState(0);
+  const [committedFunds, setCommittedFunds] = useState(0);
+  const [availableLieuPoolFunds, setAvailableLieuPoolFunds] = useState(0);
+  const [openFunds, setOpenFunds] = useState(0);
+  const [requestedFunds, setRequestedFunds] = useState(0);
+  const [arrivedFunds, setArrivedFunds] = useState(0);
+  const [pendingInLieuCount, setPendingInLieuCount] = useState(0);
+  const [committedFundsPercentage, setCommittedFundsPercentage] = useState(0);
+  const [openFundsPercentage, setOpenFundsPercentage] = useState(0);
+  const [prTrendData, setPrTrendData] = useState<any[]>([]);
+  const [logs, setLogs] = useState<Log[]>([]);
 
-    const [totalAnnualBudget, setTotalAnnualBudget] = useState(0);
-    const [committedFunds, setCommittedFunds] = useState(0);
-    const [availableLieuPoolFunds, setAvailableLieuPoolFunds] = useState(0);
-    const [openFunds, setOpenFunds] = useState(0);
-    const [requestedFunds, setRequestedFunds] = useState(0);
-    const [arrivedFunds, setArrivedFunds] = useState(0);
-    const [pendingInLieuCount, setPendingInLieuCount] = useState(0);
-    const [committedFundsPercentage, setCommittedFundsPercentage] = useState(0);
-    const [openFundsPercentage, setOpenFundsPercentage] = useState(0);
-    const [logs, setLogs] = useState<Log[]>([]);
-    const [aiNotUtilizedItemsPercentage, setAiNotUtilizedItemsPercentage] = useState(0);
-    const [aiFrequentInLieuItemsPercentage, setAiFrequentInLieuItemsPercentage] = useState(0);
-    const [aiNotUtilizedCurrentYearPercentage, setAiNotUtilizedCurrentYearPercentage] = useState(0);
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      handleDashboardFiscalYearChange(selectedFiscalYear);
+      try {
+        const formData = new FormData();
+        formData.append("year", String(selectedFiscalYear));
 
-    useEffect(() => {
-        const loadDashboardData = async () => {
-            handleDashboardFiscalYearChange(selectedFiscalYear);
-            try {
-                const formData = new FormData();
-                formData.append('year', String(selectedFiscalYear));
+        const [dashboardCardsResponse] = await Promise.all([
+          fetch("https://test-ppmp.onrender.com/api/dashboard_cards/", {
+            method: "POST",
+            body: formData,
+            headers: {
+              Authorization: `Bearer ${(await getAccessToken()) || ""}`,
+            },
+          }),
+        ]);
 
-                const [dashboardCardsResponse, importancesResponse] = await Promise.all([
+        if (!dashboardCardsResponse.ok) {
+          toast.error(
+            "Failed to fetch dashboard cards data. Please try again later.",
+          );
+        } else {
+          const dashboardCardsResult = await dashboardCardsResponse.json();
+          setTotalAnnualBudget(dashboardCardsResult.totalAnnualBudget);
+          setCommittedFunds(dashboardCardsResult.committedFunds);
+          setAvailableLieuPoolFunds(
+            dashboardCardsResult.availableLieuPoolFunds,
+          );
+          setOpenFunds(dashboardCardsResult.openFunds);
+          setRequestedFunds(dashboardCardsResult.requestedFunds);
+          setArrivedFunds(dashboardCardsResult.arrivedFunds);
+          setPendingInLieuCount(dashboardCardsResult.pendingInLieuCount);
 
-                    fetch('https://test-ppmp.onrender.com/api/dashboard_cards/', {
-                        method: "POST",
-                        body: formData,
-                        headers: {
-                            "Authorization": `Bearer ${await getAccessToken() || ""}`
-                        }
-                    }),
-                    fetch('https://test-ppmp.onrender.com/api/get_importances/?year=' + selectedFiscalYear, {
-                        method: "GET",
-                        headers: {
-                            "Authorization": `Bearer ${await getAccessToken() || ""}`
-                        }
-                    })
-                ]);
+          setLogs((dashboardCardsResult.logs || []).slice().reverse());
 
-                if (!dashboardCardsResponse.ok) {
-                    toast.error("Failed to fetch dashboard cards data. Please try again later.");
-                } else {
-                    const dashboardCardsResult = await dashboardCardsResponse.json();
-                    setTotalAnnualBudget(dashboardCardsResult.totalAnnualBudget);
-                    setCommittedFunds(dashboardCardsResult.committedFunds);
-                    setAvailableLieuPoolFunds(dashboardCardsResult.availableLieuPoolFunds);
-                    setOpenFunds(dashboardCardsResult.openFunds);
-                    setRequestedFunds(dashboardCardsResult.requestedFunds);
-                    setArrivedFunds(dashboardCardsResult.arrivedFunds);
-                    setPendingInLieuCount(dashboardCardsResult.pendingInLieuCount);
-
-                    setLogs((dashboardCardsResult.logs || []).slice().reverse());
-
-                    setCommittedFundsPercentage((dashboardCardsResult.committedFunds / dashboardCardsResult.totalAnnualBudget) * 100);
-                    setOpenFundsPercentage((dashboardCardsResult.openFunds / dashboardCardsResult.totalAnnualBudget) * 100);
-                }
-
-                if (!importancesResponse.ok) {
-                    toast.error("Failed to fetch AI importances data. Please try again later.");
-                }
-                else {
-                    const importancesResult = await importancesResponse.json();
-                    const item1 = importancesResult.notUtilizedItems || 0;
-                    const item2 = importancesResult.frequentInLieuItems || 0;
-                    const item3 = importancesResult.notUtilizedCurrentYear || 0;
-
-                    const grandTotal = item1 + item2 + item3;
-
-                    if (grandTotal > 0) {
-                        setAiNotUtilizedItemsPercentage(Number(((item1 / grandTotal) * 100).toFixed(2)));
-                        setAiFrequentInLieuItemsPercentage(Number(((item2 / grandTotal) * 100).toFixed(2)));
-                        setAiNotUtilizedCurrentYearPercentage(Number(((item3 / grandTotal) * 100).toFixed(2)));
-                    } else {
-                        setAiNotUtilizedItemsPercentage(0);
-                        setAiFrequentInLieuItemsPercentage(0);
-                        setAiNotUtilizedCurrentYearPercentage(0);
-                    }
-                }
-
-            } catch (error) {
-                console.error("Error fetching dashboard cards data:", error);
-                toast.error("Network error. Please try again later.");
-            }
-            finally {
-                setIsInitialLoading(false);
-            }
-        };
-        loadDashboardData();
-                
-    }, [selectedFiscalYear]);
-
-    const dashboardData: DashboardData[] = [
-        {icon: <IconWallet size={24} />, iconColor: "blue", title: "Total Annual Budget", description: "FY 2026 Allocation", value: totalAnnualBudget, color: "blue-purple",},
-        {icon: <IconFilter2Check size={24} />, iconColor: "green", title: "Committed Funds", description: "Items in PR/Arrived", value: committedFunds,color: "green-teal",additionalInfo: `${committedFundsPercentage?.toFixed(1)}% Utilized`},
-        {icon: <IconStatusChange size={24} />, iconColor: "yellow", title: "Available Lieu Pool", description: "Planned but not requested", value: availableLieuPoolFunds, color: "yellow-red",},
-        {icon: <IconCurrencyDollarOff size={24} />, iconColor: "purple", title: "Open Funds", description: "Not planned funds", value: openFunds, color: "purple-black", additionalInfo: `${openFundsPercentage?.toFixed(1)}% Unutilized`},
-        {icon: <IconGitPullRequestDraft size={24} />, iconColor: "blue", title: "Purchase Request", description: "Funds currently in PR", value: requestedFunds, color: "cyan-blue",},
-        {icon: <IconChecklist size={24} />, iconColor: "green", title: "Fulfilled Items", description: "Allocated funds of fulfilled items", value: arrivedFunds,  color: "green-yellow",},
-    ];
-
-    const aiFeaturesDataTraining: aiFeaturesData[] = [
-        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized Items", description: "Based on the historical low-utilization of item quantities", percentage: aiNotUtilizedItemsPercentage},
-        {icon: <IconTransform size={18}/>, title: "Frequent In Lieu Items", description: "Based on the historical in-lieu quantity of items", percentage: aiFrequentInLieuItemsPercentage},
-    ];
-
-    const aiFeaturesDataCurrentYear: aiFeaturesData[] = [
-        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized in Current Year", description: "Based on the utilization rate of items in the current fiscal year", percentage: aiNotUtilizedCurrentYearPercentage},
-    ];
-
-    const knapsackFeaturesData: aiFeaturesData[] = [
-        {icon: <IconClockDollar size={18}/>, title: "Lowest Price possible of Combined Items", description: "Algorithm to find the lowest price possible of combined items based on the target budget."},
-    ];
-
-    function handleDashboardFiscalYearChange(newFiscalYear: string) {
-        if (newFiscalYear !== fiscalYearHolder) {
-            setIsInitialLoading(true);
-            setFiscalYearHolder(newFiscalYear);
+          setCommittedFundsPercentage(
+            (dashboardCardsResult.committedFunds /
+              dashboardCardsResult.totalAnnualBudget) *
+              100,
+          );
+          setOpenFundsPercentage(
+            (dashboardCardsResult.openFunds /
+              dashboardCardsResult.totalAnnualBudget) *
+              100,
+          );
+          setPrTrendData(dashboardCardsResult.prTrend);
         }
+      } catch (error) {
+        console.error("Error fetching dashboard cards data:", error);
+        toast.error("Network error. Please try again later.");
+      } finally {
+        setIsInitialLoading(false);
+      }
+    };
+    loadDashboardData();
+  }, [selectedFiscalYear]);
+
+  const dashboardData: DashboardData[] = [
+    {
+      icon: <IconWallet size={20} />,
+      iconColor: "blue",
+      title: "Total Annual Budget",
+      description: "FY 2026 Allocation",
+      value: totalAnnualBudget,
+      color: "blue-purple",
+    },
+    {
+      icon: <IconFilter2Check size={20} />,
+      iconColor: "green",
+      title: "Committed Funds",
+      description: "Items in PR/Arrived",
+      value: committedFunds,
+      color: "green-teal",
+      additionalInfo: `${committedFundsPercentage?.toFixed(1)}% Utilized`,
+    },
+    {
+      icon: <IconStatusChange size={20} />,
+      iconColor: "yellow",
+      title: "Available Lieu Pool",
+      description: "Planned but not requested",
+      value: availableLieuPoolFunds,
+      color: "yellow-red",
+    },
+    {
+      icon: <IconCurrencyDollarOff size={20} />,
+      iconColor: "purple",
+      title: "Open Funds",
+      description: "Not planned funds",
+      value: openFunds,
+      color: "purple-black",
+      additionalInfo: `${openFundsPercentage?.toFixed(1)}% Unutilized`,
+    },
+    {
+      icon: <IconGitPullRequestDraft size={20} />,
+      iconColor: "blue",
+      title: "Purchase Request",
+      description: "Funds currently in PR",
+      value: requestedFunds,
+      color: "cyan-blue",
+    },
+    {
+      icon: <IconChecklist size={20} />,
+      iconColor: "green",
+      title: "Fulfilled Items",
+      description: "Allocated funds of fulfilled items",
+      value: arrivedFunds,
+      color: "green-yellow",
+    },
+  ];
+
+  const budgetData = [
+    { name: "Pending Purchase Requests", value: requestedFunds },
+    { name: "Fulfilled Purchase Requests", value: arrivedFunds },
+    { name: "Available Lieu Pool", value: availableLieuPoolFunds },
+    { name: "Open Funds", value: openFunds },
+  ];
+
+  const COLORS = ["#3b82f6", "#22c55e", "#eab308", "#ad46ff"];
+
+  function handleDashboardFiscalYearChange(newFiscalYear: string) {
+    if (newFiscalYear !== fiscalYearHolder) {
+      setIsInitialLoading(true);
+      setFiscalYearHolder(newFiscalYear);
     }
+  }
 
-    return (
-        <main className="page-container dashboard">
-            <LoadingWrapper isLoading={isInitialLoading} skeleton={<DashboardSkeleton />}>
-                
-                <div className="dashboard-card-container">
-                    {dashboardData.map((data, index) => (
-                        <DashboardCard
-                            key={index}
-                            icon={data.icon}
-                            iconColor={data.iconColor}
-                            title={data.title}
-                            description={data.description}
-                            value={data.value}
-                            color={data.color}
-                            additionalInfo={data.additionalInfo}
-                        />
+  return (
+    <main className="page-container dashboard">
+      <LoadingWrapper
+        isLoading={isInitialLoading}
+        skeleton={<DashboardSkeleton />}
+      >
+        <div className="dashboard-card-container">
+          {dashboardData.map((data, index) => (
+            <DashboardCard
+              key={index}
+              icon={data.icon}
+              iconColor={data.iconColor}
+              title={data.title}
+              description={data.description}
+              value={data.value}
+              color={data.color}
+              additionalInfo={data.additionalInfo}
+            />
+          ))}
+          {pendingInLieuCount > 0 && (
+            <div className="alert-card">
+              <div className="icon yellow">
+                <IconAlertCircle size={20} />
+              </div>
+              <div className="alert-card-content">
+                <h3>In Lieu Approval</h3>
+                <span>{pendingInLieuCount}</span>
+                <p>In-Lieu requests that require approval.</p>
+              </div>
+              <Link to="/in-lieu-approvals" className="view-details">
+                View Details <IconArrowRight size={16} />
+              </Link>
+            </div>
+          )}
+        </div>
+
+        <div className="analytics-container">
+          <div className="analytics-area-graph-container">
+            <div className="analytics-header">
+              <div className="title-container">
+                <h2>3-Year PR Volume Trend</h2>
+                <p>Insights and analytics of latest 3 years purchase requests history</p>
+              </div>
+            </div>
+            <div className="content-container">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={prTrendData}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                >
+                  <defs>
+                    {/* Light Blue (Subtle background) */}
+                    <linearGradient id="color2024" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#bfdbfe" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="#bfdbfe" stopOpacity={0} />
+                    </linearGradient>
+
+                    {/* Medium Blue */}
+                    <linearGradient id="color2025" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#60a5fa" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="#60a5fa" stopOpacity={0} />
+                    </linearGradient>
+
+                    {/* Dark/Bold Blue (Strong focus for current year) */}
+                    <linearGradient id="color2026" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+
+                  <XAxis
+                    dataKey="month"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#9ca3af", fontSize: 12, fontWeight: 500 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#9ca3af", fontSize: 12, fontWeight: 500 }}
+                  />
+
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: "16px",
+                      border: "none",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                      opacity: 0.9,
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="top"
+                    align="right"
+                    height={24}
+                    iconType="circle"
+                    wrapperStyle={{ fontSize: "12px", color: "#4b5563" }}
+                  />
+                  <Area
+                    type="bump"
+                    dataKey="2024"
+                    stroke="#bfdbfe"
+                    strokeWidth={1}
+                    fillOpacity={1}
+                    fill="url(#color2024)"
+                  />
+                  <Area
+                    type="bump"
+                    dataKey="2025"
+                    stroke="#60a5fa"
+                    strokeWidth={1}
+                    fillOpacity={1}
+                    fill="url(#color2025)"
+                  />
+                  <Area
+                    type="bump"
+                    dataKey="2026"
+                    stroke="#2563eb"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#color2026)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="analytics-donut-graph-container">
+            <div className="analytics-header">
+              <div className="title-container">
+                <h2>Funds Distribution for the Year {selectedFiscalYear}</h2>
+                <p>Visualization of the distribution of funds</p>
+              </div>
+            </div>
+            <div className="content-container">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <defs>
+                    <linearGradient id="pieColor0" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor={COLORS[0]} />
+                      <stop offset="100%" stopColor="#1e40af" />
+                    </linearGradient>
+                    <linearGradient id="pieColor1" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor={COLORS[1]} />
+                      <stop offset="100%" stopColor="#016630" />
+                    </linearGradient>
+                    <linearGradient id="pieColor2" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor={COLORS[2]} />
+                      <stop offset="100%" stopColor="#ef4444" />
+                    </linearGradient>
+                    <linearGradient id="pieColor3" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor={COLORS[3]} />
+                      <stop offset="100%" stopColor="#6b21a8" />
+                    </linearGradient>
+                  </defs>
+                  <Pie
+                    data={budgetData}
+                    innerRadius={30}
+                    outerRadius={80}
+                    paddingAngle={1}
+                    cornerRadius={8}
+                    dataKey="value"
+                    stroke="none"
+                    label={({
+                      cx,
+                      cy,
+                      midAngle,
+                      innerRadius,
+                      outerRadius,
+                      percent,
+                    }: any) => {
+                      if (!percent || percent < 0.05) return null;
+
+                      const radius =
+                        innerRadius + (outerRadius - innerRadius) * 0.5;
+
+                      const x =
+                        cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+                      const y =
+                        cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+
+                      return (
+                        <text
+                          x={x}
+                          y={y}
+                          fill="white"
+                          fontSize={12}
+                          fontWeight={"bold"}
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                        >
+                          {`${(percent * 100).toFixed(0)}%`}
+                        </text>
+                      );
+                    }}
+                    labelLine={false}
+                  >
+                    {budgetData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${entry.name}`}
+                        fill={`url(#pieColor${index % 4})`}
+                      />
                     ))}
-                    {pendingInLieuCount > 0 && (
-                        <div className="alert-card">
-                            <div className="icon yellow">
-                                <IconAlertCircle size={24} />
-                            </div>
-                            <div className="alert-card-content">
-                                <h3>In Lieu Approval</h3>
-                                <span>{pendingInLieuCount}</span>
-                                <p>In-Lieu requests that require approval.</p>
-                            </div>
-                            <Link to="/in-lieu-approvals" className="view-details">
-                                View Details <IconArrowRight size={16} />
-                            </Link>
-                        </div>
-                    )}
-                </div>
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: any) => `PHP ${value.toLocaleString()}`}
+                    contentStyle={{
+                      borderRadius: "16px",
+                      border: "none",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                      opacity: 0.9,
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="top"
+                    align="left"
+                    iconType="circle"
+                    wrapperStyle={{
+                      fontSize: "11px",
+                      color: "#4b5563",
+                      paddingBottom: "10px",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
 
-                <div className="lower-dashboard-container">
-                    <div className="procurement-timeline-container">
-                        <div className="procurement-timeline-header">
-                            <div className="title-container">
-                                <h2>Procurement Timeline</h2>
-                                <p>Track the progress of your procurement activities</p>
-                            </div>
-                        </div>
-                        <div className="content-container">
-                            {logs.map((log, index) => (
-                                <DashboardProcurementCard
-                                    key={index}
-                                    actionType={log.actionType}
-                                    description={log.description}
-                                    date={log.date}
-                                    value={log.value}
-                                    userFullName={log.userFullName}
-                                    fiscalYear={log.fiscalYear}
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="ai-features-container btn-alab">
-                        <div className="ai-features-header">
-                            <div className="title-container">
-                                <h2>Bulk Budget Balancing (AI Decision Weights)</h2>
-                                <p>Your AI-powered budget optimization tool</p>
-                            </div>
-                        </div>
-                        <div className="content-container">
-                            <Link to="/in-lieu-reallocation" className="btn-alab">
-                                <img src={alab} alt="ALAB Icon" className="alab-link-icon" style={{ width: '20px', height: '20px' }}/>
-                                <span>Optimize Your Budget with ALAB</span>
-                            </Link>
-                            <div className="title-content-container">
-                                <h4>Training Data Importances</h4>
-                                {aiFeaturesDataTraining.map((data, index) => (
-                                    <div className="ai-features-content" key={index}>
-                                        <div className="icon white">{data.icon}</div>
-                                        <div className="description">
-                                            <h3>{data.title}</h3>
-                                            <p>{data.description}</p>
-                                        </div>
-                                        <span>{data.percentage !== undefined ? data.percentage.toFixed(2) : 'N/A'}%</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="title-content-container">
-                                <h4>Current Year Importances</h4>
-                                {aiFeaturesDataCurrentYear.map((data, index) => (
-                                    <div className="ai-features-content" key={index}>
-                                        <div className="icon white">{data.icon}</div>
-                                        <div className="description">
-                                            <h3>{data.title}</h3>
-                                            <p>{data.description}</p>
-                                        </div>
-                                        <span>{data.percentage !== undefined ? data.percentage.toFixed(2) : 'N/A'}%</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="title-content-container">
-                                <h4>Knapsack Problem Features</h4>
-                                {knapsackFeaturesData.map((data, index) => (
-                                    <div className="ai-features-content" key={index}>
-                                        <div className="icon white">{data.icon}</div>
-                                        <div className="description">
-                                            <h3>{data.title}</h3>
-                                            <p>{data.description}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </LoadingWrapper>
-        </main>
-    )
+        <div className="lower-dashboard-container">
+          <div className="procurement-timeline-container">
+            <div className="procurement-timeline-header">
+              <div className="title-container">
+                <h2>Procurement Timeline</h2>
+                <p>Track the progress of your procurement activities</p>
+              </div>
+            </div>
+            <div className="content-container">
+              {logs.map((log, index) => (
+                <DashboardProcurementCard
+                  key={index}
+                  actionType={log.actionType}
+                  description={log.description}
+                  date={log.date}
+                  value={log.value}
+                  userFullName={log.userFullName}
+                  fiscalYear={log.fiscalYear}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </LoadingWrapper>
+    </main>
+  );
 }

@@ -318,6 +318,8 @@ export default function InLieuApprovalTable({ data, handleInLieuStatusChange, it
                                             status={item.status}
                                             isOpen={openDialogIndex === index}
                                             onClose={() => setOpenDialogIndex(null)}
+                                            handleOnApproveInLieu={handleOnApproveInLieu}
+                                            handleOnRejectInLieu={handleOnRejectInLieu}
                                         />
                                     </td>
                                 </tr>

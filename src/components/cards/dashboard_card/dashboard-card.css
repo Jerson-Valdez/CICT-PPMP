@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .dashboard-card{
-    @apply flex flex-col items-start justify-start p-5 gap-2 shadow-xl rounded-xl min-w-65 flex-1 max-sm:min-w-full;
+    @apply flex flex-col items-start justify-start p-4 gap-1 shadow-xl rounded-xl min-w-65 flex-1 max-sm:min-w-full;
 
     & > .card-content{
         & > h3{

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 .page-container.settings{
-    & > .profile-container, & > .security-container, & > .content-management-container, & > .ml-retrain-container{
+    & > .profile-container, & > .security-container, & > .content-management-container, & > .retrain-importances-container{
         @apply flex flex-col w-full rounded-xl shadow-xl p-8 gap-2 max-md:p-5;
 
         & > .profile-title, & > .security-title, & > .content-management-title{
@@ -50,9 +50,69 @@
             }
         }
     }
-    & > .ml-retrain-container{
-        & > .btn-alab{
-            @apply w-fit px-5 py-2.5 text-sm;
+    & > .retrain-importances-container{
+        @apply flex flex-col items-start justify-start gap-2 w-full px-5;
+        & > .ml-retrain-container{
+            @apply w-full;
+            & > .threshold-button-container{
+                    @apply flex flex-col items-center justify-center gap-2 w-full;
+                }
+        }
+        & > .ai-features-container{
+            @apply flex-5 flex flex-col items-center justify-start rounded-xl w-full min-w-80 p-0;
+            box-shadow: var(--yellow-shadow-strong);
+            height: 28rem;
+            
+            &:active {
+                @apply translate-y-0 scale-100;
+            }
+
+            & > .ai-features-header{
+                @apply flex flex-row items-center justify-start gap-2 w-full rounded-t-xl px-5 py-3;
+
+                & > .title-container{
+                    @apply flex flex-col items-start justify-start;
+
+                    & > h2 {
+                        @apply text-sm font-semibold text-white;
+                    }
+
+                    & > p {
+                        @apply text-xs text-white font-normal;
+                    }
+                }
+            }
+            & > .content-container{
+                @apply flex flex-col items-center justify-start py-2 px-5 gap-2 w-full h-full overflow-y-auto;
+
+                & > .title-content-container{
+                    @apply flex flex-col items-start justify-start gap-1 w-full border-b border-gray-300;
+
+                    & > h4{
+                        @apply text-sm font-bold text-white;
+                    }
+
+                    & > .ai-features-content{
+                        @apply flex flex-row items-center justify-between gap-2 w-full py-2 px-5 rounded-xl;
+
+                        & > .description{
+                            @apply flex-1;
+                            & > h3 {
+                                @apply text-xs font-bold text-red-800;
+                            }
+                            & > p {
+                                @apply text-xs text-white font-light;
+                            }
+                        }
+                        & > span{
+                            @apply text-sm font-semibold text-red-800;
+                        }
+                    }
+                    &:nth-last-child(1) {
+                        @apply border-b-0;
+                    }
+                }
+            }
         }
     }
 }

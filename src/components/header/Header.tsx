@@ -16,6 +16,15 @@ export default function Header({ userFullName, userEmailAddress, fiscalYears }: 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isUploadPPMPDialogOpen, setIsUploadPPMPDialogOpen] = useState(false);
   
+  const emailAddressEncrypt = () => {
+    for (let i = 0; i < userEmailAddress.length; i++) {
+      if (userEmailAddress[i] === '@') {
+        return userEmailAddress.substring(0, 6) + '*******' + userEmailAddress.substring(i);
+      }
+    }
+    return userEmailAddress;
+  };
+
   function toggleSidebar() {
     setIsSidebarCollapsed(!isSidebarCollapsed);
     const sidebar = document.querySelector('.nav-container');
@@ -102,7 +111,7 @@ export default function Header({ userFullName, userEmailAddress, fiscalYears }: 
         </div>
         <div className="user-info">
           <span className="name">{userFullName}</span>
-          <span className="email">{userEmailAddress}</span>
+          <span className="email">{emailAddressEncrypt()}</span>
         </div>
       </div>
     </header>

@@ -29,24 +29,24 @@ interface NavProps {
 export default function Nav({userFullName, userEmailAddress, userRole, selectedFiscalYear, fiscalYears, handleFiscalYearChange }: NavProps) {
 
     const navLink: NavItem[] = [       
-        {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={20} />},
-        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={20} /> },
-        {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} />},
-        {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={20} /> },
-        {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={20} /> },
-        {name: 'Supplemental PPMP', to: 'supplemental-ppmp', icon: <IconDeviceTabletPlus size={20} /> },
-        {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} />},
+        {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={18} />},
+        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={18} /> },
+        {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={18} />},
+        {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={18} /> },
+        {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={18} /> },
+        {name: 'Supplemental PPMP', to: 'supplemental-ppmp', icon: <IconDeviceTabletPlus size={18} /> },
+        {name: 'Settings', to: 'settings', icon: <IconSettings2 size={18} />},
     ]
 
     const adminNavLink: NavItem[] = [       
-        {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={20} />},
-        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={20} /> },
-        {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={20} />},
-        {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={20} /> },
-        {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={20} /> },
-        {name: 'Supplemental PPMP', to: 'supplemental-ppmp', icon: <IconDeviceTabletPlus size={20} /> },
-        {name: 'User Management', to: 'user-management', icon: <IconUsers size={20} /> },
-        {name: 'Settings', to: 'settings', icon: <IconSettings2 size={20} />},
+        {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={18} />},
+        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={18} /> },
+        {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={18} />},
+        {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={18} /> },
+        {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={18} /> },
+        {name: 'Supplemental PPMP', to: 'supplemental-ppmp', icon: <IconDeviceTabletPlus size={18} /> },
+        {name: 'User Management', to: 'user-management', icon: <IconUsers size={18} /> },
+        {name: 'Settings', to: 'settings', icon: <IconSettings2 size={18} />},
     ]
 
     const navigate = useNavigate();
@@ -61,6 +61,7 @@ export default function Nav({userFullName, userEmailAddress, userRole, selectedF
                         await logoutUser();
                         navigate('/login');
                         toast.success("Logged out successfully.");
+                        localStorage.removeItem("isLoggedIn");
                     } catch (error) {
                         console.error("Logout error:", error);
                         toast.error("Network error. Please try again later.");
@@ -95,7 +96,7 @@ export default function Nav({userFullName, userEmailAddress, userRole, selectedF
             <hr />
             <div className="fiscal-year-selector-container">
                 <label htmlFor="fiscal-year">
-                    <IconCalendarWeek size={24} />
+                    <IconCalendarWeek size={18} />
                     Fiscal Year:
                 </label>
                 <select name="fiscal-year" id="fiscal-year" value={selectedFiscalYear} onChange={handleFiscalYearChange}>
@@ -128,7 +129,7 @@ export default function Nav({userFullName, userEmailAddress, userRole, selectedF
                 </div>
             </div>
             <button className="btn-solid red" onClick={handleLogout}>
-                <IconLogout2 size={24} />
+                <IconLogout2 size={20} />
                 Logout
             </button>
         </nav>
