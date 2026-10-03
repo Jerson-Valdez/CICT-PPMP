@@ -116,26 +116,13 @@ export default function Dashboard() {
               dashboardCardsResult.totalAnnualBudget) *
               100,
           );
+          setPrTrendData(dashboardCardsResult.prTrend);
         }
       } catch (error) {
         console.error("Error fetching dashboard cards data:", error);
         toast.error("Network error. Please try again later.");
       } finally {
         setIsInitialLoading(false);
-        setPrTrendData([
-          { month: "Jan", "2024": 12, "2025": 15, "2026": 10 },
-          { month: "Feb", "2024": 8, "2025": 10, "2026": 14 },
-          { month: "Mar", "2024": 7, "2025": 20, "2026": 28 },
-          { month: "Apr", "2024": 7, "2025": 32, "2026": 28 },
-          { month: "May", "2024": 2, "2025": 20, "2026": 6 },
-          { month: "Jun", "2024": 23, "2025": 6, "2026": 45 },
-          { month: "Jul", "2024": 13, "2025": 4, "2026": 28 },
-          { month: "Aug", "2024": 42, "2025": 20, "2026": 34 },
-          { month: "Sep", "2024": 6, "2025": 9, "2026": 28 },
-          { month: "Oct", "2024": 34, "2025": 20, "2026": 6 },
-          { month: "Nov", "2024": 1, "2025": 8, "2026": 28 },
-          { month: "Dec", "2024": 23, "2025": 20, "2026": 12 },
-        ]);
       }
     };
     loadDashboardData();
@@ -251,7 +238,7 @@ export default function Dashboard() {
             <div className="analytics-header">
               <div className="title-container">
                 <h2>3-Year PR Volume Trend</h2>
-                <p>Insights and analytics 3 years purchase requests history</p>
+                <p>Insights and analytics of latest 3 years purchase requests history</p>
               </div>
             </div>
             <div className="content-container">
@@ -367,7 +354,7 @@ export default function Dashboard() {
                   </defs>
                   <Pie
                     data={budgetData}
-                    innerRadius={40}
+                    innerRadius={30}
                     outerRadius={80}
                     paddingAngle={1}
                     cornerRadius={8}
@@ -428,7 +415,7 @@ export default function Dashboard() {
                     align="left"
                     iconType="circle"
                     wrapperStyle={{
-                      fontSize: "12px",
+                      fontSize: "11px",
                       color: "#4b5563",
                       paddingBottom: "10px",
                     }}

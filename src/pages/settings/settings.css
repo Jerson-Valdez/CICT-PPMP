@@ -53,9 +53,10 @@
     & > .retrain-importances-container{
         @apply flex flex-col items-start justify-start gap-2 w-full px-5;
         & > .ml-retrain-container{
-            & > .btn-alab{
-                @apply w-fit px-5 py-2.5 text-sm;
-            }
+            @apply w-full;
+            & > .threshold-button-container{
+                    @apply flex flex-col items-center justify-center gap-2 w-full;
+                }
         }
         & > .ai-features-container{
             @apply flex-5 flex flex-col items-center justify-start rounded-xl w-full min-w-80 p-0;
@@ -83,10 +84,6 @@
             }
             & > .content-container{
                 @apply flex flex-col items-center justify-start py-2 px-5 gap-2 w-full h-full overflow-y-auto;
-
-                & > .btn-alab{
-                    @apply border border-white;
-                }
 
                 & > .title-content-container{
                     @apply flex flex-col items-start justify-start gap-1 w-full border-b border-gray-300;

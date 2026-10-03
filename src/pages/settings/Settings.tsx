@@ -1,19 +1,11 @@
 import { useEffect, useState, type JSX } from "react";
 import "./settings.css";
 import {
-  IconUser,
-  IconEye,
-  IconEyeOff,
-  IconShield,
-  IconCheck,
-  IconX,
-  IconStackBack,
-  IconPlus,
-  IconTrash,
-  IconSettingsAi,
-  IconChartBarOff,
   IconTransform,
   IconClockDollar,
+  IconCalendarCheck,
+  IconCalendarCancel,
+  IconCategory2,
 } from "@tabler/icons-react";
 import {
   confirm,
@@ -24,8 +16,10 @@ import { toast } from "../../components/toast/ToastService";
 import { useOutletContext } from "react-router";
 import { getAccessToken, getRefreshToken, logoutUser } from "../../../supadb";
 import { useNavigate } from "react-router";
-import InfoNote from "../../components/notes/info_note/InfoNote";
-import WarningNote from "../../components/notes/warning_note/WarningNote";
+import ProfileSection from "../../sections/setting sections/ProfileSection";
+import SecuritySection from "../../sections/setting sections/SecuritySection";
+import SignatoriesCMSSection from "../../sections/setting sections/SignatoriesCMSSection";
+import MLSection from "../../sections/setting sections/MLSection";
 
 interface aiFeaturesData {
   icon: JSX.Element;
@@ -47,7 +41,6 @@ export default function Settings() {
     setPrAsignatories,
     setApprovedAsignatories,
     setRevisedAsignatories,
-    selectedFiscalYear
   } = useOutletContext<{
     userFullName: string;
     userEmailAddress: string;
@@ -59,21 +52,18 @@ export default function Settings() {
     setPrAsignatories: (asignatories: any[]) => void;
     setApprovedAsignatories: (asignatories: any[]) => void;
     setRevisedAsignatories: (asignatories: any[]) => void;
-    selectedFiscalYear: string;
   }>();
 
-  const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
-
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-
-  const [aiNotUtilizedItemsPercentage, setAiNotUtilizedItemsPercentage] =
+  const [aiAvailableQuantityWeight, setAiAvailableQuantityWeight] =
     useState(0);
-  const [aiFrequentInLieuItemsPercentage, setAiFrequentInLieuItemsPercentage] =
+  const [aiItemCategoryWeight, setAiItemCategoryWeight] =
     useState(0);
   const [
-    aiNotUtilizedCurrentYearPercentage,
-    setAiNotUtilizedCurrentYearPercentage,
+    aiPlannedQuantityWeight,
+    setAiPlannedQuantityWeight,
   ] = useState(0);
+  const [aiPricePerUnitWeight, setAiPricePerUnitWeight] = useState(0);
+  const [aiUtilizedQuantityWeight, setAiUtilizedQuantityWeight] = useState(0);
 
   const [localPrAsignatories, setLocalPrAsignatories] = useState(
     prAsignatories || [],
@@ -142,12 +132,10 @@ export default function Settings() {
 
   useEffect(() => {
     const loadDashboardData = async () => {
-      handleDashboardFiscalYearChange(selectedFiscalYear);
       try {
         const [importancesResponse] = await Promise.all([
           fetch(
-            "https://test-ppmp.onrender.com/api/get_importances/?year=" +
-              selectedFiscalYear,
+            "https://test-ppmp.onrender.com/api/get_importances/",
             {
               method: "GET",
               headers: {
@@ -162,37 +150,22 @@ export default function Settings() {
           );
         } else {
           const importancesResult = await importancesResponse.json();
-          const item1 = importancesResult.notUtilizedItems || 0;
-          const item2 = importancesResult.frequentInLieuItems || 0;
-          const item3 = importancesResult.notUtilizedCurrentYear || 0;
-
-          const grandTotal = item1 + item2 + item3;
-
-          if (grandTotal > 0) {
-            setAiNotUtilizedItemsPercentage(
-              Number(((item1 / grandTotal) * 100).toFixed(2)),
-            );
-            setAiFrequentInLieuItemsPercentage(
-              Number(((item2 / grandTotal) * 100).toFixed(2)),
-            );
-            setAiNotUtilizedCurrentYearPercentage(
-              Number(((item3 / grandTotal) * 100).toFixed(2)),
-            );
-          } else {
-            setAiNotUtilizedItemsPercentage(0);
-            setAiFrequentInLieuItemsPercentage(0);
-            setAiNotUtilizedCurrentYearPercentage(0);
-          }
+          console.log("Importances Result:", importancesResult);
+          setAiAvailableQuantityWeight(importancesResult.availableQuantityWeight || 0);
+          setAiItemCategoryWeight(importancesResult.itemCategoryWeight || 0);
+          setAiPlannedQuantityWeight(importancesResult.plannedQuantityWeight || 0);
+          setAiPricePerUnitWeight(importancesResult.pricePerUnitWeight || 0);
+          setAiUtilizedQuantityWeight(importancesResult.utilizedQuantityWeight || 0);
         }
       } catch (error) {
         console.error("Error fetching dashboard cards data:", error);
         toast.error("Network error. Please try again later.");
       } finally {
-        setIsInitialLoading(false);
+        // setIsInitialLoading(false);
       }
     };
     loadDashboardData();
-  }, [selectedFiscalYear]);
+  }, []);
 
   function handleAsignatoryChange(
     category: "pr" | "approved" | "revised",
@@ -256,13 +229,6 @@ export default function Settings() {
       setNewPassword("");
     }
   }
-
-  function handleDashboardFiscalYearChange(newFiscalYear: string) {
-        if (newFiscalYear !== fiscalYearHolder) {
-            setIsInitialLoading(true);
-            setFiscalYearHolder(newFiscalYear);
-        }
-    }
 
   function handleConfirmNewPasswordChange(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -545,7 +511,7 @@ export default function Settings() {
     });
   }
 
-  function retrainAIModel() {
+  function retrainAIModel(threshold: number) {
     confirm(
       "Retrain AI Model",
       "Are you sure you want to retrain the AI model? This process may take some time.",
@@ -554,12 +520,15 @@ export default function Settings() {
     ).then(async (confirmed) => {
       if (confirmed) {
         const closeLoading = showCircleLoadingDialog();
+        const formData = new FormData();
+        formData.append("threshold", String(threshold));
 
         try {
           const response = await fetch(
             "https://test-ppmp.onrender.com/api/retrain_ml/",
             {
               method: "POST",
+              body: formData,
               headers: {
                 Authorization: `Bearer ${(await getAccessToken()) || ""}`,
               },
@@ -586,12 +555,11 @@ export default function Settings() {
   }
 
   const aiFeaturesDataTraining: aiFeaturesData[] = [
-        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized Items", description: "Based on the historical low-utilization of item quantities", percentage: aiNotUtilizedItemsPercentage},
-        {icon: <IconTransform size={18}/>, title: "Frequent In Lieu Items", description: "Based on the historical in-lieu quantity of items", percentage: aiFrequentInLieuItemsPercentage},
-    ];
-
-    const aiFeaturesDataCurrentYear: aiFeaturesData[] = [
-        {icon: <IconChartBarOff size={18}/>, title: "Not Utilized in Current Year", description: "Based on the utilization rate of items in the current fiscal year", percentage: aiNotUtilizedCurrentYearPercentage},
+        {icon: <IconCalendarCancel  size={18}/>, title: "Available Quantity Weight", description: "Based on the historical available quantity of items left not utilized", percentage: aiAvailableQuantityWeight},
+        {icon: <IconCalendarCheck size={18}/>, title: "Planned Quantity Weight", description: "Based on the historical planned quantity of items", percentage: aiPlannedQuantityWeight},
+        {icon: <IconCategory2 size={18}/>, title: "Item Category Weight", description: "Based on the historical utilization of items category", percentage: aiItemCategoryWeight},
+        {icon: <IconClockDollar size={18}/>, title: "Price Per Unit Weight", description: "Based on the historical utilization of price per unit of items", percentage: aiPricePerUnitWeight},
+        {icon: <IconTransform size={18}/>, title: "Utilized Quantity Weight", description: "Based on the historical utilized quantity of items", percentage: aiUtilizedQuantityWeight},
     ];
 
     const knapsackFeaturesData: aiFeaturesData[] = [
@@ -600,476 +568,52 @@ export default function Settings() {
 
   return (
     <main className="page-container settings">
-      <div className="profile-container">
-        <div className="profile-title">
-          <div className="icon royal-red">
-            <IconUser size={20} />
-          </div>
-          <div className="title">
-            <h2>Profile</h2>
-            <p>Your Account Information</p>
-          </div>
-        </div>
-        <div className="input-row">
-          <div className="field-group">
-            <label htmlFor="fullName">Full Name</label>
-            <input
-              type="text"
-              id="fullName"
-              value={fullName}
-              onChange={handleFullNameChange}
-            />
-            <p className="error-message" id="fullnameError"></p>
-          </div>
-          <div className="field-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              disabled
-              value={email}
-              className="text-gray-500"
-            />
-          </div>
-        </div>
-        {fullName !== "" && fullName !== initialFullName && (
-          <button
-            className="btn-primary-rd-shadow"
-            onClick={handleUpdateProfile}
-          >
-            Update Profile
-          </button>
-        )}
-      </div>
-      <div className="security-container">
-        <div className="security-title">
-          <div className="icon royal-red">
-            <IconShield size={20} />
-          </div>
-          <div className="title">
-            <h2>Security</h2>
-            <p>Your Account Security Settings</p>
-          </div>
-        </div>
-        <InfoNote message="For security reasons, you will be logged out after updating your password. Please log in again with your new password." />
-        <WarningNote message="Your password must not be the same as your current password." />
-        <div className="field-group">
-          <label htmlFor="password">Current Password</label>
-          <div className="input-field">
-            <input
-              type={isCurrentPasswordVisible ? "text" : "password"}
-              id="password"
-              placeholder="Enter your current password"
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
-            <button
-              type="button"
-              className="input-icon"
-              onClick={toggleCurrentPasswordVisibility}
-            >
-              {isCurrentPasswordVisible ? <IconEye /> : <IconEyeOff />}
-            </button>
-          </div>
-          <p className="error-message" id="passwordError"></p>
-        </div>
-        <div className="input-row">
-          <div className="field-group">
-            <label htmlFor="newPassword">New Password</label>
-            <div className="input-field">
-              <input
-                type={isNewPasswordVisible ? "text" : "password"}
-                id="newPassword"
-                placeholder="Enter your new password"
-                onChange={handleNewPasswordChange}
-              />
-              <button
-                type="button"
-                className="input-icon"
-                onClick={toggleNewPasswordVisibility}
-              >
-                {isNewPasswordVisible ? <IconEye /> : <IconEyeOff />}
-              </button>
-            </div>
-          </div>
-          <div className="field-group">
-            <label htmlFor="confirmNewPassword">Confirm New Password</label>
-            <div className="input-field">
-              <input
-                type={isConfirmNewPasswordVisible ? "text" : "password"}
-                id="confirmNewPassword"
-                placeholder="Confirm your new password"
-                onChange={handleConfirmNewPasswordChange}
-              />
-              <button
-                type="button"
-                className="input-icon"
-                onClick={toggleConfirmNewPasswordVisibility}
-              >
-                {isConfirmNewPasswordVisible ? <IconEye /> : <IconEyeOff />}
-              </button>
-            </div>
-            <p className="error-message" id="confirmNewPasswordError"></p>
-          </div>
-        </div>
-        <ul>
-          <li className={eightCharacter ? "valid" : "error"}>
-            {eightCharacter ? <IconCheck size={18} /> : <IconX size={18} />}{" "}
-            Atleast 8 characters
-          </li>
-          <li className={upperLowerCase ? "valid" : "error"}>
-            {upperLowerCase ? <IconCheck size={18} /> : <IconX size={18} />}{" "}
-            Include uppercase and lowercase letters
-          </li>
-          <li className={number ? "valid" : "error"}>
-            {number ? <IconCheck size={18} /> : <IconX size={18} />} Contain at
-            least one number
-          </li>
-          <li className={specialCharacter ? "valid" : "error"}>
-            {specialCharacter ? <IconCheck size={18} /> : <IconX size={18} />}{" "}
-            Include at least one special character
-          </li>
-        </ul>
-        {currentPassword &&
-        newPassword &&
-        confirmNewPassword &&
-        isPasswordMatched ? (
-          <button
-            className="btn-primary-rd-shadow"
-            onClick={handleUpdatePassword}
-          >
-            Update Password
-          </button>
-        ) : (
-          <button className="btn-primary-rd-shadow" disabled>
-            Update Password
-          </button>
-        )}
-      </div>
-      <div className="content-management-container">
-        <div className="content-management-title">
-          <div className="icon royal-red">
-            <IconStackBack size={20} />
-          </div>
-          <div className="title">
-            <h2>Content Management</h2>
-            <p>Manage Signatories for the contents</p>
-          </div>
-        </div>
-        <div className="pr-asignatory">
-          <div className="title-addbtn">
-            <h3>Purchase Request Signatories</h3>
-            <button
-              className="btn-secondary"
-              onClick={handleAddAsignatory.bind(null, "pr")}
-            >
-              <IconPlus size={18} />
-              Add PR Signatory
-            </button>
-          </div>
-          {localPrAsignatories.map((signatory: any, index: number) => (
-            <div key={signatory.signatoryId} className="input-row">
-              <div className="field-group">
-                <label htmlFor={`fullName-${signatory.signatoryId}-pr`}>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id={`fullName-${signatory.signatoryId}-pr`}
-                  value={signatory.fullName}
-                  onChange={(e) =>
-                    handleAsignatoryChange(
-                      "pr",
-                      index,
-                      "fullName",
-                      e.target.value,
-                    )
-                  }
-                />
-                <p
-                  className="error-message"
-                  id={`fullnameError-${signatory.signatoryId}-pr`}
-                ></p>
-              </div>
-              <div className="field-group">
-                <label htmlFor={`position-${signatory.signatoryId}-pr`}>
-                  Position Title
-                </label>
-                <input
-                  type="text"
-                  id={`position-${signatory.signatoryId}-pr`}
-                  value={signatory.position}
-                  onChange={(e) =>
-                    handleAsignatoryChange(
-                      "pr",
-                      index,
-                      "position",
-                      e.target.value,
-                    )
-                  }
-                />
-                <p
-                  className="error-message"
-                  id={`positionError-${signatory.signatoryId}-pr`}
-                ></p>
-              </div>
-              <button
-                className="btn-secondary red"
-                onClick={() => handleDeleteAsignatory("pr", index)}
-              >
-                <IconTrash size={18} />
-              </button>
-            </div>
-          ))}
-          {isPrDirty && (
-            <button
-              className="btn-primary-rd-shadow"
-              onClick={() => onAsignatoriesUpdate("pr")}
-            >
-              Update Purchase Request Signatories
-            </button>
-          )}
-        </div>
-        <div className="pr-asignatory">
-          <div className="title-addbtn">
-            <h3>Approved PPMP Signatories</h3>
-            <button
-              className="btn-secondary"
-              onClick={handleAddAsignatory.bind(null, "approved")}
-            >
-              <IconPlus size={18} />
-              Add Approved Signatory
-            </button>
-          </div>
-          {localApprovedAsignatories.map((signatory: any, index: number) => (
-            <div key={signatory.signatoryId} className="input-row">
-              <div className="field-group">
-                <label htmlFor={`fullName-${signatory.signatoryId}-approved`}>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id={`fullName-${signatory.signatoryId}-approved`}
-                  value={signatory.fullName}
-                  onChange={(e) =>
-                    handleAsignatoryChange(
-                      "approved",
-                      index,
-                      "fullName",
-                      e.target.value,
-                    )
-                  }
-                />
-                <p
-                  className="error-message"
-                  id={`fullnameError-${signatory.signatoryId}-approved`}
-                ></p>
-              </div>
-              <div className="field-group">
-                <label htmlFor={`position-${signatory.signatoryId}-approved`}>
-                  Position Title
-                </label>
-                <input
-                  type="text"
-                  id={`position-${signatory.signatoryId}-approved`}
-                  value={signatory.position}
-                  onChange={(e) =>
-                    handleAsignatoryChange(
-                      "approved",
-                      index,
-                      "position",
-                      e.target.value,
-                    )
-                  }
-                />
-                <p
-                  className="error-message"
-                  id={`positionError-${signatory.signatoryId}-approved`}
-                ></p>
-              </div>
-              <button
-                className="btn-secondary red"
-                onClick={() => handleDeleteAsignatory("approved", index)}
-              >
-                <IconTrash size={18} />
-              </button>
-            </div>
-          ))}
-          {isApprovedDirty && (
-            <button
-              className="btn-primary-rd-shadow"
-              onClick={() => onAsignatoriesUpdate("approved")}
-            >
-              Update Approved PPMP Signatories
-            </button>
-          )}
-        </div>
-        <div className="pr-asignatory">
-          <div className="title-addbtn">
-            <h3>Revised PPMP Signatories</h3>
-            <button
-              className="btn-secondary"
-              onClick={handleAddAsignatory.bind(null, "revised")}
-            >
-              <IconPlus size={18} />
-              Add Revised Signatory
-            </button>
-          </div>
-          {localRevisedAsignatories.map((signatory: any, index: number) => (
-            <div key={signatory.signatoryId} className="input-row">
-              <div className="field-group">
-                <label htmlFor={`fullName-${signatory.signatoryId}-revised`}>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id={`fullName-${signatory.signatoryId}-revised`}
-                  value={signatory.fullName}
-                  onChange={(e) =>
-                    handleAsignatoryChange(
-                      "revised",
-                      index,
-                      "fullName",
-                      e.target.value,
-                    )
-                  }
-                />
-                <p
-                  className="error-message"
-                  id={`fullnameError-${signatory.signatoryId}-revised`}
-                ></p>
-              </div>
-              <div className="field-group">
-                <label htmlFor={`position-${signatory.signatoryId}-revised`}>
-                  Position Title
-                </label>
-                <input
-                  type="text"
-                  id={`position-${signatory.signatoryId}-revised`}
-                  value={signatory.position}
-                  onChange={(e) =>
-                    handleAsignatoryChange(
-                      "revised",
-                      index,
-                      "position",
-                      e.target.value,
-                    )
-                  }
-                />
-                <p
-                  className="error-message"
-                  id={`positionError-${signatory.signatoryId}-revised`}
-                ></p>
-              </div>
-              <button
-                className="btn-secondary red"
-                onClick={() => handleDeleteAsignatory("revised", index)}
-              >
-                <IconTrash size={18} />
-              </button>
-            </div>
-          ))}
-          {isRevisedDirty && (
-            <button
-              className="btn-primary-rd-shadow"
-              onClick={() => onAsignatoriesUpdate("revised")}
-            >
-              Update Revised PPMP Signatories
-            </button>
-          )}
-        </div>
-      </div>
+      <ProfileSection
+        fullName={fullName}
+        email={email}
+        initialFullName={initialFullName}
+        handleFullNameChange={handleFullNameChange}
+        handleUpdateProfile={handleUpdateProfile}
+      />
+      <SecuritySection 
+        currentPassword={currentPassword}
+        newPassword={newPassword}
+        confirmNewPassword={confirmNewPassword}
+        isCurrentPasswordVisible={isCurrentPasswordVisible}
+        isNewPasswordVisible={isNewPasswordVisible}
+        isConfirmNewPasswordVisible={isConfirmNewPasswordVisible}
+        isPasswordMatched={isPasswordMatched}
+        eightCharacter={eightCharacter}
+        upperLowerCase={upperLowerCase}
+        number={number}
+        specialCharacter={specialCharacter}
+        setCurrentPassword={setCurrentPassword}
+        handleNewPasswordChange={handleNewPasswordChange}
+        handleConfirmNewPasswordChange={handleConfirmNewPasswordChange}
+        toggleCurrentPasswordVisibility={toggleCurrentPasswordVisibility}
+        toggleNewPasswordVisibility={toggleNewPasswordVisibility}
+        toggleConfirmNewPasswordVisibility={toggleConfirmNewPasswordVisibility}
+        handleUpdatePassword={handleUpdatePassword}
+      />
+      <SignatoriesCMSSection 
+        localPrAsignatories={localPrAsignatories}
+        localApprovedAsignatories={localApprovedAsignatories}
+        localRevisedAsignatories={localRevisedAsignatories}
+        handleAsignatoryChange={handleAsignatoryChange}
+        handleDeleteAsignatory={handleDeleteAsignatory}
+        handleAddAsignatory={handleAddAsignatory}
+        onAsignatoriesUpdate={onAsignatoriesUpdate}
+        isPrDirty={isPrDirty}
+        isApprovedDirty={isApprovedDirty}
+        isRevisedDirty={isRevisedDirty}
+      />
       {userRole === "Admin" && (
-        <div className="retrain-importances-container">
-            <div className="content-management-title">
-              <div className="icon royal-red">
-                <IconSettingsAi size={20} />
-              </div>
-              <div className="title">
-                <h2>Artificial Intelligence</h2>
-                <p>
-                  Manage the training curve of the AI model by retraining it
-                  with new data
-                </p>
-              </div>
-            </div>
-            <InfoNote message="The AI model is advisable to train every other procurement year." />
-            <WarningNote message="The AI model requires regular retraining to maintain optimal performance with new data." />
-          <div className="ml-retrain-container">
-            {timeLeft > 0 ? (
-              <button className="btn-alab" disabled>
-                Retrain AI Model ({Math.ceil(timeLeft / 1000)}s)
-              </button>
-            ) : (
-              <button
-                className="btn-alab"
-                onClick={(e) => {
-                  e.preventDefault();
-                  retrainAIModel();
-                }}
-              >
-                Retrain AI Model
-              </button>
-            )}
-          </div>
-          <div className="ai-features-container btn-alab">
-            <div className="ai-features-header">
-              <div className="title-container">
-                <h2>Bulk Budget Balancing (AI Decision Weights)</h2>
-                <p>Your AI-powered budget optimization tool</p>
-              </div>
-            </div>
-            <div className="content-container">
-              <div className="title-content-container">
-                <h4>Training Data Importances</h4>
-                {aiFeaturesDataTraining.map((data, index) => (
-                  <div className="ai-features-content" key={index}>
-                    <div className="icon white">{data.icon}</div>
-                    <div className="description">
-                      <h3>{data.title}</h3>
-                      <p>{data.description}</p>
-                    </div>
-                    <span>
-                      {data.percentage !== undefined
-                        ? data.percentage.toFixed(2)
-                        : "N/A"}
-                      %
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="title-content-container">
-                <h4>Current Year Importances</h4>
-                {aiFeaturesDataCurrentYear.map((data, index) => (
-                  <div className="ai-features-content" key={index}>
-                    <div className="icon white">{data.icon}</div>
-                    <div className="description">
-                      <h3>{data.title}</h3>
-                      <p>{data.description}</p>
-                    </div>
-                    <span>
-                      {data.percentage !== undefined
-                        ? data.percentage.toFixed(2)
-                        : "N/A"}
-                      %
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="title-content-container">
-                <h4>Knapsack Problem Features</h4>
-                {knapsackFeaturesData.map((data, index) => (
-                  <div className="ai-features-content" key={index}>
-                    <div className="icon white">{data.icon}</div>
-                    <div className="description">
-                      <h3>{data.title}</h3>
-                      <p>{data.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <MLSection
+          aiFeaturesDataTraining={aiFeaturesDataTraining}
+          knapsackFeaturesData={knapsackFeaturesData}
+          retrainAIModel={retrainAIModel}
+          timeLeft={timeLeft}
+        />
       )}
     </main>
   );
