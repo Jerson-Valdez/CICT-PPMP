@@ -521,7 +521,8 @@ export default function Settings() {
       if (confirmed) {
         const closeLoading = showCircleLoadingDialog();
         const formData = new FormData();
-        formData.append("threshold", String(threshold));
+        const decimalThreshold = threshold / 100;
+        formData.append("utilizationThreshold", String(decimalThreshold));
 
         try {
           const response = await fetch(
