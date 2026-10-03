@@ -396,7 +396,7 @@ export default function Dashboard() {
                   >
                     {budgetData.map((entry, index) => (
                       <Cell
-                        key={`cell-${index}`}
+                        key={`cell-${entry.name}`}
                         fill={`url(#pieColor${index % 4})`}
                       />
                     ))}
