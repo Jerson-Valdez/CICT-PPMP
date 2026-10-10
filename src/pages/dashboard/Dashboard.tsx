@@ -54,8 +54,9 @@ interface Log {
 export default function Dashboard() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  const { selectedFiscalYear } = useOutletContext<{
+  const { selectedFiscalYear, fiscalYears } = useOutletContext<{
     selectedFiscalYear: string;
+    fiscalYears: string[];
   }>();
   const [fiscalYearHolder, setFiscalYearHolder] = useState<string | null>(null);
 
@@ -133,7 +134,7 @@ export default function Dashboard() {
       icon: <IconWallet size={20} />,
       iconColor: "blue",
       title: "Total Annual Budget",
-      description: "FY 2026 Allocation",
+      description: `FY ${selectedFiscalYear} Allocation`,
       value: totalAnnualBudget,
       color: "blue-purple",
     },
@@ -297,7 +298,7 @@ export default function Dashboard() {
                   />
                   <Area
                     type="bump"
-                    dataKey="2024"
+                    dataKey={`${fiscalYears[2]}`}
                     stroke="#bfdbfe"
                     strokeWidth={1}
                     fillOpacity={1}
@@ -305,7 +306,7 @@ export default function Dashboard() {
                   />
                   <Area
                     type="bump"
-                    dataKey="2025"
+                    dataKey={`${fiscalYears[1]}`}
                     stroke="#60a5fa"
                     strokeWidth={1}
                     fillOpacity={1}
@@ -313,7 +314,7 @@ export default function Dashboard() {
                   />
                   <Area
                     type="bump"
-                    dataKey="2026"
+                    dataKey={`${fiscalYears[0]}`}
                     stroke="#2563eb"
                     strokeWidth={2}
                     fillOpacity={1}
