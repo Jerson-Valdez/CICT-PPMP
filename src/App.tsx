@@ -169,7 +169,7 @@ function PrivateLayout() {
                         <FourSquare color="var(--primary)" size="large" text="Loading page..." />
                     </div>
                 }>
-                    <Outlet context={{ userRole, selectedFiscalYear, userFullName, userEmailAddress, deanName, prAsignatories, approvedAsignatories, revisedAsignatories, setUserFullName, setUserRole, setPrAsignatories, setApprovedAsignatories, setRevisedAsignatories }} /> 
+                    <Outlet context={{ userRole, selectedFiscalYear, userFullName, userEmailAddress, deanName, prAsignatories, approvedAsignatories, revisedAsignatories, setUserFullName, setUserRole, setPrAsignatories, setApprovedAsignatories, setRevisedAsignatories, fiscalYears }} /> 
                 </Suspense>
             </main>
         </>
