@@ -75,7 +75,7 @@ export default function MLSection({
                 disabled
               />
             </div>
-            <button className="btn-alab" disabled>
+            <button className="btn-primary-rd-shadow" disabled>
               Retrain AI Model ({Math.ceil(timeLeft / 1000)}s)
             </button>
           </div>
@@ -98,7 +98,7 @@ export default function MLSection({
             </div>
             {threshold !== 0 ? (
               <button
-                className="btn-alab"
+                className="btn-primary-rd-shadow"
                 onClick={(e) => {
                   e.preventDefault();
                   retrainAIModel(threshold);
@@ -108,14 +108,14 @@ export default function MLSection({
                 Retrain AI Model
               </button>
             ) : (
-              <button className="btn-alab" disabled>
+              <button className="btn-primary-rd-shadow" disabled>
                 Retrain AI Model
               </button>
             )}
           </div>
         )}
       </div>
-      <div className="ai-features-container btn-alab">
+      <div className="ai-features-container">
         <div className="ai-features-header">
           <div className="title-container">
             <h2>Bulk Budget Balancing (AI Decision Weights)</h2>

@@ -73,8 +73,7 @@
         @apply flex flex-1 flex-col items-start justify-start gap-1 w-full;
 
         & .nav-link {
-            @apply relative overflow-hidden flex flex-row items-center gap-2 text-xs font-semibold w-full p-3 rounded-lg;
-            color: var(--text-gray);
+            @apply relative overflow-hidden flex flex-row items-center gap-2 text-xs font-medium w-full p-3 rounded-lg text-gray-200;
 
             &::after {
                 content: '';

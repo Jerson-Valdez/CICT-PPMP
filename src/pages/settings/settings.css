@@ -55,12 +55,13 @@
         & > .ml-retrain-container{
             @apply w-full;
             & > .threshold-button-container{
-                    @apply flex flex-col items-center justify-center gap-2 w-full;
+                    @apply flex flex-col items-start justify-center gap-2 w-full mb-4;
                 }
         }
         & > .ai-features-container{
             @apply flex-5 flex flex-col items-center justify-start rounded-xl w-full min-w-80 p-0;
             box-shadow: var(--yellow-shadow-strong);
+            background-color: var(--primary);
             height: 28rem;
             
             &:active {
@@ -98,10 +99,11 @@
                         & > .description{
                             @apply flex-1;
                             & > h3 {
-                                @apply text-xs font-bold text-red-800;
+                                @apply text-xs font-medium;
+                                color: var(--secondary);
                             }
                             & > p {
-                                @apply text-xs text-white font-light;
+                                @apply text-xs font-light text-white;
                             }
                         }
                         & > span{

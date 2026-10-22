@@ -397,9 +397,9 @@ export default function InLieuReallocation() {
                             <h3><IconTransform size={24} color="red" /> Available Lieu Pool</h3>
                             {newItemsArray.length > 0 && requiredBudget > 0 && isNewItemsValid ?
                                 (
-                                    <button className="btn-alab" onClick={getTestingSuggestions}><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />ALAB Suggestions</button>
+                                    <button className="btn-primary-rd-shadow" onClick={getTestingSuggestions}><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" title="Click to get the AI suggestions of In-Lieu Items"/>Suggest In-Lieu Items (AI)</button>
                                 ) : (
-                                    <button className="btn-alab" disabled><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" />ALAB Suggestions</button>
+                                    <button className="btn-primary-rd-shadow" disabled><img src={alabIcon} alt="ALAB Icon" className="w-5 h-5" title="Click to get the AI suggestions of In-Lieu Items"/>Suggest In-Lieu Items (AI)</button>
                                 )}
                         </div>
                         <LoadingWrapper isLoading={isInitialLoading} skeleton={<InLieuReallocationSkeleton />}>
