@@ -30,7 +30,7 @@ export default function Nav({userFullName, userEmailAddress, userRole, selectedF
 
     const navLink: NavItem[] = [       
         {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={18} />},
-        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={18} /> },
+        {name: 'PPMP Price Catalog', to: 'ppmp-master-list', icon: <IconClipboardList size={18} /> },
         {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={18} />},
         {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={18} /> },
         {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={18} /> },
@@ -40,7 +40,7 @@ export default function Nav({userFullName, userEmailAddress, userRole, selectedF
 
     const adminNavLink: NavItem[] = [       
         {name: 'Dashboard', to: 'dashboard', icon: <IconLayoutDashboard size={18} />},
-        {name: 'PPMP Master List', to: 'ppmp-master-list', icon: <IconClipboardList size={18} /> },
+        {name: 'PPMP Price Catalog', to: 'ppmp-master-list', icon: <IconClipboardList size={18} /> },
         {name: 'Procurement Monitor', to: 'procurement-monitor', icon: <IconChartColumn size={18} />},
         {name: 'In Lieu Reallocation', to: 'in-lieu-reallocation', icon: <IconTransform size={18} /> },
         {name: 'In Lieu Approvals', to: 'in-lieu-approvals', icon: <IconChecklist size={18} /> },

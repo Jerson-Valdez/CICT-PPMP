@@ -129,7 +129,7 @@ export default function MasterlistTable({
     <div className="table-container masterlist">
       <div className="table-title-container">
         <div className="table-title">
-          <h2 className="table-title">Master PPMP Table</h2>
+          <h2 className="table-title">PPMP Price Catalog</h2>
           <p>
             <span>{itemCount}</span> Items • <span>{unitCount}</span> Units
             available for request
@@ -149,7 +149,7 @@ export default function MasterlistTable({
           className="export-button"
           onClick={() => setIsExportDialogOpen(true)}
         >
-          <IconFileTypeXls size={24} /> Export Datas
+          <IconFileTypeXls size={24} /> Export Data
         </button>
         {isExportDialogOpen && (
           <ExportPromptDialog

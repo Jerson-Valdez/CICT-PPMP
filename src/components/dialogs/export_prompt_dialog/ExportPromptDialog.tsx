@@ -39,7 +39,9 @@ export default function ExportPromptDialog({
   const exportAll = [{ label: "Export All Data", value: "all" }];
 
   const exportOptions = [
+    { label: "Original PPMP", value: "original_ppmp" },
     { label: "Revised PPMP", value: "revised_ppmp" },
+    { label: "PPMP Remaining Available Items", value: "ppmp_remaining" },
     { label: "Supplemental PPMP", value: "supplemental_ppmp" },
     { label: "In Lieus", value: "in_lieus" },
     { label: "Purchase Requests", value: "purchase_requests" },
