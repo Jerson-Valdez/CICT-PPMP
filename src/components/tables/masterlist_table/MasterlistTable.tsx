@@ -208,8 +208,8 @@ export default function MasterlistTable({
                 <p>Arrived Items</p>
               </th>
               <th>
-                <h3>Price Catalog</h3>
-                <p>Per Unit (PHP)</p>
+                <h3>Price per Unit</h3>
+                <p>Price of items (PHP)</p>
               </th>
               <th>
                 <h3>Total Price</h3>
