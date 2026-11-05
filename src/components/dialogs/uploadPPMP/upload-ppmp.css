@@ -98,8 +98,6 @@
                 }
                 &.row{
                     @apply flex-row items-start gap-1 border border-gray-300 rounded-lg p-2 mb-2 bg-white;
-                    color: var(--primary);
-                    border-color: var(--primary);
                 }
             }
             & > .totalABC > .field-group{
